@@ -1,0 +1,13 @@
+[package]
+name = "voxels"
+version = "0.1.0"
+authors = ["yohandev"]
+edition = "2018"
+
+[dependencies]
+pixels = "0.0.4"
+nalgebra = "0.21.0"
+rayon = "1.3.0"
+winit = "0.22.2"
+winit_input_helper = "0.6.0"
+lazy_static = "1.4.0"
