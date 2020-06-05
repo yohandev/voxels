@@ -4,16 +4,21 @@ use crate::raytracer::*;
 
 pub struct Camera
 {
-    pub fov: f32
+    pub fov: f32,
+
+    env_map: image::RgbImage
 }
 
 impl Default for Camera
 {
     fn default() -> Self
-    {
+    {        
         Camera
         {
             fov: 45.0 * (std::f32::consts::PI / 180.0),
+            env_map: image::load_from_memory(include_bytes!("../old_outdoor_theater_2k.jpg"))
+                .unwrap()
+                .into_rgb()
         }
     }
 }
@@ -50,7 +55,7 @@ impl Camera
     {
         if bounces <= 0
         {
-            Self::background_px(ray.direct.y)
+            self.background(&ray.direct)
         }
         else if let Some(hit) = ray.cast(scene)              // hit object
         {
@@ -117,7 +122,7 @@ impl Camera
             };
             // if bounces == crate::BOUNCES
             // {
-            //     return refraction;
+            //     return reflection;
             // }
 
             [
@@ -128,8 +133,8 @@ impl Camera
             ]
         }
         else                                // background colour
-        {                                   // hard-coded sky gradient
-            Self::background_px(ray.direct.y)
+        {
+            self.background(&ray.direct)
         }
     }
 
@@ -143,14 +148,39 @@ impl Camera
         clamp(diffuse + specular + reflect + refract, 0.0, 255.0) as u8
     }
 
-    fn background_px(y: f32) -> [u8; 4]
+    fn background(&self, dir: &float3) -> [u8; 4]
     {
-        let v = (y / 2.0) + 0.5;
+        //-- sky gradient --
+        // let v = (dir.y / 2.0) + 0.5;
 
-        let r = 44.0 + v * (90.0 - 44.0);
-        let g = 98.0 + v * (156.0 - 98.0);
-        let b = 145.0 + v * (214.0 - 145.0);
+        // let r = 44.0 + v * (90.0 - 44.0);
+        // let g = 98.0 + v * (156.0 - 98.0);
+        // let b = 145.0 + v * (214.0 - 145.0);
 
-        [r as u8, g as u8, b as u8, 255]
+        // [r as u8, g as u8, b as u8, 255]
+
+        // -- sphere map --
+        // let m = 2.0 * ((dir.x * dir.x) + (dir.y * dir.y) + ((dir.z + 1.0) * (dir.z + 1.0))).sqrt();
+        
+        // let u = dir.x / m + 0.5;
+        // let v = dir.y / m + 0.5;
+
+        // let x = (u * self.env_map.width() as f32) as u32;
+        // let y = (v * self.env_map.height() as f32) as u32;
+
+        // let p = self.env_map.get_pixel(x, y);
+
+        // [p.0[0], p.0[1], p.0[2], 255]
+
+        // -- equirectangular map --
+        let u = f32::atan2(dir.z, dir.x) * (std::f32::consts::FRAC_1_PI * 0.5) + 0.5;
+        let v = f32::asin(-dir.y) * std::f32::consts::FRAC_1_PI + 0.5;
+
+        let x = (u * self.env_map.width() as f32) as u32;
+        let y = (v * self.env_map.height() as f32) as u32;
+
+        let p = self.env_map.get_pixel(x, y);
+
+        [p.0[0], p.0[1], p.0[2], 255]
     }
 }
