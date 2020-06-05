@@ -16,7 +16,7 @@ impl Default for Camera
         Camera
         {
             fov: 45.0 * (std::f32::consts::PI / 180.0),
-            env_map: image::load_from_memory(include_bytes!("../old_outdoor_theater_2k.jpg"))
+            env_map: image::load_from_memory(include_bytes!("../winter_lake_01.jpg"))
                 .unwrap()
                 .into_rgb()
         }
