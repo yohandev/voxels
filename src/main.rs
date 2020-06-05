@@ -13,6 +13,43 @@ fn main()
     use raytracer::{ Sphere, Material, PointLight, AmbientLight };
     use ezmath::float3;
 
+    let ivory = Material
+    {
+        diffuse: [102, 102, 77],
+        albedo: [0.6, 0.3],
+        specular: 50.0,
+        reflectivity: 0.1,
+        refractivity: 0.0,
+        ior: 1.0,  
+    };
+    let glass = Material
+    {
+        diffuse: [153, 179, 204],
+        albedo: [0.0, 0.5],
+        specular: 125.0,
+        reflectivity: 0.1,
+        refractivity: 0.8,
+        ior: 1.5,  
+    };
+    let red_rubber = Material
+    {
+        diffuse: [77, 26, 26],
+        albedo: [0.9, 0.1],
+        specular: 10.0,
+        reflectivity: 0.0,
+        refractivity: 0.0,
+        ior: 1.0,  
+    };
+    let mirror = Material
+    {
+        diffuse: [255, 255, 255],
+        albedo: [0.0, 10.0],
+        specular: 1425.0,
+        reflectivity: 0.8,
+        refractivity: 0.0,
+        ior: 1.0,  
+    };
+
     let scene = raytracer::Scene
     {
         camera: Default::default(),
@@ -24,13 +61,7 @@ fn main()
                 {
                     center: float3::new(-3.0, 0.0, -16.0),
                     radius: 2.0,
-                    material: Material
-                    {
-                        diffuse: [255, 255, 255],
-                        albedo: [0.2, 10.0],
-                        specular: 1425.0,
-                        reflectivity: 0.8,
-                    }
+                    material: ivory,
                 }
             ),
             Box::new
@@ -39,13 +70,7 @@ fn main()
                 {
                     center: float3::new(-1.0, -1.5, -12.0),
                     radius: 2.0,
-                    material: Material
-                    {
-                        diffuse: [77, 26, 26],
-                        albedo: [0.9, 0.1],
-                        specular: 10.0,
-                        reflectivity: 0.0,
-                    }
+                    material: glass,
                 }
             ),
             Box::new
@@ -54,13 +79,7 @@ fn main()
                 {
                     center: float3::new(1.5, -0.5, -18.0),
                     radius: 3.0,
-                    material: Material
-                    {
-                        diffuse: [77, 26, 26],
-                        albedo: [0.9, 0.1],
-                        specular: 10.0,
-                        reflectivity: 0.0,
-                    }
+                    material: red_rubber,
                 }
             ),
             Box::new
@@ -69,13 +88,7 @@ fn main()
                 {
                     center: float3::new(7.0, 5.0, -18.0),
                     radius: 4.0,
-                    material: Material
-                    {
-                        diffuse: [102, 102, 77],
-                        albedo: [0.6, 0.3],
-                        specular: 50.0,
-                        reflectivity: 0.0,
-                    }
+                    material: mirror,
                 }
             ),
         ],

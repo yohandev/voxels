@@ -40,18 +40,17 @@ impl Camera
                     origin: float3::new(0.0, 0.0, 0.0),
                     direct: float3::new(dx, dy, -1.0).normalize(),
                 };
-                let px = float2::new(x, y);
 
-                pixel.copy_from_slice(&Self::calculate_pixel(self, &px, &ray, scene, 2));
+                pixel.copy_from_slice(&Self::calculate_pixel(self, &ray, scene, crate::BOUNCES));
             }
         );
     }
 
-    pub fn calculate_pixel(&self, px: &float2, ray: &Ray, scene: &Scene, bounces: usize) -> [u8; 4]
+    pub fn calculate_pixel(&self, ray: &Ray, scene: &Scene, bounces: usize) -> [u8; 4]
     {
         if bounces <= 0
         {
-            Self::background_px(px.y)
+            Self::background_px(ray.direct.y)
         }
         else if let Some(hit) = ray.cast(scene)              // hit object
         {
@@ -87,38 +86,66 @@ impl Camera
                     },
                     direct: reflect_dir
                 };
-                scene.camera.calculate_pixel(px, &reflect_ray, scene, bounces - 1)
+                scene.camera.calculate_pixel(&reflect_ray, scene, bounces - 1)
             }
             else
             {
                 [0; 4]
             };
 
+            // -- refraction --
+            let refraction = if hit.collide.material().refractivity > 0.0
+            {
+                let refract_dir = refract(&hit.ray.direct, &hit.normal, hit.collide.material().ior).normalize();
+                let refract_ray = Ray
+                {
+                    origin: if refract_dir.dot(&hit.normal) < 0.0
+                    {
+                        hit.point - (hit.normal * 1e-3)
+                    }
+                    else
+                    {
+                        hit.point + (hit.normal * 1e-3)
+                    },
+                    direct: refract_dir
+                };
+                scene.camera.calculate_pixel(&refract_ray, scene, bounces - 1)
+            }
+            else
+            {
+                [0; 4]
+            };
+            // if bounces == crate::BOUNCES
+            // {
+            //     return refraction;
+            // }
+
             [
-                Self::frag(&hit.collide.material(), 0, &light, &reflection),
-                Self::frag(&hit.collide.material(), 1, &light, &reflection),
-                Self::frag(&hit.collide.material(), 2, &light, &reflection),
+                Self::frag(&hit.collide.material(), 0, &light, &reflection, &refraction),
+                Self::frag(&hit.collide.material(), 1, &light, &reflection, &refraction),
+                Self::frag(&hit.collide.material(), 2, &light, &reflection, &refraction),
                 255
             ]
         }
         else                                // background colour
         {                                   // hard-coded sky gradient
-            Self::background_px(px.y)
+            Self::background_px(ray.direct.y)
         }
     }
 
-    fn frag(mat: &Material, channel: usize, light: &LightIntensity, reflection: &[u8; 4]) -> u8
+    fn frag(mat: &Material, channel: usize, light: &LightIntensity, reflection: &[u8; 4], refraction: &[u8; 4]) -> u8
     {
         let diffuse = mat.diffuse[channel] as f32 * light.diffuse * mat.albedo[0];  
         let specular = light.specular * mat.albedo[1];
         let reflect = reflection[channel] as f32 * mat.reflectivity;
+        let refract = refraction[channel] as f32 * mat.refractivity;
 
-        clamp(diffuse + specular + reflect, 0.0, 255.0) as u8
+        clamp(diffuse + specular + reflect + refract, 0.0, 255.0) as u8
     }
 
     fn background_px(y: f32) -> [u8; 4]
     {
-        let v = y / crate::HEIGHT as f32;
+        let v = (y / 2.0) + 0.5;
 
         let r = 44.0 + v * (90.0 - 44.0);
         let g = 98.0 + v * (156.0 - 98.0);

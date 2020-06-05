@@ -12,5 +12,8 @@ pub struct Material
     pub diffuse: [u8; 3],
     pub albedo: [f32; 2],
     pub specular: f32,
+
     pub reflectivity: f32,
+    pub refractivity: f32,
+    pub ior: f32,
 }
