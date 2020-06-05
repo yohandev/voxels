@@ -10,8 +10,8 @@ pub const BOUNCES: usize = 3;
 
 fn main()
 {
-    use raytracer::{ Sphere, Material, PointLight, AmbientLight };
-    use ezmath::float3;
+    use raytracer::{ Sphere, Plane, Material, PointLight, AmbientLight };
+    use ezmath::{ float3, float2 };
 
     let ivory = Material
     {
@@ -89,6 +89,15 @@ fn main()
                     center: float3::new(7.0, 5.0, -18.0),
                     radius: 4.0,
                     material: mirror,
+                }
+            ),
+            Box::new
+            (
+                Plane
+                {
+                    center: float3::new(0.0, -4.0, 0.0),
+                    size: float2::new(5.0, 15.0),
+                    material: ivory
                 }
             ),
         ],

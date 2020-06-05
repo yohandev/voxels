@@ -6,7 +6,7 @@ pub trait Renderable: std::marker::Sync
     fn hits<'a>(&'a self, ray: &'a Ray) -> Option<RayCastHit<'a>>;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Material
 {
     pub diffuse: [u8; 3],

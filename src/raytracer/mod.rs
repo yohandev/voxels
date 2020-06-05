@@ -3,6 +3,7 @@ use crate::ezmath::*;
 mod render;
 mod camera;
 mod sphere;
+mod plane;
 mod light;
 mod scene;
 mod ray;
@@ -12,6 +13,7 @@ pub use render::{ Renderable, Material };
 pub use ray::{ Ray, RayCastHit };
 pub use camera::Camera;
 pub use sphere::Sphere;
+pub use plane::Plane;
 pub use scene::Scene;
 
 // struct Sphere
