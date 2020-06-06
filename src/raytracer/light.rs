@@ -11,6 +11,8 @@ pub struct LightIntensity
 {
     pub diffuse: f32,
     pub specular: f32,
+
+    pub in_shadow: bool,
 }
 
 pub struct PointLight
@@ -48,7 +50,7 @@ impl Light for PointLight
         {
             if (shadow_hit.point - shadow_hit.ray.origin).magnitude_squared() < (dis * dis)
             {
-                return Default::default(); // in shadow -> no light
+                return LightIntensity { diffuse: 0.0, specular: 0.0, in_shadow: true }
             }
         }
         
@@ -58,7 +60,7 @@ impl Light for PointLight
         // -- specular --
         let specular = self.intensity * max(0.0, reflect(&dir, &hit.normal).dot(&hit.ray.direct)).powf(hit.collide.material().specular);
     
-        LightIntensity { diffuse, specular }
+        LightIntensity { diffuse, specular, in_shadow: false }
     }
 
     fn goto(&mut self, pos: float3)
@@ -71,7 +73,7 @@ impl Light for AmbientLight
 {
     fn intensity(&self, _: &RayCastHit, _: &Scene) -> LightIntensity
     {
-        LightIntensity { diffuse: self.intensity, specular: 0.0 }
+        LightIntensity { diffuse: self.intensity, specular: 0.0, in_shadow: false }
     }
 
     fn goto(&mut self, _: float3)

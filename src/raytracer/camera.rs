@@ -70,7 +70,8 @@ impl Camera
                     {
                         acc.diffuse += i.diffuse;
                         acc.specular += i.specular;
-                        
+                        acc.in_shadow |= i.in_shadow;
+
                         acc
                     }
                 );
@@ -122,7 +123,20 @@ impl Camera
             };
             // if bounces == crate::BOUNCES
             // {
-            //     return reflection;
+            //     return if light.in_shadow
+            //     {
+            //         let lightness = (light.diffuse * 255.0) as u8;
+            //         [
+            //             lightness,
+            //             lightness,
+            //             lightness,
+            //             255
+            //         ]
+            //     }
+            //     else
+            //     {
+            //         [255; 4]
+            //     }
             // }
 
             [

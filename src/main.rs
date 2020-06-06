@@ -4,8 +4,8 @@ mod ezmath;
 
 use window::*;
 
-pub const WIDTH: u32 = 800;
-pub const HEIGHT: u32 = 600;
+pub const WIDTH: u32 = 400;
+pub const HEIGHT: u32 = 300;
 pub const BOUNCES: usize = 3;
 
 fn main()
@@ -96,8 +96,8 @@ fn main()
                 Plane
                 {
                     center: float3::new(0.0, -4.0, 0.0),
-                    size: float2::new(5.0, 15.0),
-                    material: ivory
+                    size: float2::new(15.0, 30.0),
+                    material: red_rubber
                 }
             ),
         ],
