@@ -7,9 +7,11 @@ const MAX_ALLOC: usize = max(super::DATA_SIZE, super::NODE_SIZE) * 8;
 
 /// virtual allocator that works over its own subset of contiguous real memory
 /// implementation is very specific to this SVO implementation
+#[derive(Debug)]
 pub(super) struct Allocator
 {
-    mem: Vec<u8>,                           // contiguous memory this allocator manages
+    pub(super) mem: Vec<u8>,                // contiguous memory this allocator manages
+
     free: Vec<Option<Vec<usize>>>           // free blocks of memory per specific size.
 }
 
@@ -17,10 +19,14 @@ impl Allocator
 {
     pub(super) fn new(capacity: usize) -> Self
     {
+        let mut free = Vec::with_capacity(MAX_ALLOC);
+
+        free.resize(MAX_ALLOC, None);
+
         Self
         {
             mem: Vec::with_capacity(capacity),
-            free: Vec::with_capacity(MAX_ALLOC)
+            free
         }
     }
 
@@ -69,8 +75,96 @@ impl Allocator
     }
 }
 
+impl std::ops::Index<usize> for Allocator
+{
+    type Output = u8;
+
+    fn index(&self, index: usize) -> &Self::Output
+    {
+        &self.mem[index]
+    }
+}
+
+impl std::ops::IndexMut<usize> for Allocator
+{
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output
+    {
+        &mut self.mem[index]
+    }
+}
+
+impl std::fmt::Display for Allocator
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
+    {
+        let mut str_repr = self.mem
+            .iter()
+            .map(|b| format!("[{:03}]", b))
+            .collect::<Vec<String>>();
+
+        for (len, locs) in self.free
+            .iter()
+            .enumerate()
+            .filter(|(_, locs)| locs.is_some())
+            .map(|(i, e)| (i, e.as_ref().unwrap()))
+        {
+            for loc in locs
+            {
+                for i in *loc..(loc + len)
+                {
+                    str_repr[i] = String::from("[###]");
+                }
+            }
+        }
+
+        f.write_str(str_repr.concat().as_str())
+    }
+}
+
 /// from https://stackoverflow.com/a/53646925
 const fn max(a: usize, b: usize) -> usize
 {
     [a, b][(a < b) as usize]
+}
+
+#[test]
+#[cfg(test)]
+pub fn test_alloc()
+{
+    let mut mem = Allocator::new(32);
+
+    println!("after init: ");
+    println!("{}", mem);
+
+    let (a1_loc, a1_len) = (mem.alloc(&[1, 2, 3, 4, 5, 6]), 6);
+
+    println!("after alloc A:");
+    println!("{}", mem);
+
+    let (a2_loc, a2_len) = (mem.alloc(&[7, 8, 9]), 3);
+
+    println!("after alloc B:");
+    println!("{}", mem);
+
+    mem.free(a1_loc, a1_len);
+
+    println!("after free A:");
+    println!("{}", mem);
+
+    let (a3_loc, a3_len) = (mem.alloc(&[1, 2, 3, 4, 5, 6]), 6);
+
+    println!("after re-alloc A:");
+    println!("{}", mem);
+
+    let (a4_loc, a4_len) = (mem.alloc(&[255, 254, 253, 252, 251, 250]), 6);
+
+    println!("after alloc similar to A:");
+    println!("{}", mem);
+
+    mem.free(a2_loc, a2_len);
+    mem.free(a3_loc, a3_len);
+    mem.free(a4_loc, a4_len);
+
+    println!("after de-alloc all:");
+    println!("{}", mem);
 }
