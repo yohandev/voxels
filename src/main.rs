@@ -1,4 +1,5 @@
 mod raytracer;
+mod octree;
 mod window;
 mod ezmath;
 
