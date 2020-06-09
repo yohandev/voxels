@@ -8,3 +8,19 @@ pub fn num_bits(n: u8) -> u32
     ];
     NIBBLE_LOOKUP[(n & 0x0F) as usize] + NIBBLE_LOOKUP[(n >> 4) as usize]
 }
+
+#[test]
+#[cfg(test)]
+#[cfg(target_endian="little")]
+fn test_endian()
+{
+    println!("running on little endian");
+}
+
+#[test]
+#[cfg(test)]
+#[cfg(target_endian="big")]
+fn test_endian()
+{
+    println!("running on big endian");
+}

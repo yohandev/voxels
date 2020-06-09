@@ -3,7 +3,7 @@
 // ~40 bytes, this option is viable and merging isn't even necessary. the array
 // is partially populated with vectors, populated only with at indices that are
 // multiples(1-8) of DATA_SIZE and NODE_SIZE.
-const MAX_ALLOC: usize = max(super::DATA_SIZE, super::NODE_SIZE) * 8;
+const MAX_ALLOC: usize = max(super::block::Block::SIZE, super::node::Node::SIZE) * 8;
 
 /// virtual allocator that works over its own subset of contiguous real memory
 /// implementation is very specific to this SVO implementation
@@ -88,6 +88,24 @@ impl std::ops::Index<usize> for Allocator
 impl std::ops::IndexMut<usize> for Allocator
 {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output
+    {
+        &mut self.mem[index]
+    }
+}
+
+impl std::ops::Index<std::ops::Range<usize>> for Allocator
+{
+    type Output = [u8];
+
+    fn index(&self, index: std::ops::Range<usize>) -> &Self::Output
+    {
+        &self.mem[index]
+    }
+}
+
+impl std::ops::IndexMut<std::ops::Range<usize>> for Allocator
+{
+    fn index_mut(&mut self, index: std::ops::Range<usize>) -> &mut Self::Output
     {
         &mut self.mem[index]
     }
