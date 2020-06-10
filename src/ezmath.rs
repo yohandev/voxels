@@ -5,11 +5,16 @@ use nalgebra::*;
 
 // -- matrices --
 pub type float4x4 = Matrix<f32, U4, U4, ArrayStorage<f32, U4, U4>>;
+pub type int4x4 = Matrix<i32, U4, U4, ArrayStorage<i32, U4, U4>>;
 
 // -- vectors --
 pub type float4 = Vector4<f32>;
 pub type float3 = Vector3<f32>;
 pub type float2 = Vector2<f32>;
+
+pub type int4 = Vector4<i32>;
+pub type int3 = Vector3<i32>;
+pub type int2 = Vector2<i32>;
 
 // -- functors --
 pub fn min(a: f32, b: f32) -> f32

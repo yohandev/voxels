@@ -1,7 +1,8 @@
 mod raytracer;
-mod octree;
+// mod octree; currently unused
 mod window;
 mod ezmath;
+mod voxel;
 
 use window::*;
 

@@ -17,4 +17,14 @@ pub struct Block
 impl Block
 {
     pub const SIZE:usize = std::mem::size_of::<Self>();
+
+    pub fn new(data: u16) -> Self
+    {
+        Self { data }
+    }
+
+    pub fn to_bytes(&self) -> [u8; Self::SIZE]
+    {
+        self.data.to_be_bytes()
+    }
 }

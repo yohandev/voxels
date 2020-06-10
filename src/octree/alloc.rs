@@ -62,8 +62,11 @@ impl Allocator
 
     /// mark the len amount of bytes starting at loc as free, to be re-allocated
     /// using the alloc() function.
-    pub(super) fn free(&mut self, loc: usize, len: usize)
+    pub(super) fn free(&mut self, range: std::ops::Range<usize>)
     {
+        let loc = range.start;
+        let len = range.end - range.start;
+
         if self.free[len].is_none()
         {
             self.free[len] = Some(Vec::default());
@@ -72,6 +75,11 @@ impl Allocator
             .as_mut()
             .unwrap()
             .push(loc);
+    }
+
+    pub(super) fn len(&self) -> usize
+    {
+        self.mem.len()
     }
 }
 
@@ -143,46 +151,4 @@ impl std::fmt::Display for Allocator
 const fn max(a: usize, b: usize) -> usize
 {
     [a, b][(a < b) as usize]
-}
-
-#[test]
-#[cfg(test)]
-pub fn test_alloc()
-{
-    let mut mem = Allocator::new(32);
-
-    println!("after init: ");
-    println!("{}", mem);
-
-    let (a1_loc, a1_len) = (mem.alloc(&[1, 2, 3, 4, 5, 6]), 6);
-
-    println!("after alloc A:");
-    println!("{}", mem);
-
-    let (a2_loc, a2_len) = (mem.alloc(&[7, 8, 9]), 3);
-
-    println!("after alloc B:");
-    println!("{}", mem);
-
-    mem.free(a1_loc, a1_len);
-
-    println!("after free A:");
-    println!("{}", mem);
-
-    let (a3_loc, a3_len) = (mem.alloc(&[1, 2, 3, 4, 5, 6]), 6);
-
-    println!("after re-alloc A:");
-    println!("{}", mem);
-
-    let (a4_loc, a4_len) = (mem.alloc(&[255, 254, 253, 252, 251, 250]), 6);
-
-    println!("after alloc similar to A:");
-    println!("{}", mem);
-
-    mem.free(a2_loc, a2_len);
-    mem.free(a3_loc, a3_len);
-    mem.free(a4_loc, a4_len);
-
-    println!("after de-alloc all:");
-    println!("{}", mem);
 }
