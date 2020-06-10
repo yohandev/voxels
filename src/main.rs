@@ -57,85 +57,113 @@ fn main()
         camera: Default::default(),
         objects: vec!
         [
+            // Box::new
+            // (
+            //     Sphere
+            //     {
+            //         center: float3::new(-3.0, 0.0, -16.0),
+            //         radius: 2.0,
+            //         material: ivory,
+            //     }
+            // ),
+            // Box::new
+            // (
+            //     Sphere
+            //     {
+            //         center: float3::new(-1.0, -1.5, -12.0),
+            //         radius: 2.0,
+            //         material: glass,
+            //     }
+            // ),
+            // Box::new
+            // (
+            //     Sphere
+            //     {
+            //         center: float3::new(1.5, -0.5, -18.0),
+            //         radius: 3.0,
+            //         material: red_rubber,
+            //     }
+            // ),
+            // Box::new
+            // (
+            //     Sphere
+            //     {
+            //         center: float3::new(7.0, 5.0, -18.0),
+            //         radius: 4.0,
+            //         material: mirror,
+            //     }
+            // ),
+            // Box::new
+            // (
+            //     Plane
+            //     {
+            //         center: float3::new(0.0, -4.0, 0.0),
+            //         size: float2::new(15.0, 30.0),
+            //         material: red_rubber
+            //     }
+            // ),
             Box::new
             (
-                Sphere
-                {
-                    center: float3::new(-3.0, 0.0, -16.0),
-                    radius: 2.0,
-                    material: ivory,
-                }
-            ),
-            Box::new
-            (
-                Sphere
-                {
-                    center: float3::new(-1.0, -1.5, -12.0),
-                    radius: 2.0,
-                    material: glass,
-                }
-            ),
-            Box::new
-            (
-                Sphere
-                {
-                    center: float3::new(1.5, -0.5, -18.0),
-                    radius: 3.0,
-                    material: red_rubber,
-                }
-            ),
-            Box::new
-            (
-                Sphere
-                {
-                    center: float3::new(7.0, 5.0, -18.0),
-                    radius: 4.0,
-                    material: mirror,
-                }
-            ),
-            Box::new
-            (
-                Plane
-                {
-                    center: float3::new(0.0, -4.0, 0.0),
-                    size: float2::new(15.0, 30.0),
-                    material: red_rubber
-                }
-            ),
+                crate::voxel::World::new(54321)
+            )
         ],
         lights: vec!
         [
+            // Box::new
+            // (
+            //     PointLight
+            //     {
+            //         position: float3::new(-20.0, 20.0, 20.0),
+            //         intensity: 1.5
+            //     }
+            // ),
+            // Box::new
+            // (
+            //     PointLight
+            //     {
+            //         position: float3::new(30.0, 50.0, -25.0),
+            //         intensity: 1.8
+            //     }
+            // ),
+            // Box::new
+            // (
+            //     PointLight
+            //     {
+            //         position: float3::new(30.0, 20.0, 30.0),
+            //         intensity: 1.7
+            //     }
+            // ),
             Box::new
             (
-                PointLight
+                AmbientLight
                 {
-                    position: float3::new(-20.0, 20.0, 20.0),
-                    intensity: 1.5
+                    intensity: 0.4
                 }
             ),
             Box::new
             (
                 PointLight
                 {
-                    position: float3::new(30.0, 50.0, -25.0),
-                    intensity: 1.8
-                }
-            ),
-            Box::new
-            (
-                PointLight
-                {
-                    position: float3::new(30.0, 20.0, 30.0),
+                    position: float3::new(0.0, 40.0, -48.0),
                     intensity: 1.7
                 }
             ),
             Box::new
             (
-                AmbientLight
+                PointLight
                 {
-                    intensity: 0.1
+                    position: float3::new(20.0, 40.0, -30.0),
+                    intensity: 1.6
                 }
-            )
+            ),
+            Box::new
+            (
+                PointLight
+                {
+                    position: float3::new(-20.0, 40.0, -60.0),
+                    intensity: 1.5
+                }
+            ),
         ],
         time: 0.0
     };

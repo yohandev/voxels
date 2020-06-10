@@ -5,6 +5,7 @@ use crate::raytracer::*;
 pub struct Camera
 {
     pub fov: f32,
+    pub pos: float3,
 
     env_map: image::RgbImage
 }
@@ -12,10 +13,12 @@ pub struct Camera
 impl Default for Camera
 {
     fn default() -> Self
-    {        
+    {
         Camera
         {
             fov: 45.0 * (std::f32::consts::PI / 180.0),
+            pos: float3::new(0.0, 0.0, 0.0),
+
             env_map: image::load_from_memory(include_bytes!("../winter_lake_01.jpg"))
                 .unwrap()
                 .into_rgb()
@@ -42,7 +45,7 @@ impl Camera
                 
                 let ray = Ray
                 {
-                    origin: float3::new(0.0, 0.0, 0.0),
+                    origin: self.pos,
                     direct: float3::new(dx, dy, -1.0).normalize(),
                 };
 

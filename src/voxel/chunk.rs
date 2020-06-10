@@ -1,6 +1,5 @@
 use std::ops::*;
 
-use crate::raytracer::*;
 use super::*;
 
 pub const CHUNK_SIZE: usize = 32;
@@ -24,11 +23,14 @@ impl Chunk
     /// load a chunk
     pub fn load(world: &World, pos: int3) -> Self
     {
-        Self
+        let mut chunk = Self
         {
             blocks: [Block::default(); CHUNK_VOLUME],
             pos
-        }
+        };
+        generate(world, &mut chunk, &rand::thread_rng());
+
+        chunk
     }
 
     /// flatten a relative position index to a 1D array index
@@ -45,127 +47,25 @@ impl Chunk
         (r_pos.1 as usize * CHUNK_SIZE ) +
         (r_pos.2 as usize * CHUNK_LAYER)
     }
-}
 
-impl Renderable for Chunk
-{
-    fn material(&self) -> &Material
+    pub fn pos(&self) -> &int3
     {
-        const MATERIAL: Material = Material
-        {
-            diffuse: [77, 26, 26],
-            albedo: [0.9, 0.1],
-            specular: 10.0,
-            reflectivity: 0.0,
-            refractivity: 0.0,
-            ior: 1.0,
-        };
-
-        &MATERIAL
+        &self.pos
     }
 
-    fn hits<'a>(&'a self, ray: &'a Ray) -> Option<RayCastHit<'a>>
+    pub fn x(&self) -> i32
     {
-        const MAX_RAY_DIST: f32 = 128.0;
+        self.pos.x
+    }
 
-        let mut t = 0.0;
+    pub fn y(&self) -> i32
+    {
+        self.pos.y
+    }
 
-        let mut pt = int3::new
-        (
-            ray.origin.x.floor() as i32,
-            ray.origin.y.floor() as i32,
-            ray.origin.z.floor() as i32,
-        );
-
-        let step = int3::new
-        (
-            if ray.direct.x > 0.0 { 1 } else { -1 },
-            if ray.direct.y > 0.0 { 1 } else { -1 },
-            if ray.direct.z > 0.0 { 1 } else { -1 },
-        );
-
-        let delta = float3::new
-        (
-            (1.0 / ray.direct.x).abs(),
-            (1.0 / ray.direct.y).abs(),
-            (1.0 / ray.direct.z).abs(),
-        );
-
-        let dist = float3::new
-        (
-            if step.x > 0 { pt.x as f32 + 1.0 - ray.origin.x } else { ray.origin.x - pt.x as f32 },
-            if step.x > 0 { pt.y as f32 + 1.0 - ray.origin.y } else { ray.origin.y - pt.y as f32 },
-            if step.x > 0 { pt.z as f32 + 1.0 - ray.origin.z } else { ray.origin.z - pt.z as f32 },
-        );
-
-        let mut max = float3::new
-        (
-            if delta.x.is_finite() { delta.x * dist.x } else { f32::INFINITY },
-            if delta.y.is_finite() { delta.y * dist.y } else { f32::INFINITY },
-            if delta.z.is_finite() { delta.z * dist.z } else { f32::INFINITY },
-        );
-
-        let mut step_index = -1;
-
-        while t < MAX_RAY_DIST
-        {
-            let b = self[pt];
-            if !b.is_air()
-            {
-                return Some
-                (
-                    crate::raytracer::RayCastHit
-                    {
-                        distance: t,
-                        point: ray.origin + (t * delta),
-                        normal: float3::new
-                        (
-                            if step_index == 0 { -step.x as f32 } else { 0.0 },
-                            if step_index == 1 { -step.y as f32 } else { 0.0 },
-                            if step_index == 2 { -step.z as f32 } else { 0.0 },
-                        ),
-                        ray: &ray,
-                        collide: self,
-                    }
-                )
-            }
-
-            if max.x < max.y
-            {
-                if max.x < max.z
-                {
-                    pt.x += step.x;
-                    t = max.x;
-                    max.x += delta.x;
-                    step_index = 0;
-                }
-                else
-                {
-                    pt.z += step.z;
-                    t = max.z;
-                    max.z += delta.z;
-                    step_index = 2;
-                }
-            }
-            else
-            {
-                if max.y < max.z
-                {
-                    pt.y += step.y;
-                    t = max.y;
-                    max.y += delta.y;
-                    step_index = 1;
-                }
-                else
-                {
-                    pt.z += step.z;
-                    t = max.z;
-                    max.z += delta.z;
-                    step_index = 2;
-                }
-            }
-        }
-        None
+    pub fn z(&self) -> i32
+    {
+        self.pos.z
     }
 }
 
