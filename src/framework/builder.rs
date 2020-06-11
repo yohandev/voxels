@@ -24,7 +24,7 @@ impl<'a> ApplicationBuilder<'a>
         self
     }
 
-    pub fn run<T: State + 'static>(self, mut state: T)
+    pub fn run<T: State + 'static>(self, state: T)
     {
         self.app.run(state)
     }

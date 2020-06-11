@@ -1,8 +1,13 @@
+use legion::prelude::*;
+
 use crate::framework::*;
 use crate::ezmath::*;
 
 pub struct Game
 {
+    ecs: Universe,
+
+    worlds: Vec<World>,  // loaded worlds
 }
 
 impl State for Game
@@ -20,6 +25,8 @@ impl State for Game
         {
             println!("key released!");
         }
+
+        //self.ecs.create_world().resources.
     }
 
     fn on_render(&self, window: &mut Window)
@@ -43,5 +50,17 @@ impl State for Game
 
 impl Game
 {
-    
+    pub fn new() -> Self
+    {
+        Self
+        {
+            ecs: Universe::new(),
+            worlds: Vec::new()
+        }
+    }
+
+    pub fn ecs(&self) -> &Universe
+    {
+        &self.ecs
+    }
 }

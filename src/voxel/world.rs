@@ -8,13 +8,23 @@ pub struct World
     /// all currently loaded chunks
     chunks: HashMap<int3, Box<Chunk>>,
 
+    /// ecs entities in this world
+    ecs: EcsRegistry,
+
     /// dummy air block to return when falsy indexing
     air: Block,
 }
 
 impl World
 {
+    pub fn load_chunk(&mut self, mut pos: int3)
+    {
+        pos.x -= pos.x % CHUNK_SIZE as i32;
+        pos.y -= pos.y % CHUNK_SIZE as i32;
+        pos.z -= pos.z % CHUNK_SIZE as i32;
 
+        self.chunks.insert(pos, Box::new(Chunk::load(&self, pos)));
+    }
 }
 
 impl Index<int3> for World
@@ -74,7 +84,7 @@ impl IndexMut<int3> for World
                 index.x, index.y, index.z,
                 "loading chunk...",
             );
-            self.chunks.insert(pos, Box::new(Chunk::load(&self, pos)));
+            self.load_chunk(pos);
         }
 
         self.chunks
