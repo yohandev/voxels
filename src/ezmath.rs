@@ -16,6 +16,14 @@ pub type int4 = Vector4<i32>;
 pub type int3 = Vector3<i32>;
 pub type int2 = Vector2<i32>;
 
+pub type uint4 = Vector4<u32>;
+pub type uint3 = Vector3<u32>;
+pub type uint2 = Vector2<u32>;
+
+pub type double4 = Vector4<f64>;
+pub type double3 = Vector3<f64>;
+pub type double2 = Vector2<f64>;
+
 // -- functors --
 pub fn min(a: f32, b: f32) -> f32
 {

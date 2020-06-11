@@ -1,0 +1,84 @@
+use super::*;
+
+pub struct Application
+{
+    app_loop: Option<EventLoop<()>>,
+
+    windows: Vec<Window>,
+    input: Input,
+}
+
+impl Application
+{
+    pub fn create() -> Self
+    {
+        Self
+        {
+            app_loop: Some(EventLoop::new()),
+            windows: Vec::new(),
+            input: Input::new(),
+        }
+    }
+
+    pub fn create_window(&mut self, name: &str, size: uint2) -> &Window
+    {
+        use winit::window::WindowBuilder;
+        use winit::dpi::LogicalSize;
+
+        self.windows.push
+        (
+            Window
+            {
+                winit:
+                {
+                    WindowBuilder::new()
+                        .with_title(name)
+                        .with_inner_size(LogicalSize::new(size.x, size.y))
+                        .build(self.app_loop.as_ref().unwrap())
+                        .unwrap()
+                },
+                size,
+                focused: false,
+            }
+        );
+
+        self.windows
+            .last()
+            .unwrap()
+    }
+
+    pub fn run(mut self)
+    {
+        let app_loop = self.app_loop
+            .take()
+            .unwrap();
+
+        app_loop.run
+        (
+            move |event, _, flow|
+            {
+                // pass event to window(s)
+                for window in &mut self.windows
+                {
+                    window.process_events(&event, flow);
+                }
+
+                // pass event to input
+                self.input.process_events(&event, flow);
+
+                // quick test
+                if let Event::MainEventsCleared = event
+                {
+                    if self.input.key_pressed(VirtualKeyCode::Space)
+                    {
+                        println!("key pressed!");
+                    }
+                    if self.input.key_released(VirtualKeyCode::Space)
+                    {
+                        println!("key released!");
+                    }
+                }
+            }
+        )
+    }
+}
