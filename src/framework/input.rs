@@ -1,3 +1,7 @@
+pub mod KeyCode             // re-export key codes
+{
+    pub use winit::event::VirtualKeyCode::*;
+}
 use std::time::*;
 
 use super::*;

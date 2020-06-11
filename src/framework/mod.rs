@@ -7,8 +7,8 @@ mod input;
 // -- export module typdefs --
 pub use application::{ Application, State };
 pub use builder::ApplicationBuilder;
+pub use input::{ Input, KeyCode };
 pub use window::Window;
-pub use input::Input;
 
 
 // -- used by sub-modules --

@@ -68,6 +68,8 @@ impl Application
         (
             move |event, _, flow|
             {
+                *flow = ControlFlow::Poll;
+
                 // pass event to window(s)
                 for window in &mut self.windows
                 {
@@ -76,19 +78,6 @@ impl Application
 
                 // pass event to input
                 self.input.process_events(&event, flow, &mut state);
-
-                // quick test
-                if let Event::MainEventsCleared = event
-                {
-                    if self.input.key_pressed(VirtualKeyCode::Space)
-                    {
-                        println!("key pressed!");
-                    }
-                    if self.input.key_released(VirtualKeyCode::Space)
-                    {
-                        println!("key released!");
-                    }
-                }
             }
         )
     }
