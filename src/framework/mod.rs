@@ -3,13 +3,14 @@ mod application;
 mod builder;
 mod window;
 mod input;
+mod state;
 
 // -- export module typdefs --
-pub use application::{ Application, State };
 pub use builder::ApplicationBuilder;
+pub use application::Application;
 pub use input::{ Input, KeyCode };
 pub use window::Window;
-
+pub use state::State;
 
 // -- used by sub-modules --
 use winit::event_loop::*;

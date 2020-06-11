@@ -8,12 +8,6 @@ pub struct Application
     input: Input,
 }
 
-pub trait State
-{
-    fn on_update(&mut self, input: &Input);
-    fn on_render(&self, window: &mut Window);
-}
-
 impl Application
 {
     pub fn create(name: &str) -> ApplicationBuilder
