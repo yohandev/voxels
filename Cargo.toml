@@ -5,6 +5,5 @@ authors = ["yohandev"]
 edition = "2018"
 
 [dependencies]
-winit_input_helper = "0.7.0"
-winit = "0.22.2"
 nalgebra = "0.21.0"
+winit = "0.22.2"
