@@ -1,3 +1,5 @@
+use std::time::*;
+
 use super::*;
 
 pub struct Input
@@ -7,6 +9,9 @@ pub struct Input
 
     keys: [u8; 255],        // up, down, pressed, and released data
     btns: [u8; 255],        // same as keys, but for mouse buttons
+
+    frame: Instant,         // last frame instant
+    delta: Duration,        // delta duration between frame and the one before it
 }
 
 const ACT_UP:       u8 = 0; // not held for the duration of this frame
@@ -25,13 +30,21 @@ impl Input
 
             keys: [0; 255],
             btns: [0; 255],
+
+            frame: Instant::now(),
+            delta: Duration::default(),
         }
     }
 
-    pub(super) fn process_events(&mut self, event: &Event<()>, _: &mut ControlFlow)
+    pub(super) fn process_events<T: State>(&mut self, event: &Event<()>, _: &mut ControlFlow, state: &mut T)
     {
         if let Event::NewEvents(_) = event
         {
+            let now = Instant::now();
+
+            self.delta = now.duration_since(self.frame);
+            self.frame = now;
+
             for key in self.keys.iter_mut()
             {
                 *key = match *key
@@ -129,6 +142,10 @@ impl Input
                 _ => {}
             }
         }
+        if let Event::MainEventsCleared = event
+        {
+            state.on_update(self);
+        }
     }
 
     /// is the key pressed this frame or held for the duration of this frame?
@@ -158,5 +175,15 @@ impl Input
     pub fn key_up(&self, code: VirtualKeyCode) -> bool
     {
         !self.key_down(code)
+    }
+
+    pub fn delta_time(&self) -> Duration
+    {
+        self.delta
+    }
+
+    pub fn delta_time_f32(&self) -> f32
+    {
+        self.delta.as_secs_f32()
     }
 }

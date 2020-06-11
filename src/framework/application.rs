@@ -8,9 +8,20 @@ pub struct Application
     input: Input,
 }
 
+pub trait State
+{
+    fn on_update(&mut self, input: &Input);
+    fn on_render(&self, window: &mut Window);
+}
+
 impl Application
 {
-    pub fn create() -> Self
+    pub fn create(name: &str) -> ApplicationBuilder
+    {
+        ApplicationBuilder::new(name)
+    }
+
+    pub fn new() -> Self
     {
         Self
         {
@@ -47,7 +58,7 @@ impl Application
             .unwrap()
     }
 
-    pub fn run(mut self)
+    pub fn run<T: State + 'static>(mut self, mut state: T)
     {
         let app_loop = self.app_loop
             .take()
@@ -60,11 +71,11 @@ impl Application
                 // pass event to window(s)
                 for window in &mut self.windows
                 {
-                    window.process_events(&event, flow);
+                    window.process_events(&event, flow, &state);
                 }
 
                 // pass event to input
-                self.input.process_events(&event, flow);
+                self.input.process_events(&event, flow, &mut state);
 
                 // quick test
                 if let Event::MainEventsCleared = event

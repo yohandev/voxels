@@ -3,26 +3,22 @@ use crate::ezmath::*;
 
 pub struct Game
 {
-    app: Application
+}
+
+impl State for Game
+{
+    fn on_update(&mut self, input: &Input)
+    {
+        println!("updating @ {}ms of delta", input.delta_time_f32() * 1000.0);
+    }
+
+    fn on_render(&self, window: &mut Window)
+    {
+        //println!("rendering...")
+    }
 }
 
 impl Game
 {
-    pub const NAME: &'static str = "Voxels Game";
-
-    pub fn new() -> Self
-    {
-        Self { app: Application::create() }
-    }
-
-    pub fn with_graphics(mut self, w: u32, h: u32) -> Self
-    {
-        self.app.create_window(Self::NAME, uint2::new(w, h));
-        self
-    }
-
-    pub fn run(self)
-    {
-        self.app.run()
-    }
+    
 }

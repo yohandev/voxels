@@ -13,7 +13,7 @@ impl Window
     pub fn _width(&self) -> u32 { self.size.x }
     pub fn _height(&self) -> u32 { self.size.y }   
 
-    pub(super) fn process_events(&mut self, event: &Event<()>, flow: &mut ControlFlow)
+    pub(super) fn process_events<T: State>(&mut self, event: &Event<()>, flow: &mut ControlFlow, state: &T)
     {
         match event
         {
@@ -38,7 +38,7 @@ impl Window
                     {
                         *flow = ControlFlow::Exit;
                     }
-                    WindowEvent::ScaleFactorChanged { scale_factor:_, new_inner_size } =>
+                    WindowEvent::ScaleFactorChanged { new_inner_size, .. } =>
                     {
                         self.size.x = new_inner_size.width;
                         self.size.y = new_inner_size.height;
@@ -49,6 +49,7 @@ impl Window
             Event::RedrawRequested(_) =>
             {
                 // -- render logic --
+                state.on_render(self);
             }
             Event::MainEventsCleared =>
             {

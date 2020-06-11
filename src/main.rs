@@ -2,11 +2,12 @@ mod framework;
 mod ezmath;
 mod game;
 
+use framework::*;
 use game::*;
 
 fn main()
 {
-    Game::new()
+    Application::create("voxels game")
         .with_graphics(800, 600)
-        .run();
+        .run(Game {});   
 }
