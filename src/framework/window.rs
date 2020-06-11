@@ -6,6 +6,8 @@ pub struct Window
 
     pub(super) size: uint2,
     pub(super) focused: bool,
+
+    pub(super) ctx: Option<RenderCtx>
 }
 
 impl Window
@@ -29,6 +31,10 @@ impl Window
                     {
                         self.size.x = size.width;
                         self.size.y = size.height;
+
+                        let size = self.size.clone_owned();
+
+                        self.ctx().resize(size);
                     }
                     WindowEvent::Focused(focused) =>
                     {
@@ -57,5 +63,12 @@ impl Window
             }
             _ => {}
         }
+    }
+
+    pub fn ctx(&mut self) -> &mut RenderCtx
+    {
+        self.ctx
+            .as_mut()
+            .unwrap()
     }
 }

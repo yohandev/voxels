@@ -1,6 +1,7 @@
 // -- declare sub-modules --
 mod application;
 mod builder;
+mod render;
 mod window;
 mod input;
 mod state;
@@ -9,6 +10,7 @@ mod state;
 pub use builder::ApplicationBuilder;
 pub use application::Application;
 pub use input::{ Input, KeyCode };
+pub use render::RenderCtx;
 pub use window::Window;
 pub use state::State;
 

@@ -44,12 +44,20 @@ impl Application
                 },
                 size,
                 focused: false,
+                ctx: None
             }
         );
 
-        self.windows
-            .last()
-            .unwrap()
+        let window = self.windows
+            .last_mut()
+            .unwrap();
+        
+        window.ctx.replace
+        (
+            futures::executor::block_on(RenderCtx::from_window(&window))
+        );
+
+        window
     }
 
     pub fn run<T: State + 'static>(mut self, mut state: T)
