@@ -12,13 +12,17 @@ impl ChunkPipeline
     {
         use shaderc::ShaderKind::*;
 
+        use super::uniforms::ModViewProjUniform;
         use super::vertices::ChunkVertex;
 
         let vs = ctx.create_shader_module(include_str!("../shaders/chunk.vert"), Vertex);
         let fs = ctx.create_shader_module(include_str!("../shaders/chunk.frag"), Fragment);
 
         ctx.create_pipeline()
-            .with_binding_groups(&[/*TODO*/])
+            .with_binding_groups
+            (&[
+                &ModViewProjUniform::bind_group_layout(ctx, 0)
+            ])
             .with_vertex_shader(vs)
             .with_fragment_shader(fs)
             .with_index_format(IndexFormat::Uint32)

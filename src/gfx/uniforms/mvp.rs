@@ -1,12 +1,12 @@
 use super::*;
 
-pub struct ModelViewProjectionUniform
+pub struct ModViewProjUniform
 {
     mat: float4,
     buf: Buffer,
 }
 
-impl ModelViewProjectionUniform
+impl ModViewProjUniform
 {
     pub fn create(ctx: &RenderCtx, mat: float4) -> Self
     {
