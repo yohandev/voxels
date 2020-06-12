@@ -10,9 +10,9 @@ pub mod vertices;
 
 pub struct Gfx
 {
-    mvp: Uniform<uniforms::ModelViewProj>,
+    _mvp: Uniform<uniforms::ModelViewProj>,
 
-    chunk_pip: pipelines::ChunkPipeline,
+    _chunk_pip: pipelines::ChunkPipeline,
 }
 
 impl Gfx
@@ -25,7 +25,7 @@ impl Gfx
         let mvp = ModelViewProj::create_uniform(ctx, 0);
         let chunk_pip = ChunkPipeline::create(ctx, &mvp);
 
-        Self { mvp, chunk_pip }
+        Self { _mvp: mvp, _chunk_pip: chunk_pip }
     }
 
     pub fn render(&self, ctx: &mut RenderCtx)

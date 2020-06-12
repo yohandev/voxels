@@ -49,26 +49,31 @@ impl ChunkVertex
         }
     }
 
+    #[allow(dead_code)]
     pub fn x(&self) -> u32
     {
         self.compressed >> 26
     }
 
+    #[allow(dead_code)]
     pub fn y(&self) -> u32
     {
         (self.compressed >> 20) & 0b0011_1111
     }
 
+    #[allow(dead_code)]
     pub fn z(&self) -> u32
     {
         (self.compressed >> 14) & 0b0011_1111
     }
 
+    #[allow(dead_code)]
     pub fn u(&self) -> u32
     {
         (self.compressed >> 7) & 0b0111_1111
     }
 
+    #[allow(dead_code)]
     pub fn v(&self) -> u32
     {
         self.compressed & 0b0111_1111

@@ -154,6 +154,7 @@ impl Input
     }
 
     /// is the key pressed this frame or held for the duration of this frame?
+    #[allow(dead_code)]
     pub fn key_down(&self, code: VirtualKeyCode) -> bool
     {
         match self.keys[code as usize]
@@ -165,28 +166,35 @@ impl Input
     }
 
     /// was the key pressed this frame?
+    #[allow(dead_code)]
     pub fn key_pressed(&self, code: VirtualKeyCode) -> bool
     {
         self.keys[code as usize] == ACT_PRESSED
     }
 
     /// was the key released this frame?
+    #[allow(dead_code)]
     pub fn key_released(&self, code: VirtualKeyCode) -> bool
     {
         self.keys[code as usize] == ACT_RELEASED
     }
 
     /// opposite of key_down
+    #[allow(dead_code)]
     pub fn key_up(&self, code: VirtualKeyCode) -> bool
     {
         !self.key_down(code)
     }
 
+    /// time delta between this frame and the one before it
+    #[allow(dead_code)]
     pub fn delta_time(&self) -> Duration
     {
         self.delta
     }
 
+    /// 32bit float representation of delta_time()
+    #[allow(dead_code)]
     pub fn delta_time_f32(&self) -> f32
     {
         self.delta.as_secs_f32()

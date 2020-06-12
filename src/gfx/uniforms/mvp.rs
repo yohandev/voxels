@@ -8,7 +8,7 @@ impl ModelViewProj
 {
     pub fn create_uniform(ctx: &RenderCtx, slot: u32) -> Uniform<Self>
     {
-        ctx.create_uniform_buffer()
+        ctx.create_uniform()
             .with_binding_slot(slot)
             .with_visiblity(ShaderStage::VERTEX)
             .with_label("model_view_projection_uniform")

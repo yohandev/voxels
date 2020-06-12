@@ -57,7 +57,7 @@ impl Game
         }
     }
 
-    pub fn ecs(&self) -> &Universe
+    pub fn _ecs(&self) -> &Universe
     {
         &self.ecs
     }
