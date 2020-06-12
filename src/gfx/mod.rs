@@ -1,7 +1,7 @@
 use bytemuck::*;
 use wgpu::*;
 
-use crate::framework::RenderCtx;
+use crate::framework::*;
 use crate::ezmath::*;
 
 pub mod pipelines;
@@ -10,7 +10,9 @@ pub mod vertices;
 
 pub struct Gfx<'a>
 {
-    ctx: &'a RenderCtx
+    ctx: &'a RenderCtx,
+
+    mvp: Uniform<uniforms::ModelViewProj>
 }
 
 impl<'a> Gfx<'a>

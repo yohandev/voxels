@@ -40,8 +40,8 @@ impl State for Game
                 .create_render_pass(&frame, &mut encoder)
                 .with_clear(double4::new(0.1, 0.2, 0.3, 1.0))
                 .build();
-
             // -- render operations --
+            
         }
 
         ctx.submit(encoder);
