@@ -1,16 +1,16 @@
-use legion::prelude::*;
-
 use crate::framework::*;
 use crate::ezmath::*;
+use crate::voxel::*;
 use crate::gfx::*;
+use crate::ecs::*;
 
 pub struct Game
 {
     ecs: Universe,
 
-    worlds: Vec<World>,  // loaded worlds
+    worlds: Vec<Dimension>, // loaded worlds
 
-    gfx: Option<Gfx>,   // graphics, loads on first render call
+    gfx: Option<Gfx>,       // graphics, loads on first render call
 }
 
 impl State for Game
@@ -36,7 +36,10 @@ impl State for Game
     {
         if let Some(gfx) = &self.gfx
         {
-            gfx.render(window.ctx());
+            if let Some(world) = self.worlds.first_mut()
+            {
+                gfx.render(world, window.ctx());
+            }
         }
         else
         {
@@ -49,10 +52,12 @@ impl Game
 {
     pub fn new() -> Self
     {
+        let uni = Universe::new();
+
         Self
         {
-            ecs: Universe::new(),
-            worlds: Vec::new(),
+            worlds: vec![Dimension::new(uni.create_world())],
+            ecs: uni,
             gfx: None
         }
     }

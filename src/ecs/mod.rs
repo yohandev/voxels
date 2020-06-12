@@ -1,4 +1,6 @@
-pub use legion::prelude::*;
-
-pub use Universe as EcsFactory;
-pub use World as EcsRegistry;
+pub use legion::prelude::
+{
+    *,
+    World as EcsRegistry,
+    Universe as EcsFactory,
+};

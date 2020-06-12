@@ -2,9 +2,10 @@ use super::*;
 
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct ModelViewProj(pub float4x4);
+/// a camera's view-projection matrix
+pub struct ViewProj(pub float4x4);
 
-impl ModelViewProj
+impl ViewProj
 {
     pub fn create_uniform(ctx: &RenderCtx, slot: u32) -> Uniform<Self>
     {
@@ -16,7 +17,7 @@ impl ModelViewProj
     }
 }
 
-impl Default for ModelViewProj
+impl Default for ViewProj
 {
     fn default() -> Self
     {
@@ -24,5 +25,5 @@ impl Default for ModelViewProj
     }
 }
 
-unsafe impl Pod for ModelViewProj {}
-unsafe impl Zeroable for ModelViewProj {}
+unsafe impl Pod for ViewProj {}
+unsafe impl Zeroable for ViewProj {}

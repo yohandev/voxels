@@ -1,5 +1,6 @@
 use std::ops::*;
 
+use crate::gfx::mesh::ChunkMesh;
 use super::*;
 
 pub const CHUNK_SIZE: usize = 32;
@@ -16,18 +17,32 @@ pub struct Chunk
     /// if the chunk spans from (0, 0, 0) to (32, 32, 32),
     /// pos would be (0, 0, 0).
     pos: int3,
+
+    /// mesh of chunk
+    mesh: Option<ChunkMesh>,
 }
 
 impl Chunk
 {
     /// load a chunk
-    pub(super) fn load(world: &World, pos: int3) -> Self
+    pub(super) fn load(world: &Dimension, pos: int3) -> Self
     {
         Self
         {
             blocks: [Block::default(); CHUNK_VOLUME],
+            mesh: None,
             pos,
         }
+    }
+
+    pub fn pos(&self) -> &int3
+    {
+        &self.pos
+    }
+
+    pub fn mesh(&self) -> &Option<ChunkMesh>
+    {
+        &self.mesh
     }
 
     /// flatten a relative position index to a 1D array index

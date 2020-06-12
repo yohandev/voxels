@@ -75,7 +75,7 @@ impl<'a> UniformBuilder<'a>
         layout_label.push_str("_bind_group_layout");
         bind_label.push_str("_bind_group");
         
-        let buffer = self.ctx.create_buffer(data, BufferUsage::UNIFORM | BufferUsage::COPY_DST);
+        let buffer = self.ctx.create_buffer(&[data], BufferUsage::UNIFORM | BufferUsage::COPY_DST);
         let layout = self.ctx.device().create_bind_group_layout
         (
             &BindGroupLayoutDescriptor

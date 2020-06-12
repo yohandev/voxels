@@ -120,9 +120,9 @@ impl RenderCtx
         self.dev.create_shader_module(&shader)
     }
 
-    pub fn create_buffer<T: Pod>(&self, data: T, usage: BufferUsage) -> Buffer
+    pub fn create_buffer<T: Pod>(&self, data: &[T], usage: BufferUsage) -> Buffer
     {
-        self.dev.create_buffer_with_data(cast_slice(&[data]), usage)
+        self.dev.create_buffer_with_data(cast_slice(data), usage)
     }
 
     pub fn submit(&self, encoder: CommandEncoder)

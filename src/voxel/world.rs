@@ -1,9 +1,9 @@
-use std::collections::HashMap;
+use std::collections::hash_map::*;
 use std::ops::*;
 
 use super::*;
 
-pub struct World
+pub struct Dimension
 {
     /// all currently loaded chunks
     chunks: HashMap<int3, Box<Chunk>>,
@@ -15,8 +15,18 @@ pub struct World
     air: Block,
 }
 
-impl World
+impl Dimension
 {
+    pub fn new(registry: EcsRegistry) -> Self
+    {
+        Self
+        {
+            chunks: Default::default(),
+            ecs: registry,
+            air: Block::default()
+        }
+    }
+
     pub fn load_chunk(&mut self, mut pos: int3)
     {
         pos.x -= pos.x % CHUNK_SIZE as i32;
@@ -25,9 +35,15 @@ impl World
 
         self.chunks.insert(pos, Box::new(Chunk::load(&self, pos)));
     }
+
+    /// reports all loaded chunks
+    pub fn chunks(&self) -> Values<'_, int3, Box<Chunk>>
+    {
+        self.chunks.values()
+    }
 }
 
-impl Index<int3> for World
+impl Index<int3> for Dimension
 {
     type Output = Block;
 
@@ -61,7 +77,7 @@ impl Index<int3> for World
     }
 }
 
-impl IndexMut<int3> for World
+impl IndexMut<int3> for Dimension
 {
     fn index_mut(&mut self, index: int3) -> &mut Self::Output
     {
@@ -94,7 +110,7 @@ impl IndexMut<int3> for World
     }
 }
 
-impl Index<(i32, i32, i32)> for World
+impl Index<(i32, i32, i32)> for Dimension
 {
     type Output = Block;
 
@@ -104,7 +120,7 @@ impl Index<(i32, i32, i32)> for World
     }
 }
 
-impl IndexMut<(i32, i32, i32)> for World
+impl IndexMut<(i32, i32, i32)> for Dimension
 {
     fn index_mut(&mut self, index: (i32, i32, i32)) -> &mut Self::Output
     {
