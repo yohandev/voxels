@@ -24,6 +24,16 @@ pub struct ChunkVertex
 
 impl ChunkVertex
 {
+    pub const ATTR: &'static [VertexAttributeDescriptor] = &
+    [
+        VertexAttributeDescriptor
+        {
+            offset: 0,
+            format: VertexFormat::Uint,
+            shader_location: 0
+        }
+    ];
+
     pub fn new(pos: &uint3, tex: &uint2) -> Self
     {
         debug_assert!(pos.x <= 63 && pos.y <= 63 && pos.z <= 63, "vertex position needs to be localized 0..64!");
@@ -64,6 +74,9 @@ impl ChunkVertex
         self.compressed & 0b0111_1111
     }
 }
+
+unsafe impl Pod for ChunkVertex {}
+unsafe impl Zeroable for ChunkVertex {}
 
 #[cfg(test)]
 #[test]

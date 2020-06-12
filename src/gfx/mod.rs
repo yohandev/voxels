@@ -1,9 +1,12 @@
+use bytemuck::*;
 use wgpu::*;
 
 use crate::framework::RenderCtx;
 use crate::ezmath::*;
 
-mod chunk;
+pub mod pipelines;
+pub mod uniforms;
+pub mod vertices;
 
 pub struct Gfx<'a>
 {

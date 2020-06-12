@@ -8,6 +8,22 @@ pub struct ChunkPipeline
 
 impl ChunkPipeline
 {
+    pub fn create(ctx: &RenderCtx)
+    {
+        use shaderc::ShaderKind::*;
+
+        use super::vertices::ChunkVertex;
+
+        let vs = ctx.create_shader_module(include_str!("../shaders/chunk.vert"), Vertex);
+        let fs = ctx.create_shader_module(include_str!("../shaders/chunk.frag"), Fragment);
+
+        ctx.create_pipeline()
+            .with_binding_groups(&[/*TODO*/])
+            .with_vertex_shader(vs)
+            .with_fragment_shader(fs)
+            .with_index_format(IndexFormat::Uint32)
+            .with_vertex_format::<ChunkVertex>(ChunkVertex::ATTR);
+    }
     // pub fn create(gfx: &Gfx)
     // {
     //     let pip_layout = gfx.ctx.device().create_pipeline_layout    // pipeline layout
