@@ -25,4 +25,24 @@ impl ModelViewProjectionUniform
             buf,
         }
     }
+
+    pub fn bind_group_layout(ctx: &RenderCtx, bind: u32) -> BindGroupLayout
+    {
+        ctx.device().create_bind_group_layout
+        (
+            &BindGroupLayoutDescriptor
+            {
+                bindings: &
+                [
+                    BindGroupLayoutEntry
+                    {
+                        binding: bind,
+                        visibility: ShaderStage::VERTEX,
+                        ty: BindingType::UniformBuffer { dynamic: false },
+                    }
+                ],
+                label: Some("model_view_projection_uniform_bind_group_layout"),
+            }
+        )
+    }
 }
