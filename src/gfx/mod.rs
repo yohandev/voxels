@@ -8,17 +8,40 @@ pub mod pipelines;
 pub mod uniforms;
 pub mod vertices;
 
-pub struct Gfx<'a>
+pub struct Gfx
 {
-    ctx: &'a RenderCtx,
+    mvp: Uniform<uniforms::ModelViewProj>,
 
-    mvp: Uniform<uniforms::ModelViewProj>
+    chunk_pip: pipelines::ChunkPipeline,
 }
 
-impl<'a> Gfx<'a>
+impl Gfx
 {
-    pub fn ctx(&self) -> &RenderCtx
+    pub fn new(ctx: &RenderCtx) -> Self
     {
-        self.ctx
+        use pipelines::*;
+        use uniforms::*;
+
+        let mvp = ModelViewProj::create_uniform(ctx, 0);
+        let chunk_pip = ChunkPipeline::create(ctx, &mvp);
+
+        Self { mvp, chunk_pip }
+    }
+
+    pub fn render(&self, ctx: &mut RenderCtx)
+    {
+        let frame = ctx.frame();
+
+        let mut encoder = ctx.create_command_encoder("render encoder");
+        {
+            let pass = ctx
+                .create_render_pass(&frame, &mut encoder)
+                .with_clear(double4::new(0.1, 0.2, 0.3, 1.0))
+                .build();
+            // -- render operations --
+            
+        }
+
+        ctx.submit(encoder);
     }
 }

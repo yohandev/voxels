@@ -2,12 +2,15 @@ use legion::prelude::*;
 
 use crate::framework::*;
 use crate::ezmath::*;
+use crate::gfx::*;
 
 pub struct Game
 {
     ecs: Universe,
 
     worlds: Vec<World>,  // loaded worlds
+
+    gfx: Option<Gfx>,   // graphics, loads on first render call
 }
 
 impl State for Game
@@ -29,22 +32,16 @@ impl State for Game
         //self.ecs.create_world().resources.
     }
 
-    fn on_render(&self, window: &mut Window)
+    fn on_render(&mut self, window: &mut Window)
     {
-        let ctx = window.ctx();
-        let frame = ctx.frame();
-
-        let mut encoder = ctx.create_command_encoder("render encoder");
+        if let Some(gfx) = &self.gfx
         {
-            let pass = ctx
-                .create_render_pass(&frame, &mut encoder)
-                .with_clear(double4::new(0.1, 0.2, 0.3, 1.0))
-                .build();
-            // -- render operations --
-            
+            gfx.render(window.ctx());
         }
-
-        ctx.submit(encoder);
+        else
+        {
+            self.gfx = Some(Gfx::new(window.ctx()))
+        }
     }
 }
 
@@ -55,7 +52,8 @@ impl Game
         Self
         {
             ecs: Universe::new(),
-            worlds: Vec::new()
+            worlds: Vec::new(),
+            gfx: None
         }
     }
 

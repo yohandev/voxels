@@ -15,7 +15,7 @@ impl Window
     pub fn _width(&self) -> u32 { self.size.x }
     pub fn _height(&self) -> u32 { self.size.y }   
 
-    pub(super) fn process_events<T: State>(&mut self, event: &Event<()>, flow: &mut ControlFlow, state: &T)
+    pub(super) fn process_events<T: State>(&mut self, event: &Event<()>, flow: &mut ControlFlow, state: &mut T)
     {
         match event
         {

@@ -75,7 +75,7 @@ impl Application
                 // pass event to window(s)
                 for window in &mut self.windows
                 {
-                    window.process_events(&event, flow, &state);
+                    window.process_events(&event, flow, &mut state);
                 }
 
                 // pass event to input
