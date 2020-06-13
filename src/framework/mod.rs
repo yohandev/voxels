@@ -7,7 +7,7 @@ mod input;
 mod state;
 
 // -- export module typdefs --
-pub use render::{ RenderCtx, Uniform };
+pub use render::{ RenderCtx, Uniform, StorageBuffer };
 pub use builder::ApplicationBuilder;
 pub use application::Application;
 pub use input::{ Input, KeyCode };

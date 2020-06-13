@@ -54,22 +54,35 @@ impl Gfx
                 .with_clear(double4::new(0.1, 0.2, 0.3, 1.0))
                 .build();
             
+            //let offsets = world.chunks().map(|chunk| ChunkModel(*chunk.pos())).collect::<Vec<_>>();
+
+            //self.model.bind_group().
+            //*self.model = ChunkModel::create_storage_buffer(ctx, 0);
+            //self.model.update_data(ctx, offsets);
+
             pass.set_bind_group(0, &self.mvp.bind_group(), &[]);
             pass.set_bind_group(1, &self.model.bind_group(), &[]);
             pass.set_pipeline(&self.chunk_pip);
 
-            for chunk in world.chunks()
+
+            //let mut offsets = Vec::<ChunkModel>::new();
+            let mut offsets = ChunkModel::default();
+            for (i, chunk) in world.chunks().enumerate()
             {
+                offsets.0[i] = float3::new(chunk.pos().x as f32, chunk.pos().y as f32, chunk.pos().z as f32);
+
+                let i = i as u32;
+
+                //offsets.push(ChunkModel(*chunk.pos()));
                 if let Some(chunk_mesh) = chunk.mesh()
                 {
-                    self.model.update_data(ctx, ChunkModel::new(chunk.pos()));
-
                     pass.set_index_buffer(chunk_mesh.index_buffer(), 0, 0);
                     pass.set_vertex_buffer(0, chunk_mesh.vertex_buffer(), 0, 0);
 
-                    pass.draw_indexed(0..chunk_mesh.num_index() as u32, 0, 0..1);
+                    pass.draw_indexed(0..chunk_mesh.num_index() as u32, 0, i..(i + 1));
                 }
-            }         
+            }
+            self.model.update_data(ctx, offsets);   // update before submitting pass to queue
         }
 
         ctx.submit(encoder);

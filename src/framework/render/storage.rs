@@ -2,9 +2,9 @@ use super::*;
 
 impl RenderCtx
 {
-    pub fn create_uniform(&self) -> UniformBuilder
+    pub fn create_storage_buffer(&self) -> StorageBufferBuilder
     {
-        UniformBuilder
+        StorageBufferBuilder
         {
             ctx: self,
             binding: 0,
@@ -14,7 +14,7 @@ impl RenderCtx
     }
 }
 
-pub struct Uniform<T: Pod>
+pub struct StorageBuffer<T: Pod>
 {
     buffer: Buffer,
 
@@ -24,7 +24,7 @@ pub struct Uniform<T: Pod>
     ty: std::marker::PhantomData<T>
 }
 
-pub struct UniformBuilder<'a>
+pub struct StorageBufferBuilder<'a>
 {
     ctx: &'a RenderCtx,
 
@@ -34,7 +34,7 @@ pub struct UniformBuilder<'a>
     label: Option<&'a str>
 }
 
-impl<T: Pod> Uniform<T>
+impl<T: Pod> StorageBuffer<T>
 {
     pub fn bind_group_layout(&self) -> &BindGroupLayout
     {
@@ -46,18 +46,22 @@ impl<T: Pod> Uniform<T>
         &self.bind
     }
 
-    pub fn update_data(&self, ctx: &RenderCtx, data: T)
+    pub fn update_data(&self, ctx: &RenderCtx, data: Vec<T>)
     {
-        let mut encoder = ctx.create_command_encoder("uniform_update_encoder");
-        let staging = ctx.create_buffer(&[data], BufferUsage::COPY_SRC);
+        if data.is_empty()
+        {
+            return;
+        }
+        let mut encoder = ctx.create_command_encoder("storage_buffer_update_encoder");
+        let staging = ctx.create_buffer(&data, BufferUsage::COPY_SRC);
 
-        encoder.copy_buffer_to_buffer(&staging, 0, &self.buffer, 0, std::mem::size_of::<T>() as BufferAddress);
+        encoder.copy_buffer_to_buffer(&staging, 0, &self.buffer, 0, (std::mem::size_of::<T>() * data.len()) as BufferAddress);
     
         ctx.submit(encoder);
     }
 }
 
-impl<'a> UniformBuilder<'a>
+impl<'a> StorageBufferBuilder<'a>
 {
     pub fn with_binding_slot(mut self, slot: u32) -> Self
     {
@@ -77,7 +81,7 @@ impl<'a> UniformBuilder<'a>
         self
     }
 
-    pub fn build<T: Pod>(self, data: T) -> Uniform<T>
+    pub fn build<T: Pod>(self, data: Vec<T>) -> StorageBuffer<T>
     {
         let mut layout_label = self.label.unwrap_or("unnamed").to_string();
         let mut bind_label = layout_label.clone();
@@ -85,7 +89,7 @@ impl<'a> UniformBuilder<'a>
         layout_label.push_str("_bind_group_layout");
         bind_label.push_str("_bind_group");
         
-        let buffer = self.ctx.create_buffer(&[data], BufferUsage::UNIFORM | BufferUsage::COPY_DST);
+        let buffer = self.ctx.create_buffer(&data, BufferUsage::STORAGE_READ | BufferUsage::COPY_DST);
         let layout = self.ctx.device().create_bind_group_layout
         (
             &BindGroupLayoutDescriptor
@@ -96,7 +100,7 @@ impl<'a> UniformBuilder<'a>
                     {
                         binding: self.binding,
                         visibility: self.visibility,
-                        ty: BindingType::UniformBuffer { dynamic: false },
+                        ty: BindingType::StorageBuffer { dynamic: false, readonly: true },
                     }
                 ],
                 label: Some(layout_label.as_str()),
@@ -115,7 +119,7 @@ impl<'a> UniformBuilder<'a>
                         resource: BindingResource::Buffer
                         {
                             buffer: &buffer,
-                            range: 0..std::mem::size_of::<T>() as BufferAddress
+                            range: 0..(std::mem::size_of::<T>() * data.len()) as BufferAddress
                         }
                     }
                 ],
@@ -123,7 +127,7 @@ impl<'a> UniformBuilder<'a>
             }
         );
 
-        Uniform
+        StorageBuffer
         {
             buffer,
             layout,
