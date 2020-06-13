@@ -5,7 +5,7 @@ pub struct ChunkPipeline;
 
 impl ChunkPipeline
 {
-    pub fn create(ctx: &RenderCtx, mvp: &Uniform<uniforms::ViewProj>) -> RenderPipeline
+    pub fn create(ctx: &RenderCtx, mvp: &Uniform<uniforms::ViewProj>, model: &Uniform<uniforms::ChunkModel>) -> RenderPipeline
     {
         use shaderc::ShaderKind::*;
 
@@ -17,7 +17,8 @@ impl ChunkPipeline
         ctx.create_pipeline()
             .with_binding_groups
             (&[
-                mvp.bind_group_layout()
+                mvp.bind_group_layout(),
+                model.bind_group_layout(),
             ])
             .with_vertex_shader(vs)
             .with_fragment_shader(fs)

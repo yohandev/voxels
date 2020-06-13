@@ -47,6 +47,19 @@ impl<T: Pod> Uniform<T>
     }
 }
 
+impl<T: Pod> Uniform<T>
+{
+    pub fn update_data(&self, ctx: &RenderCtx, data: T)
+    {
+        let mut encoder = ctx.create_command_encoder("uniform_update_encoder");
+        let staging = ctx.create_buffer(&[data], BufferUsage::COPY_SRC);
+
+        encoder.copy_buffer_to_buffer(&staging, 0, &self.buffer, 0, std::mem::size_of_val(&data) as BufferAddress);
+    
+        ctx.submit(encoder);
+    }
+}
+
 impl<'a> UniformBuilder<'a>
 {
     pub fn with_binding_slot(mut self, slot: u32) -> Self

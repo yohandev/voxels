@@ -1,10 +1,14 @@
 use std::collections::hash_map::*;
 use std::ops::*;
 
+use crate::framework::RenderCtx;
 use super::*;
 
 pub struct Dimension
 {
+    /// seed used to generate the world
+    seed: u32,
+
     /// all currently loaded chunks
     chunks: HashMap<int3, Box<Chunk>>,
 
@@ -21,6 +25,7 @@ impl Dimension
     {
         Self
         {
+            seed: 12345,
             chunks: Default::default(),
             ecs: registry,
             air: Block::default()
@@ -33,13 +38,52 @@ impl Dimension
         pos.y -= pos.y % CHUNK_SIZE as i32;
         pos.z -= pos.z % CHUNK_SIZE as i32;
 
-        self.chunks.insert(pos, Box::new(Chunk::load(&self, pos)));
+        let mut chunk = Box::new(Chunk::load(&self, pos));
+
+        chunk.generate(self);
+
+        self.chunks.insert(pos, chunk);
+    }
+
+    pub fn remesh_chunk(&mut self, pos: int3, ctx: &RenderCtx)
+    {
+        // check neighbors
+        // let px = self.chunks.get(&(pos + CHUNK_SIZE as i32 * int3::new(1, 0, 0)));
+        // if px.is_none() { return; }
+        // let nx = self.chunks.get(&(pos + CHUNK_SIZE as i32 * int3::new(-1, 0, 0)));
+        // if nx.is_none() { return; }
+        // let py = self.chunks.get(&(pos + CHUNK_SIZE as i32 * int3::new(0, 1, 0)));
+        // if py.is_none() { return; }
+        // let ny = self.chunks.get(&(pos + CHUNK_SIZE as i32 * int3::new(0, -1, 0)));
+        // if ny.is_none() { return; }
+        // let pz = self.chunks.get(&(pos + CHUNK_SIZE as i32 * int3::new(0, 0, 1)));
+        // if pz.is_none() { return; }
+        // let nz = self.chunks.get(&(pos + CHUNK_SIZE as i32 * int3::new(0, 0, -1)));
+        // if nz.is_none() { return; }
+
+        let mesh = self.chunks
+            .get(&pos)
+            .unwrap()
+            .remesh(ctx, self);
+
+        let chunk = self.chunks
+            .get_mut(&pos)
+            .unwrap();
+
+        chunk.mesh = mesh;
+            //.mesh_mut() = Some(mesh);
+            //.replace(mesh);
     }
 
     /// reports all loaded chunks
     pub fn chunks(&self) -> Values<'_, int3, Box<Chunk>>
     {
         self.chunks.values()
+    }
+
+    pub fn seed(&self) -> u32
+    {
+        self.seed
     }
 }
 
@@ -49,9 +93,9 @@ impl Index<int3> for Dimension
 
     fn index(&self, index: int3) -> &Self::Output
     {
-        let rx = index.x % CHUNK_SIZE as i32;
-        let ry = index.y % CHUNK_SIZE as i32;
-        let rz = index.z % CHUNK_SIZE as i32;
+        let rx = index.x.rem_euclid(CHUNK_SIZE as i32);
+        let ry = index.y.rem_euclid(CHUNK_SIZE as i32);
+        let rz = index.z.rem_euclid(CHUNK_SIZE as i32);
 
         let x = index.x - rx;
         let y = index.y - ry;
@@ -59,18 +103,18 @@ impl Index<int3> for Dimension
 
         if let Some(chunk) = self.chunks.get(&int3::new(x, y, z))
         {
-            &chunk[(rx, ry, rz)]
+            &chunk[(rx as u32, ry as u32, rz as u32)]
         }
         else
         {
-            println!
-            (
-                "[warn] {}<{}, {}, {}>. {}. {}.",
-                "attempting to index unloaded chunk! @ ",
-                index.x, index.y, index.z,
-                "returned air block instead",
-                "use mutable indexer to load chunk if needed"
-            );
+            // println!
+            // (
+            //     "[warn] {}<{}, {}, {}>. {}. {}.",
+            //     "attempting to index unloaded chunk! @ ",
+            //     index.x, index.y, index.z,
+            //     "returned air block instead",
+            //     "use mutable indexer to load chunk if needed"
+            // );
 
             &self.air
         }
@@ -81,9 +125,9 @@ impl IndexMut<int3> for Dimension
 {
     fn index_mut(&mut self, index: int3) -> &mut Self::Output
     {
-        let rx = index.x % CHUNK_SIZE as i32;
-        let ry = index.y % CHUNK_SIZE as i32;
-        let rz = index.z % CHUNK_SIZE as i32;
+        let rx = index.x.rem_euclid(CHUNK_SIZE as i32);
+        let ry = index.y.rem_euclid(CHUNK_SIZE as i32);
+        let rz = index.z.rem_euclid(CHUNK_SIZE as i32);
 
         let x = index.x - rx;
         let y = index.y - ry;
@@ -106,7 +150,7 @@ impl IndexMut<int3> for Dimension
         self.chunks
             .get_mut(&pos)
             .unwrap()
-            .index_mut((rx, ry, rz))
+            .index_mut((rx as u32, ry as u32, rz as u32))
     }
 }
 

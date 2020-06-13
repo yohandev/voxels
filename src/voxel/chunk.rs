@@ -1,6 +1,8 @@
 use std::ops::*;
 
+use crate::gfx::vertices::ChunkVertex;
 use crate::gfx::mesh::ChunkMesh;
+use crate::framework::RenderCtx;
 use super::*;
 
 pub const CHUNK_SIZE: usize = 32;
@@ -19,7 +21,7 @@ pub struct Chunk
     pos: int3,
 
     /// mesh of chunk
-    mesh: Option<ChunkMesh>,
+    pub mesh: Option<ChunkMesh>,
 }
 
 impl Chunk
@@ -35,6 +37,80 @@ impl Chunk
         }
     }
 
+    pub fn generate(&mut self, world: &Dimension)
+    {
+        use noise::*;
+
+        const SEA_LEVEL: f64 = 10.0;
+        const TERRAIN_DELTA: f64 = 10.0;
+
+        let perlin = Perlin::new().set_seed(world.seed());
+
+        for rx in 0..CHUNK_SIZE as u32
+        {
+            for rz in 0..CHUNK_SIZE as u32
+            {
+                let x = (rx as i32 + self.pos.x) as f64;
+                let z = (rz as i32 + self.pos.z) as f64;
+
+                let h = (perlin.get([x / 15.0, z / 15.0]) * TERRAIN_DELTA + SEA_LEVEL) as i32;
+                let rh = h - self.pos.y;
+
+                for ry in 0..rh.min(CHUNK_SIZE as i32)
+                {
+                    self[(rx, ry as u32, rz)] = Block::new(0b0000_0000_0000_1000);
+                }
+            }
+        }
+    }
+
+    pub(super) fn remesh(&self, ctx: &RenderCtx, world: &Dimension/*, neighbors: [&Chunk; 6]*/) -> Option<ChunkMesh>
+    {
+        let mut vertices = Vec::<ChunkVertex>::new();
+        let mut indices = Vec::<u32>::new();
+
+        // vertices.push(ChunkVertex::new(&uint3::new(0, 0, 0), &uint2::new(0, 0)));
+        // vertices.push(ChunkVertex::new(&uint3::new(0, 1, 0), &uint2::new(0, 0)));
+        // vertices.push(ChunkVertex::new(&uint3::new(1, 0, 0), &uint2::new(0, 0)));
+
+        // indices.push(0);
+        // indices.push(2);
+        // indices.push(1);
+
+        for x in 0..CHUNK_SIZE as u32
+        {
+            for y in 0..CHUNK_SIZE as u32
+            {
+                for z in 0..CHUNK_SIZE as u32
+                {
+                    let block = self[(x, y, z)];
+                    if block.is_air()
+                    {
+                        continue;
+                    }
+
+                    for d in 0..6usize
+                    {
+                        let dir = dir(d);
+
+                        if world[self.pos + int3::new(x as i32, y as i32, z as i32) + dir].is_air()
+                        {
+                            gen_face(&mut vertices, &mut indices, d, uint3::new(x, y, z));
+                        }
+                    }
+                }
+            }
+        }
+        if vertices.is_empty()
+        {
+            None
+        }
+        else
+        {
+            Some(ChunkMesh::create(ctx, &vertices[..], &indices[..]))
+        }
+    }
+
     pub fn pos(&self) -> &int3
     {
         &self.pos
@@ -45,6 +121,11 @@ impl Chunk
         &self.mesh
     }
 
+    pub fn mesh_mut(&mut self) -> &mut Option<ChunkMesh>
+    {
+        &mut self.mesh
+    }
+
     /// flatten a relative position index to a 1D array index
     fn flat_index(r_pos: &int3) -> usize
     {
@@ -53,7 +134,7 @@ impl Chunk
         (r_pos.z as usize * CHUNK_LAYER)
     }
 
-    fn flat_index_tuple(r_pos: &(i32, i32, i32)) -> usize
+    fn flat_index_tuple(r_pos: &(u32, u32, u32)) -> usize
     {
         (r_pos.0 as usize              ) +
         (r_pos.1 as usize * CHUNK_SIZE ) +
@@ -185,22 +266,95 @@ impl IndexMut<int3> for Chunk
     }
 }
 
-impl Index<(i32, i32, i32)> for Chunk
+impl Index<(u32, u32, u32)> for Chunk
 {
     type Output = Block;
 
     /// get a block within this chunk, given a relative position
-    fn index(&self, index: (i32, i32, i32)) -> &Self::Output
+    fn index(&self, index: (u32, u32, u32)) -> &Self::Output
     {
         &self.blocks[Self::flat_index_tuple(&index)]
     }
 }
 
-impl IndexMut<(i32, i32, i32)> for Chunk
+impl IndexMut<(u32, u32, u32)> for Chunk
 {
     /// get a block within this chunk, given a relative position
-    fn index_mut(&mut self, index: (i32, i32, i32)) -> &mut Self::Output
+    fn index_mut(&mut self, index: (u32, u32, u32)) -> &mut Self::Output
     {
         &mut self.blocks[Self::flat_index_tuple(&index)]
     }
+}
+
+fn gen_face(verts: &mut Vec<ChunkVertex>, ind: &mut Vec<u32>, n: usize, pos: uint3)
+{
+    const POS: [[u32; 3]; 8] = 
+    [
+        [ 1 , 1 , 1 ],
+        [ 0 , 1 , 1 ],
+        [ 0 , 0 , 1 ],
+        [ 1 , 0 , 1 ],
+        [ 0 , 1 , 0 ],
+        [ 1 , 1 , 0 ],
+        [ 1 , 0 , 0 ],
+        [ 0 , 0 , 0 ],
+    ];
+
+    const NOR: [[f32; 3]; 6] =
+    [
+        [ 0.0, 0.0, 1.0 ],
+        [ 1.0, 0.0, 0.0 ],
+        [ 0.0, 0.0, -1. ],
+        [ -1., 0.0, 0.0 ],
+        [ 0.0, 1.0, 0.0 ],
+        [ 0.0, -1., 0.0 ],
+    ];
+
+    const TRI: [[usize; 4]; 6] =
+    [
+        [ 0, 1, 2, 3 ],
+        [ 5, 0, 3, 6 ],
+        [ 4, 5, 6, 7 ],
+        [ 1, 4, 7, 2 ],
+        [ 5, 4, 1, 0 ],
+        [ 3, 2, 7, 6 ],
+    ];
+
+    const IND: [u32; 6] =
+    [
+        0, 1, 2, 0, 2, 3
+    ];
+
+    debug_assert!(n < 6, "direction index cannot be n >= 6");
+
+    for i in &TRI[n]            // vertices
+    {
+        let x = POS[*i][0] + pos.x;
+        let y = POS[*i][1] + pos.y;
+        let z = POS[*i][2] + pos.z;
+
+        verts.push(ChunkVertex::new(&uint3::new(x, y, z), &uint2::new(pos.x, pos.z)));
+        //buf.nor.push(Normal(NOR[ n]));
+    }
+
+    let j = verts.len() as u32;
+    for i in &IND               // indices
+    {
+        ind.push(*i + j);
+    }
+}
+
+fn dir(n: usize) -> int3
+{
+    const DIR: [[i32; 3]; 6] =
+    [
+        [  0,  0,  1  ],
+        [  1,  0,  0  ],
+        [  0,  0, -1  ],
+        [ -1,  0,  0  ],
+        [  0,  1,  0  ],
+        [  0, -1,  0  ],
+    ];
+
+    int3::new(DIR[n][0], DIR[n][1], DIR[n][2])
 }
