@@ -9,3 +9,11 @@ pub const APP_POLL_EVENT: &str = "app_poll_event";
 /// application. as the name implies, this event quits
 /// the game and closes all windows, etc.
 pub const APP_QUIT: &str = "app_quit_event";
+
+/// event invoked by ezgame's time system. this is called
+/// as often as possible, and can be vsync-capped by ezgfx.
+/// such would yield ~60fps on most devices. Either way,
+/// you can't rely on this event's timings, and it's important
+/// to use the ezgame::resources::Time resource to retreive
+/// the delta time. 
+pub const APP_UPDATE_EVENT: &str = "app_update_event";

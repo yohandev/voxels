@@ -151,20 +151,6 @@ impl Input
         self.scroll[1]
     }
 
-    // /// time delta between this frame and the one before it
-    // /// a frame is measured to be consecutive calls of the
-    // /// event "app_update_event"
-    // pub fn delta_time(&self) -> Duration
-    // {
-    //     self.delta
-    // }
-
-    // /// 32bit float representation of Input::delta_time()
-    // pub fn delta_time_f32(&self) -> f32
-    // {
-    //     self.delta.as_secs_f32()
-    // }
-
     /// get the state of the key for this frame. it's preferred
     /// to use Input::key_up(), Input::key_down(), etc.
     pub fn key_state(&self, code: VirtualKeyCode) -> InputState
