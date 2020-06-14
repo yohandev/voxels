@@ -2,7 +2,6 @@ use super::*;
 
 use std::collections::HashMap;
 
-use event::Event as WinitEvent;
 use event_loop::*;
 
 pub struct Application

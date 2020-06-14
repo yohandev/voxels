@@ -1,3 +1,5 @@
+# ezgame
+```rust
 use ezgame::*;
 
 fn main()
@@ -35,3 +37,4 @@ impl Game for TestGame
         Self
     }
 }
+```
