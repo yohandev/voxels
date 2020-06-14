@@ -15,8 +15,8 @@ pub struct Application
     worlds: WorldList
 }
 
-type EventMap    = HashMap<&'static str, Schedule>;
-type WorldList   = Vec<World>;
+pub(crate) type EventMap    = HashMap<&'static str, Schedule>;
+pub(crate) type WorldList   = Vec<World>;
 
 impl Application
 {
@@ -29,35 +29,44 @@ impl Application
         // build game
         T::build(&mut app);
 
-        let mut window = None;
-
         // run game
         EventLoop::new().run
         (
             move |event, window_target, flow|
             {
+                // poll events until quit
                 *flow = ControlFlow::Poll;
                 
-                if window.is_none()
-                {
-                    window = Some
-                    (
-                        window::WindowBuilder::new()
-                            .with_inner_size(dpi::PhysicalSize::new(800, 600))
-                            .with_resizable(true)
-                            .with_title("test")
-                            .with_visible(true)
-                            .build(window_target)
-                    );
-                }
-                let evt_str = format!("{:?}", &event);
+                // special system: quit application
+                // TODO
 
-                if event.to_static().is_none()
+                // special system: create windows
+                systems::system_create_window(&mut app.worlds, window_target);
+
+                // push current event into loop
+                if let Some(static_event) = event.to_static()
                 {
-                    println!("event {:?} could not be static-ized :(", evt_str);
+                    app
+                        .resources()
+                        .insert(static_event);
                 }
+
+                // invoke systems for new event
+                app.invoke(events::APP_POLL_EVENT);
             }
         );
+    }
+
+    /// creates a world and registers it to this application.
+    /// it's also possible to create a world directly from the
+    /// universe, but that wouldn't make it a candidate for
+    /// application events.
+    pub fn create_world(&mut self) -> &mut World
+    {
+        let world = self.universe().create_world();
+
+        self.worlds.push(world);
+        self.worlds.last_mut().unwrap()
     }
 
     /// get the universe(ECS world factory) for this app
@@ -113,6 +122,3 @@ impl Application
         }
     }
 }
-
-/// events and control flow of frame in the game loop
-pub struct LoopSnapshot(&'static WinitEvent<'static, ()>);
