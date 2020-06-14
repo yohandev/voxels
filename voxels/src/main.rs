@@ -18,6 +18,9 @@ impl Game for TestGame
         // weird behaviours. 
         app.add_defaults();
 
+        // add your systems here
+        app.register_system(ezgame::events::APP_UPDATE_EVENT, my_system());
+
         // you can have as many worlds as you want.
         // ezgame is powered by Legion, so entities
         // are valid across worlds.
@@ -41,4 +44,31 @@ impl Game for TestGame
 
         Self
     }
+}
+
+fn my_system() -> Box<dyn legion::Schedulable>
+{
+    use resources::{ Time, Input };
+
+    use winit::event::VirtualKeyCode;
+    use legion::*;
+
+    SystemBuilder::new("my_system")
+        .read_resource::<Time>()
+        .read_resource::<Input>()
+        .build(|_, _, (time, input), _|
+        {
+            print!("frame {{ delta_time: {}", time.delta_time_f32());
+
+            if input.key_down(VirtualKeyCode::Space)
+            {
+                print!(", space is down!");
+            }
+            else
+            {
+                print!(", space is up!");
+            }
+
+            println!(" }}");
+        })
 }
