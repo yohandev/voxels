@@ -11,9 +11,9 @@ impl Game for TestGame
 {
     fn build(app: &mut Application) -> Self
     {
-        // add common systems. they won't interfere
-        // with any of your components and may impact
-        // some ezgame provided ones, but adding
+        // add common systems and resources. they won't
+        // interfere with any of your components and may
+        // impact some ezgame provided ones, but adding
         // these might prevent some headaches and
         // weird behaviours. 
         app.add_defaults();
