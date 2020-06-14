@@ -22,6 +22,6 @@ void main()
     float u = float((a_compressed >> 7) & 127) / 128;
     float v = float(a_compressed & 127) / 128;
 
-    v_uv = vec2(u, v) * float(gl_InstanceIndex) / 3;
+    v_uv = vec2(u, v);
     gl_Position = u_view_proj * vec4(x, y, z, 1.0);
 }

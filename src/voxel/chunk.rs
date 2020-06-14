@@ -43,7 +43,7 @@ impl Chunk
         use noise::*;
 
         const SEA_LEVEL: f64 = 10.0;
-        const TERRAIN_DELTA: f64 = 10.0;
+        const TERRAIN_DELTA: f64 = 5.0;
 
         let perlin = Perlin::new().set_seed(world.seed());
 
