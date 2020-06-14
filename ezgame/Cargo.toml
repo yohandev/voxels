@@ -1,0 +1,9 @@
+[package]
+name = "ezgame"
+version = "0.1.0"
+authors = ["yohandev"]
+edition = "2018"
+
+[dependencies]
+legion = "0.2.1"
+winit = "0.22.2"

@@ -68,7 +68,7 @@ impl Application
 
         app_loop.run
         (
-            move |event, _, flow|
+            move |event, windows_target, flow|
             {
                 *flow = ControlFlow::Poll;
 

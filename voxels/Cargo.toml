@@ -1,0 +1,9 @@
+[package]
+name = "voxels"
+version = "0.1.0"
+authors = ["yohandev"]
+edition = "2018"
+
+
+[dependencies]
+ezgame = { path = "../ezgame" }
