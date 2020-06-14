@@ -16,7 +16,7 @@ impl Game for TestGame
         // some ezgame provided ones, but adding
         // these might prevent some headaches and
         // weird behaviours. 
-        app.add_default_systems();
+        app.add_defaults();
 
         // you can have as many worlds as you want.
         // ezgame is powered by Legion, so entities

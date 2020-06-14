@@ -1,6 +1,7 @@
 /// resource created by ezgame to queue and poll user and
-/// framework invoked events. see the docs on Events::invoke
+/// framework invoked events. see the docs on EventsQueue::invoke
 /// for specification. 
+#[derive(Debug)]
 pub struct EventsQueue(Vec<&'static str>);
 
 impl EventsQueue

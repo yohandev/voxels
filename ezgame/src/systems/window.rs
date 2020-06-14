@@ -54,7 +54,7 @@ pub fn window_system() -> Box<dyn Schedulable>
         .read_resource::<WinitEvent>()
         .write_resource::<EventsQueue>()
         .with_query(<(Read<Window>, TryWrite<WindowSize>)>::query())
-        .build(|command_buffer, world, (event, invoke), query|
+        .build(|_, world, (event, invoke), query|
         {
             for (window, mut size) in query.iter_mut(world)
             {

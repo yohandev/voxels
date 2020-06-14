@@ -32,11 +32,6 @@ impl Application
         // create app
         let mut app = Self::create();
 
-        // add default resources
-        app
-            .resources()
-            .insert(resources::EventsQueue::new());
-
         // build game
         T::build(&mut app);
 
@@ -157,14 +152,29 @@ impl Application
         }
     }
 
-    /// add common systems. they won't interfere with any of your components
-    /// and may impact some ezgame provided ones, but adding these might prevent
-    /// some headaches and weird behaviours.
+    /// add common systems and resources. they won't interfere with any of your
+    /// components and may impact some ezgame provided ones, but adding these
+    /// will prevent some headaches and weird behaviours.
     /// # list of systems
     /// - window_system: processes events for the Window component
-    pub fn add_default_systems(&mut self)
+    /// - input_system: processes events and caches input states
+    /// # list of resources
+    /// - EventsQueue: used by the engine to queue and poll system events
+    pub fn add_defaults(&mut self)
     {
-        self.register_system(events::APP_POLL_EVENT, systems::window_system());
+        // resources
+        self.resources().insert(resources::EventsQueue::new());
+        self.resources().insert(resources::Input::new());
+
+        // systems
+        self.register_schedule
+        (
+            events::APP_POLL_EVENT,
+            Schedule::builder()
+                .add_system(systems::window_system())
+                .add_system(systems::input_system())
+                .build()
+        );
     }
 
     /// create a new app
