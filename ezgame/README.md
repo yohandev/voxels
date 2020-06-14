@@ -13,6 +13,13 @@ impl Game for TestGame
 {
     fn build(app: &mut Application) -> Self
     {
+        // add common systems. they won't interfere
+        // with any of your components and may impact
+        // some ezgame provided ones, but adding
+        // these might prevent some headaches and
+        // weird behaviours. 
+        app.add_default_systems();
+
         // you can have as many worlds as you want.
         // ezgame is powered by Legion, so entities
         // are valid across worlds.

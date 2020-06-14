@@ -3,22 +3,20 @@ use winit::window::WindowBuilder;
 use winit::dpi::PhysicalSize;
 
 use crate::components::{ Window, WindowSize, WindowTitle };
-use crate::app::WorldList;
+use crate::resources::{ WinitEvent, EventsQueue };
+use crate::Application;
 
 use super::*;
 
-/// system that processes windows' events.
-pub struct WindowSystem;
-
 /// special system that's called by the Application itself to
 /// create windows for entities with !init() Window components.
-pub(crate) fn system_create_window(worlds: &mut WorldList, target: &EventLoopWindowTarget<()>)
+pub(crate) fn system_create_window(app: &mut Application, target: &EventLoopWindowTarget<()>)
 {
     // query window components
     let query = <(Write<Window>, TryRead<WindowSize>, TryRead<WindowTitle>)>::query();
 
     // iterate every world non-exlusively
-    for world in worlds
+    for world in app.worlds_mut()
     {
         for (mut win, size, title) in query.iter_mut(world)
         {
@@ -47,4 +45,66 @@ pub(crate) fn system_create_window(worlds: &mut WorldList, target: &EventLoopWin
             win.init(build.build(target));
         }
     }
+}
+
+/// system that processes windows' events.
+pub fn window_system() -> Box<dyn Schedulable>
+{
+    SystemBuilder::new("window_system")
+        .read_resource::<WinitEvent>()
+        .write_resource::<EventsQueue>()
+        .with_query(<(Read<Window>, TryWrite<WindowSize>)>::query())
+        .build(|command_buffer, world, (event, invoke), query|
+        {
+            for (window, mut size) in query.iter_mut(world)
+            {
+                if let Some(window) = window.get()
+                {
+                    match &event.0
+                    {
+                        winit::event::Event::WindowEvent { window_id, event } =>
+                        {
+                            if *window_id != window.id()
+                            {
+                                return;   
+                            }
+                            match event
+                            {
+                                winit::event::WindowEvent::Resized(resize) =>
+                                {
+                                    if let Some(size) = &mut size
+                                    {
+                                        size.width = resize.width;
+                                        size.height = resize.height;
+                                    }
+                                }
+                                winit::event::WindowEvent::CloseRequested =>
+                                {
+                                    invoke.invoke(crate::events::APP_QUIT);
+                                }
+                                winit::event::WindowEvent::ScaleFactorChanged { new_inner_size, .. } =>
+                                {
+                                    if let Some(size) = &mut size
+                                    {
+                                        size.width = new_inner_size.width;
+                                        size.height = new_inner_size.height;
+                                    }
+                                },
+                                _ => {}
+                            }
+                        }
+                        winit::event::Event::RedrawRequested(_) =>
+                        {
+                            // -- render logic --
+                            //state.on_render(self);
+                        }
+                        winit::event::Event::MainEventsCleared =>
+                        {
+                            window.request_redraw();
+                        }
+                        _ => {}
+                    };
+                }
+            }
+        })
 }
