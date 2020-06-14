@@ -8,20 +8,20 @@ layout(set = 0, binding = 0) uniform ViewProjection
 {
     mat4 u_view_proj;
 };
-layout(set = 1, binding = 0) uniform ChunkInstances
+layout(set = 1, binding = 0) uniform ChunkOffset
 {
-    vec3 u_offset[4096];
+    ivec3 u_offset;
 };
 
 void main()
 {
-    float x = float(a_compressed >> 26) + u_offset[gl_InstanceIndex].x;
-    float y = float((a_compressed >> 20) & 63) + u_offset[gl_InstanceIndex].y;
-    float z = float((a_compressed >> 14) & 63) + u_offset[gl_InstanceIndex].z;
+    float x = float(a_compressed >> 26) + float(u_offset.x);
+    float y = float((a_compressed >> 20) & 63) + float(u_offset.y);
+    float z = float((a_compressed >> 14) & 63) + float(u_offset.z);
 
     float u = float((a_compressed >> 7) & 127) / 128;
     float v = float(a_compressed & 127) / 128;
 
-    v_uv = vec2(u, v);
+    v_uv = vec2(u, v) * float(gl_InstanceIndex) / 3;
     gl_Position = u_view_proj * vec4(x, y, z, 1.0);
 }

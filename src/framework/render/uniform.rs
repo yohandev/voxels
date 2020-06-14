@@ -31,7 +31,7 @@ pub struct UniformBuilder<'a>
     binding: u32,
     visibility: ShaderStage,
 
-    label: Option<&'a str>
+    label: Option<&'a str>,
 }
 
 impl<T: Pod> Uniform<T>
@@ -126,7 +126,7 @@ impl<'a> UniformBuilder<'a>
         Uniform
         {
             buffer,
-            layout,
+            layout: layout,
             bind,
             ty: std::marker::PhantomData::<T>{},
         }

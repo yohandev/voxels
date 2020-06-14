@@ -66,7 +66,7 @@ impl State for Game
         {
             if let Some(world) = self.worlds.first_mut()
             {
-                if world.chunks().len() < 20 && self.temp_time >= 2.5
+                if world.chunks().len() < 3 && self.temp_time >= 2.5
                 {
                     self.temp_time = 0.0;
                     // for x in -2..2
@@ -78,7 +78,7 @@ impl State for Game
                                 let pos = CHUNK_SIZE as i32 * int3::new(world.chunks().len() as i32, 0, 0);
                                 
                                 world.load_chunk(pos);
-                                world.remesh_chunk(pos, window.ctx());
+                                world.remesh_chunk(pos, window.ctx(), gfx);
                     //         }
                     //     }
                     // }

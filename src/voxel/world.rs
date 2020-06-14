@@ -2,6 +2,7 @@ use std::collections::hash_map::*;
 use std::ops::*;
 
 use crate::framework::RenderCtx;
+use crate::gfx::Gfx;
 use super::*;
 
 pub struct Dimension
@@ -45,7 +46,7 @@ impl Dimension
         self.chunks.insert(pos, chunk);
     }
 
-    pub fn remesh_chunk(&mut self, pos: int3, ctx: &RenderCtx)
+    pub fn remesh_chunk(&mut self, pos: int3, ctx: &RenderCtx, gfx: &Gfx)
     {
         // check neighbors
         // let px = self.chunks.get(&(pos + CHUNK_SIZE as i32 * int3::new(1, 0, 0)));
@@ -61,18 +62,16 @@ impl Dimension
         // let nz = self.chunks.get(&(pos + CHUNK_SIZE as i32 * int3::new(0, 0, -1)));
         // if nz.is_none() { return; }
 
-        let mesh = self.chunks
+        let gfx = self.chunks
             .get(&pos)
             .unwrap()
-            .remesh(ctx, self);
+            .remesh(ctx, gfx, self);
 
         let chunk = self.chunks
             .get_mut(&pos)
             .unwrap();
 
-        chunk.mesh = mesh;
-            //.mesh_mut() = Some(mesh);
-            //.replace(mesh);
+        chunk.gfx = gfx;
     }
 
     /// reports all loaded chunks

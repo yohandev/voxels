@@ -3,6 +3,7 @@ use std::ops::*;
 use crate::gfx::vertices::ChunkVertex;
 use crate::gfx::mesh::ChunkMesh;
 use crate::framework::RenderCtx;
+use crate::gfx::*;
 use super::*;
 
 pub const CHUNK_SIZE: usize = 32;
@@ -21,7 +22,7 @@ pub struct Chunk
     pos: int3,
 
     /// mesh of chunk
-    pub mesh: Option<ChunkMesh>,
+    pub gfx: Option<(ChunkMesh, wgpu::Buffer, wgpu::BindGroup)>,
 }
 
 impl Chunk
@@ -32,7 +33,7 @@ impl Chunk
         Self
         {
             blocks: [Block::default(); CHUNK_VOLUME],
-            mesh: None,
+            gfx: None,
             pos,
         }
     }
@@ -64,18 +65,10 @@ impl Chunk
         }
     }
 
-    pub(super) fn remesh(&self, ctx: &RenderCtx, world: &Dimension/*, neighbors: [&Chunk; 6]*/) -> Option<ChunkMesh>
+    pub(super) fn remesh(&self, ctx: &RenderCtx, gfx: &Gfx, world: &Dimension/*, neighbors: [&Chunk; 6]*/) -> Option<(ChunkMesh, wgpu::Buffer, wgpu::BindGroup)>
     {
         let mut vertices = Vec::<ChunkVertex>::new();
         let mut indices = Vec::<u32>::new();
-
-        // vertices.push(ChunkVertex::new(&uint3::new(0, 0, 0), &uint2::new(0, 0)));
-        // vertices.push(ChunkVertex::new(&uint3::new(0, 1, 0), &uint2::new(0, 0)));
-        // vertices.push(ChunkVertex::new(&uint3::new(1, 0, 0), &uint2::new(0, 0)));
-
-        // indices.push(0);
-        // indices.push(2);
-        // indices.push(1);
 
         for x in 0..CHUNK_SIZE as u32
         {
@@ -107,23 +100,16 @@ impl Chunk
         }
         else
         {
-            Some(ChunkMesh::create(ctx, &vertices[..], &indices[..]))
+            let mesh = ChunkMesh::create(ctx, &vertices[..], &indices[..]);
+            let (buffer, bind_group) = gfx.chunk_pip.create_chunk_offset_buffer(ctx, self.pos);
+            
+            Some((mesh, buffer, bind_group))
         }
     }
 
     pub fn pos(&self) -> &int3
     {
         &self.pos
-    }
-
-    pub fn mesh(&self) -> &Option<ChunkMesh>
-    {
-        &self.mesh
-    }
-
-    pub fn mesh_mut(&mut self) -> &mut Option<ChunkMesh>
-    {
-        &mut self.mesh
     }
 
     /// flatten a relative position index to a 1D array index
