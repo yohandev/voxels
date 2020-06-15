@@ -10,7 +10,7 @@ pub struct BindGroupBuilder<'a>
 {
     parent: PipelineBuilder<'a>,
 
-    res: Vec<(ShaderResource<'a>, u32, wgpu::ShaderStage)>,
+    res: Vec<(Box<&'a dyn ShaderResource>, u32, wgpu::ShaderStage)>,
     set: u32
 }
 
@@ -110,12 +110,10 @@ impl<'a> PipelineBuilder<'a>
     }
 }
 
-#[derive(Clone)]
-pub enum ShaderResource<'a>
+pub trait ShaderResource
 {
-    Texture(String),
-    Sampler(wgpu::FilterMode, wgpu::FilterMode),
-    Uniform(&'a [u8])
+    fn binding_type(&self) -> wgpu::BindingType;
+    fn resource(&self) -> wgpu::BindingResource;
 }
 
 impl<'a> BindGroupBuilder<'a>
@@ -126,51 +124,53 @@ impl<'a> BindGroupBuilder<'a>
         self.parent
     }
 
-    pub fn binding(mut self, slot: u32, stage: wgpu::ShaderStage, res: ShaderResource<'a>) -> Self
+    pub fn binding(mut self, slot: u32, stage: wgpu::ShaderStage, res: &'a dyn ShaderResource) -> Self
     {
-        self.res.push((res, slot, stage));
+        self.res.push((Box::new(res), slot, stage));
         self
     }
 
-    pub fn build(mut self) -> PipelineBuilder<'a>
+    pub fn build(mut self, out: &'a mut Option<(wgpu::BindGroupLayout, wgpu::BindGroup)>) -> PipelineBuilder<'a>
     {
         let mut layout_entries = Vec::with_capacity(self.res.len());
-    
+        let mut bind_entries = Vec::with_capacity(self.res.len());
+
         for res in self.res
         {
             layout_entries.push(wgpu::BindGroupLayoutEntry
             {
                 binding: res.1,
                 visibility: res.2,
-                ty: match res.0
-                {
-                    ShaderResource::Texture(_) => wgpu::BindingType::SampledTexture
-                    {
-                        dimension: wgpu::TextureViewDimension::D2,
-                        component_type: wgpu::TextureComponentType::Uint,
-                        multisampled: false
-                    },
-                    ShaderResource::Sampler(_, _) => wgpu::BindingType::Sampler
-                    {
-                        comparison: false,
-                    },
-                    ShaderResource::Uniform(_) => wgpu::BindingType::UniformBuffer
-                    {
-                        dynamic: false
-                    }
-                },
-                
-            })
+                ty: res.0.binding_type(),
+            });
+            bind_entries.push(wgpu::Binding
+            {
+                binding: res.1,
+                resource: res.0.resource(),
+            });
         }
 
-        // self.parent.sets[self.set as usize] = Some(&self.parent.ctx.device.create_bind_group_layout
-        // (
-        //     &wgpu::BindGroupLayoutDescriptor
-        //     {
-        //         bindings: layout_entries.as_slice(),
-        //         label: None,
-        //     }
-        // ));
+        let layout = self.parent.ctx.device.create_bind_group_layout
+        (
+            &wgpu::BindGroupLayoutDescriptor
+            {
+                bindings: layout_entries.as_slice(),
+                label: None,
+            }
+        );
+        let bind = self.parent.ctx.device.create_bind_group
+        (
+            &wgpu::BindGroupDescriptor
+            {
+                layout: &layout,
+                bindings: bind_entries.as_slice(),
+                label: None,
+            }   
+        );
+
+        *out = Some((layout, bind));
+
+        self.parent.sets[self.set as usize] = Some(&out.as_ref().unwrap().0);
         self.parent
     }
 }
