@@ -68,8 +68,8 @@ impl Renderer
         Self { surface, device, queue, sc_desc, sc }
     }
 
-    pub fn pipeline(&mut self) -> crate::builder::PipelineBuilder
+    pub fn pipeline(&mut self) -> crate::PipelineBuilder
     {
-        crate::builder::PipelineBuilder::new(self)
+        crate::PipelineBuilder::new(self)
     }
 }
