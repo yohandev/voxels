@@ -1,4 +1,5 @@
 /// Shader stages supported by ezgfx
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ShaderKind
 {
     Vertex,

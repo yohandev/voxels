@@ -5,7 +5,8 @@ pub use kind::*;
 /// represents a shader module
 pub struct Shader
 {
-    pub(crate) module: wgpu::ShaderModule
+    module: wgpu::ShaderModule,
+    kind: ShaderKind
 }
 
 impl Shader
@@ -26,7 +27,8 @@ impl Shader
         
         Self
         {
-            module: renderer.device.create_shader_module(&shader)
+            module: renderer.device.create_shader_module(&shader),
+            kind
         }
     }
 
@@ -34,5 +36,17 @@ impl Shader
     pub fn from_path() -> Self
     {
         todo!()
+    }
+
+    /// get the internal wgpu shader module
+    pub(crate) fn module(&self) -> &wgpu::ShaderModule
+    {
+        &self.module
+    }
+
+    /// get what kind of shader self is
+    pub fn kind(&self) -> ShaderKind
+    {
+        self.kind
     }
 }

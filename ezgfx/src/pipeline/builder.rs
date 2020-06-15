@@ -3,7 +3,10 @@
 pub struct PipelineBuilder<'a>
 {
     pub(crate) ctx: RendererRef<'a>,
-    pub(crate) sets: Vec<ShaderResourceSet<'a>>
+    pub(crate) sets: Vec<ShaderResourceSet<'a>>,
+
+    vert_shader: Option<&'a crate::Shader>,
+    frag_shader: Option<&'a crate::Shader>,
 }
 
 /// a temporary reference to a renderer.
@@ -26,7 +29,23 @@ impl<'a> PipelineBuilder<'a>
         {
             ctx: renderer,
             sets: vec![],
+
+            vert_shader: None,
+            frag_shader: None,
         }
+    }
+
+    /// add a shader module to this render pipeline.
+    /// you have to manually add the vertex AND fragment
+    /// shaders both.
+    pub fn shader(mut self, module: &'a crate::Shader) -> Self
+    {
+        match module.kind()
+        {
+            crate::ShaderKind::Vertex =>   self.vert_shader = Some(module),
+            crate::ShaderKind::Fragment => self.frag_shader = Some(module),
+        }
+        self
     }
 
     /// start defining a new set, then chain to that set's
@@ -70,12 +89,16 @@ impl<'a> PipelineBuilder<'a>
                 layout: &layout,
                 vertex_stage: wgpu::ProgrammableStageDescriptor
                 {
-                    module: todo!(),
+                    module: self.vert_shader
+                        .expect("pipeline must have a vertex shader!")
+                        .module(),
                     entry_point: "main",
                 },
                 fragment_stage: Some(wgpu::ProgrammableStageDescriptor
                 {
-                    module: todo!(),
+                    module: self.vert_shader
+                        .expect("pipeline must have a fragment shader!")
+                        .module(),
                     entry_point: "main",
                 }),
                 rasterization_state: Some(wgpu::RasterizationStateDescriptor
