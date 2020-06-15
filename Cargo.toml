@@ -17,5 +17,7 @@
 members = [
     "ezgame",
     "ezmath",
+    "ezgfx",
+    
     "voxels"
 ]
