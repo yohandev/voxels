@@ -29,7 +29,7 @@ struct PipelineSettings
 /// a temporary reference to a renderer.
 /// lifetime must be valid for that of the
 /// pipeline builder.
-type RendererRef<'a> = &'a mut crate::Renderer;
+type RendererRef<'a> = &'a crate::Renderer;
 
 /// a temporary reference to a bind group layout,
 /// which describes a GLSL "set" mapping ```layout(set=N,binding=M)```.

@@ -1,5 +1,7 @@
+mod uniform;
 mod builder;
 
+pub use uniform::*;
 pub use builder::*;
 
 /// a bind-able shader resource, to be used within

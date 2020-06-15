@@ -11,3 +11,6 @@ pub use vertex::*;
 pub use index::*;
 pub use bind::*;
 pub use ctx::*;
+
+#[cfg(test)]
+mod tests;
