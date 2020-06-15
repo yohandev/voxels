@@ -1,134 +1,115 @@
-use crate::gene::*;
+#![allow(non_camel_case_types)]
 
-/// macro that defines a vector or matrix type
-macro_rules! define_vec
-{
-    ( $name:ident, $gene:ty ) =>
-    {
-        /// a stack-allocated column-Vector
-        #[allow(non_camel_case_types)]
-        pub type $name = $gene;
-    };
-}
+use nalgebra::*;
 
-macro_rules! define_mat
-{
-    ( $name:ident, $gene:ty ) =>
-    {
-        /// a stack-allocated square matrix
-        #[allow(non_camel_case_types)]
-        pub type $name = $gene;
-    };
-}
+pub type bool2 = Vector2<bool>;
+pub type bool3 = Vector3<bool>;
+pub type bool4 = Vector4<bool>;
 
-define_vec!(bool2, Vec2<bool>);
-define_vec!(bool3, Vec3<bool>);
-define_vec!(bool4, Vec4<bool>);
+pub type char2 = Vector2<char>;
+pub type char3 = Vector3<char>;
+pub type char4 = Vector4<char>;
 
-define_vec!(char2, Vec2<char>);
-define_vec!(char3, Vec3<char>);
-define_vec!(char4, Vec4<char>);
+pub type sbyte2 = Vector2<i8>;
+pub type sbyte3 = Vector3<i8>;
+pub type sbyte4 = Vector4<i8>;
 
-define_vec!(sbyte2, Vec2<i8>);
-define_vec!(sbyte3, Vec3<i8>);
-define_vec!(sbyte4, Vec4<i8>);
+pub type short2 = Vector2<i16>;
+pub type short3 = Vector3<i16>;
+pub type short4 = Vector4<i16>;
 
-define_vec!(short2, Vec2<i16>);
-define_vec!(short3, Vec3<i16>);
-define_vec!(short4, Vec4<i16>);
+pub type int2 = Vector2<i32>;
+pub type int3 = Vector3<i32>;
+pub type int4 = Vector4<i32>;
 
-define_vec!(int2, Vec2<i32>);
-define_vec!(int3, Vec3<i32>);
-define_vec!(int4, Vec4<i32>);
+pub type long2 = Vector2<i64>;
+pub type long3 = Vector3<i64>;
+pub type long4 = Vector4<i64>;
 
-define_vec!(long2, Vec2<i64>);
-define_vec!(long3, Vec3<i64>);
-define_vec!(long4, Vec4<i64>);
+pub type isize2 = Vector2<isize>;
+pub type isize3 = Vector3<isize>;
+pub type isize4 = Vector4<isize>;
 
-define_vec!(isize2, Vec2<isize>);
-define_vec!(isize3, Vec3<isize>);
-define_vec!(isize4, Vec4<isize>);
+pub type byte2 = Vector2<u8>;
+pub type byte3 = Vector3<u8>;
+pub type byte4 = Vector4<u8>;
 
-define_vec!(byte2, Vec2<u8>);
-define_vec!(byte3, Vec3<u8>);
-define_vec!(byte4, Vec4<u8>);
+pub type ushort2 = Vector2<u16>;
+pub type ushort3 = Vector3<u16>;
+pub type ushort4 = Vector4<u16>;
 
-define_vec!(ushort2, Vec2<u16>);
-define_vec!(ushort3, Vec3<u16>);
-define_vec!(ushort4, Vec4<u16>);
+pub type uint2 = Vector2<u32>;
+pub type uint3 = Vector3<u32>;
+pub type uint4 = Vector4<u32>;
 
-define_vec!(uint2, Vec2<u32>);
-define_vec!(uint3, Vec3<u32>);
-define_vec!(uint4, Vec4<u32>);
+pub type ulong2 = Vector2<u64>;
+pub type ulong3 = Vector3<u64>;
+pub type ulong4 = Vector4<u64>;
 
-define_vec!(ulong2, Vec2<u64>);
-define_vec!(ulong3, Vec3<u64>);
-define_vec!(ulong4, Vec4<u64>);
+pub type usize2 = Vector2<usize>;
+pub type usize3 = Vector3<usize>;
+pub type usize4 = Vector4<usize>;
 
-define_vec!(usize2, Vec2<usize>);
-define_vec!(usize3, Vec3<usize>);
-define_vec!(usize4, Vec4<usize>);
+pub type float2 = Vector2<f32>;
+pub type float3 = Vector3<f32>;
+pub type float4 = Vector4<f32>;
 
-define_vec!(float2, Vec2<f32>);
-define_vec!(float3, Vec3<f32>);
-define_vec!(float4, Vec4<f32>);
+pub type double2 = Vector2<f64>;
+pub type double3 = Vector3<f64>;
+pub type double4 = Vector4<f64>;
 
-define_vec!(double2, Vec2<f64>);
-define_vec!(double3, Vec3<f64>);
-define_vec!(double4, Vec4<f64>);
+pub type bool2x2 = Matrix2<bool>;
+pub type bool3x3 = Matrix3<bool>;
+pub type bool4x4 = Matrix4<bool>;
 
-define_mat!(bool2x2, Mat2x2<bool>);
-define_mat!(bool3x3, Mat3x3<bool>);
-define_mat!(bool4x4, Mat4x4<bool>);
+pub type char2x2 = Matrix2<char>;
+pub type char3x3 = Matrix3<char>;
+pub type char4x4 = Matrix4<char>;
 
-define_mat!(char2x2, Mat2x2<char>);
-define_mat!(char3x3, Mat3x3<char>);
-define_mat!(char4x4, Mat4x4<char>);
+pub type sbyte2x2 = Matrix2<i8>;
+pub type sbyte3x3 = Matrix3<i8>;
+pub type sbyte4x4 = Matrix4<i8>;
 
-define_mat!(sbyte2x2, Mat2x2<i8>);
-define_mat!(sbyte3x3, Mat3x3<i8>);
-define_mat!(sbyte4x4, Mat4x4<i8>);
+pub type short2x2 = Matrix2<i16>;
+pub type short3x3 = Matrix3<i16>;
+pub type short4x4 = Matrix4<i16>;
 
-define_mat!(short2x2, Mat2x2<i16>);
-define_mat!(short3x3, Mat3x3<i16>);
-define_mat!(short4x4, Mat4x4<i16>);
+pub type int2x2 = Matrix2<i32>;
+pub type int3x3 = Matrix3<i32>;
+pub type int4x4 = Matrix4<i32>;
 
-define_mat!(int2x2, Mat2x2<i32>);
-define_mat!(int3x3, Mat3x3<i32>);
-define_mat!(int4x4, Mat4x4<i32>);
+pub type long2x2 = Matrix2<i64>;
+pub type long3x3 = Matrix3<i64>;
+pub type long4x4 = Matrix4<i64>;
 
-define_mat!(long2x2, Mat2x2<i64>);
-define_mat!(long3x3, Mat3x3<i64>);
-define_mat!(long4x4, Mat4x4<i64>);
+pub type isize2x2 = Matrix2<isize>;
+pub type isize3x3 = Matrix3<isize>;
+pub type isize4x4 = Matrix4<isize>;
 
-define_mat!(isize2x2, Mat2x2<isize>);
-define_mat!(isize3x3, Mat3x3<isize>);
-define_mat!(isize4x4, Mat4x4<isize>);
+pub type byte2x2 = Matrix2<u8>;
+pub type byte3x3 = Matrix3<u8>;
+pub type byte4x4 = Matrix4<u8>;
 
-define_mat!(byte2x2, Mat2x2<u8>);
-define_mat!(byte3x3, Mat3x3<u8>);
-define_mat!(byte4x4, Mat4x4<u8>);
+pub type ushort2x2 = Matrix2<u16>;
+pub type ushort3x3 = Matrix3<u16>;
+pub type ushort4x4 = Matrix4<u16>;
 
-define_mat!(ushort2x2, Mat2x2<u16>);
-define_mat!(ushort3x3, Mat3x3<u16>);
-define_mat!(ushort4x4, Mat4x4<u16>);
+pub type uint2x2 = Matrix2<u32>;
+pub type uint3x3 = Matrix3<u32>;
+pub type uint4x4 = Matrix4<u32>;
 
-define_mat!(uint2x2, Mat2x2<u32>);
-define_mat!(uint3x3, Mat3x3<u32>);
-define_mat!(uint4x4, Mat4x4<u32>);
+pub type ulong2x2 = Matrix2<u64>;
+pub type ulong3x3 = Matrix3<u64>;
+pub type ulong4x4 = Matrix4<u64>;
 
-define_mat!(ulong2x2, Mat2x2<u64>);
-define_mat!(ulong3x3, Mat3x3<u64>);
-define_mat!(ulong4x4, Mat4x4<u64>);
+pub type usize2x2 = Matrix2<usize>;
+pub type usize3x3 = Matrix3<usize>;
+pub type usize4x4 = Matrix4<usize>;
 
-define_mat!(usize2x2, Mat2x2<usize>);
-define_mat!(usize3x3, Mat3x3<usize>);
-define_mat!(usize4x4, Mat4x4<usize>);
+pub type float2x2 = Matrix2<f32>;
+pub type float3x3 = Matrix3<f32>;
+pub type float4x4 = Matrix4<f32>;
 
-define_mat!(float2x2, Mat2x2<f32>);
-define_mat!(float3x3, Mat3x3<f32>);
-define_mat!(float4x4, Mat4x4<f32>);
-
-define_mat!(double2x2, Mat2x2<f64>);
-define_mat!(double3x3, Mat3x3<f64>);
-define_mat!(double4x4, Mat4x4<f64>);
+pub type double2x2 = Matrix2<f64>;
+pub type double3x3 = Matrix3<f64>;
+pub type double4x4 = Matrix4<f64>;

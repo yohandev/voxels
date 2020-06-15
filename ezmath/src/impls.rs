@@ -1,123 +1,137 @@
-use std::fmt::Display;
+/// represents a type that's suitable to be a scalar in a vector or matrix.
+/// implemented for pretty much every primitive
+pub trait Scalar: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd + num_traits::Zero + num_traits::One + simba::scalar::RealField + 'static {}
 
-use simba::scalar::*;
-use num_traits::*;
-use nalgebra::*;
+impl<T> Scalar for T where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd + num_traits::Zero + num_traits::One + simba::scalar::RealField + 'static {}
 
-use crate::gene::*;
-
-impl<T> Display for Vec2<T>
-    where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd  + Zero + One + RealField + 'static
+/// trait to add capabilities to nalgebra's Vector2
+pub trait Vec2<T: Scalar>
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        // nalgebra display is really large and annoying for debugging
-        f.write_fmt(format_args!("<{}, {}>", self.x, self.y))
-    }
+    /// get a new vector with all its components initialized to one
+    fn one() -> Self;
+    /// get a new vector with all its components initialized to zero
+    fn zero() -> Self;
 }
 
-impl<T> Display for Vec3<T>
-    where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd  + Zero + One + RealField + 'static
+/// trait to add capabilities to nalgebra's Vector3
+pub trait Vec3<T: Scalar>
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        // nalgebra display is really large and annoying for debugging
-        f.write_fmt(format_args!("<{}, {}, {}>", self.x, self.y, self.z))
-    }
+    /// get a new vector with all its components initialized to one
+    fn one() -> Self;
+    /// get a new vector with all its components initialized to zero
+    fn zero() -> Self;
 }
 
-impl<T> Display for Vec4<T>
-    where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd  + Zero + One + RealField + 'static
+/// trait to add capabilities to nalgebra's Vector4
+pub trait Vec4<T: Scalar>
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        // nalgebra display is really large and annoying for debugging
-        f.write_fmt(format_args!("<{}, {}, {}, {}>", self.x, self.y, self.z, self.w))
-    }
+    /// get a new vector with all its components initialized to one
+    fn one() -> Self;
+    /// get a new vector with all its components initialized to zero
+    fn zero() -> Self;
 }
 
-impl<T> Display for Mat2x2<T>
-    where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd  + Zero + One + RealField + 'static
+/// trait to add capabilities to nalgebra's 2x2 matrix
+pub trait Mat2x2<T: Scalar>
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        // just use the nalgebra one. matrices are large display either way
-        f.write_fmt(format_args!("{}", self.0))
-    }
+    /// constructs a new matrix from translation transformation
+    fn translation(translation: T) -> Self;
 }
 
-impl<T> Display for Mat3x3<T>
-    where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd  + Zero + One + RealField + 'static
+/// trait to add capabilities to nalgebra's 3x3 matrix
+pub trait Mat3x3<T: Scalar>
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        // just use the nalgebra one. matrices are large display either way
-        f.write_fmt(format_args!("{}", self.0))
-    }
+    /// constructs a new matrix from translation transformation
+    fn translation(translation: nalgebra::Vector2<T>) -> Self;
+    /// constructs a new matrix from an euler angle rotation
+    fn rotation(euler_angle: T) -> Self;
 }
 
-impl<T> Display for Mat4x4<T>
-    where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd  + Zero + One + RealField + 'static
+/// trait to add capabilities to nalgebra's 4x4 matrix
+pub trait Mat4x4<T: Scalar>
 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        // just use the nalgebra one. matrices are large display either way
-        f.write_fmt(format_args!("{}", self.0))
-    }
+    /// constructs a new matrix from a perspective transformation
+    fn perspective(aspect: T, fov: T, near: T, far: T) -> Self;
+    /// constructs a new matrix from translation transformation
+    fn translation(translation: nalgebra::Vector3<T>) -> Self;
+    /// constructs a new matrix from euler angles rotation
+    fn rotation(euler_angles: nalgebra::Vector3<T>) -> Self;
 }
 
-impl<T> Vec2<T>
-    where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd + Zero + One + RealField + 'static
+impl<T: Scalar> Vec2<T> for nalgebra::Vector2<T>
 {
-    /// create a new vector
-    pub fn new(x: T, y: T) -> Self
-    {
-        Vec2(Vector2::new(x, y))
-    }
-
-    /// create a new vector initialized with 1s in all dimensions
-    pub fn one() -> Self
+    fn one() -> Self
     {
         Self::new(T::one(), T::one())
     }
 
-    /// create a new vector initialized with 0s in all dimensions
-    pub fn zero() -> Self
+    fn zero() -> Self
     {
         Self::new(T::zero(), T::zero())
     }
 }
 
-impl<T> Mat4x4<T>
-    where T: std::fmt::Debug + std::fmt::Display + Clone + Copy + PartialEq + PartialOrd + Zero + One + RealField + 'static
+impl<T: Scalar> Vec3<T> for nalgebra::Vector3<T>
 {
-    /// create a new matrix initialized with its entity
-    pub fn identity() -> Self
+    fn one() -> Self
     {
-        Self(Matrix4::identity())
+        Self::new(T::one(), T::one(), T::one())
     }
 
-    /// create a new matrix from a row slice
-    pub fn new(slice: &[T]) -> Self
+    fn zero() -> Self
     {
-        Self(Matrix4::from_row_slice(slice))
+        Self::new(T::zero(), T::zero(), T::zero())
+    }
+}
+
+impl<T: Scalar> Vec4<T> for nalgebra::Vector4<T>
+{
+    fn one() -> Self
+    {
+        Self::new(T::one(), T::one(), T::one(), T::one())
     }
 
-    /// create a new matrix from a translation
-    pub fn from_translation(n: Vec3<T>) -> Self
+    fn zero() -> Self
     {
-        Self(Translation3::new(n.x, n.y, n.z).to_homogeneous())
+        Self::new(T::zero(), T::zero(), T::zero(), T::zero())
+    }
+}
+
+impl<T: Scalar> Mat2x2<T> for nalgebra::Matrix2<T>
+{
+    fn translation(n: T) -> Self
+    {
+        nalgebra::Translation1::new(n).to_homogeneous()
+    }
+}
+
+impl<T: Scalar> Mat3x3<T> for nalgebra::Matrix3<T>
+{
+    fn translation(n: nalgebra::Vector2<T>) -> Self
+    {
+        nalgebra::Translation2::new(n.x, n.y).to_homogeneous()
     }
 
-    /// create a new matrix from euler angles rotation
-    pub fn from_euler_angles(n: Vec3<T>) -> Self
+    fn rotation(n: T) -> Self
     {
-        Self(Rotation3::from_euler_angles(n.x, n.y, n.z).to_homogeneous())
+        nalgebra::Rotation2::new(n).to_homogeneous()
+    }
+}
+
+impl<T: Scalar> Mat4x4<T> for nalgebra::Matrix4<T>
+{
+    fn perspective(aspect: T, fov: T, near: T, far: T) -> Self
+    {
+        nalgebra::Perspective3::new(aspect, fov, near, far).into_inner()
     }
 
-    /// create a new matrix from a perspective
-    pub fn from_perspective(aspect: T, fov: T, near: T, far: T) -> Self
+    fn translation(n: nalgebra::Vector3<T>) -> Self
     {
-        Self(Perspective3::new(aspect, fov, near, far).into_inner())
+        nalgebra::Translation3::new(n.x, n.y, n.z).to_homogeneous()
+    }
+
+    fn rotation(n: nalgebra::Vector3<T>) -> Self
+    {
+        nalgebra::Rotation3::from_euler_angles(n.x, n.y, n.z).to_homogeneous()
     }
 }
