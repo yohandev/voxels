@@ -58,7 +58,7 @@ fn my_system() -> Box<dyn legion::Schedulable>
         .read_resource::<Input>()
         .build(|_, _, (time, input), _|
         {
-            print!("frame {{ delta_time: {}", time.delta_time_f32());
+            print!("frame {{ delta_time: {}ms", time.delta_time_f32() * 1000.0);
 
             if input.key_down(VirtualKeyCode::Space)
             {

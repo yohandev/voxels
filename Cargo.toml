@@ -16,5 +16,6 @@
 [workspace]
 members = [
     "ezgame",
+    "ezmath",
     "voxels"
 ]
