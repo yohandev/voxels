@@ -6,11 +6,11 @@ use wgpu::*;
 /// case, is a winit window.
 pub struct Renderer
 {
-    surface:    Surface,
-    dev:        Device,
-    queue:      Queue,
-    sc_desc:    SwapChainDescriptor,
-    sc:         SwapChain,
+    pub(crate) surface:    Surface,
+    pub(crate) device:     Device,
+    pub(crate) queue:      Queue,
+    pub(crate) sc_desc:    SwapChainDescriptor,
+    pub(crate) sc:         SwapChain,
 }
 
 impl Renderer
@@ -42,7 +42,7 @@ impl Renderer
         .await
         .unwrap();
 
-        let (dev, queue) = adapter.request_device   // device, queue
+        let (device, queue) = adapter.request_device   // device, queue
         (
             &DeviceDescriptor
             {
@@ -59,17 +59,17 @@ impl Renderer
             height: size.height,
             present_mode: PresentMode::Fifo
         };
-        let sc = dev.create_swap_chain              // swap chain
+        let sc = device.create_swap_chain              // swap chain
         (
             &surface,
             &sc_desc
         );
 
-        Self { surface, dev, queue, sc_desc, sc }
+        Self { surface, device, queue, sc_desc, sc }
     }
 
-    // pub fn create_pipeline<T: crate::Pipeline>()
-    // {
-
-    // }
+    pub fn pipeline(&mut self) -> crate::builder::PipelineBuilder
+    {
+        crate::builder::PipelineBuilder::new(self)
+    }
 }

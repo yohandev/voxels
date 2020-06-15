@@ -1,16 +1,21 @@
 ```rust
-let mut tex = None;
-let mut light = None;
+let tex = Texture::new("assets/img.png");
+let smp = Sampler::new(Nearest, Nearest);
+
+let light = Uniform::new(Light(20, 30));
+
+let mut tex_bind = None;
+let mut light_bind = None;
 
 let pip = renderer.pipeline()
     .set(0)
         .existing(&game.mvp_layout)
     .set(1)
-        .binding::<Texture>(0, "img.png")
-        .binding::<Sampler>(1, (Nearest, Nearest))
-        .build(&mut tex)
+        .binding(0, Fragment, tex)
+        .binding(1, Fragment, smp)
+        .build(&mut tex_bind)
     .set(2)
-        .binding::<Uniform>(2, Light(20.0))
-        .build(&mut light)
+        .binding(2, Vertex, light)
+        .build(&mut light_bind)
     .build();
 ```
