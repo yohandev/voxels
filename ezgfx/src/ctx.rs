@@ -4,6 +4,7 @@ use wgpu::*;
 /// represents a render context tied to a window. it stores
 /// everything needed to render to a surface, which in this
 /// case, is a winit window.
+#[derive(Debug)]
 pub struct Renderer
 {
     pub(crate) surface:    Surface,

@@ -3,6 +3,7 @@ mod kind;
 pub use kind::*;
 
 /// represents a shader module
+#[derive(Debug)]
 pub struct Shader
 {
     module: wgpu::ShaderModule,

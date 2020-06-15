@@ -67,7 +67,7 @@ impl<'a> BindGroupBuilder<'a>
 
     /// set the shader resource at binding N, as in ```layout(set=A, binding=N)```.
     /// this method also creates a bind group layout in the process.
-    pub fn binding(mut self, slot: u32, stage: wgpu::ShaderStage, res: &'a dyn crate::ShaderBindable) -> Self
+    pub fn binding(mut self, slot: u32, stage: crate::ShaderKind, res: &'a dyn crate::ShaderBindable) -> Self
     {
         self.resources.push
         (
@@ -75,7 +75,7 @@ impl<'a> BindGroupBuilder<'a>
             {
                 bind: Box::new(res),
                 slot,
-                stage
+                stage: stage.to_wgpu(),
             }
         );
         self
