@@ -1,6 +1,6 @@
 /// represents a generic index that can be passed to
 /// render pipelines.
-pub trait Index: Sized
+pub trait Index: bytemuck::Pod
 {
     /// the wgpu translated type of index
     const DESC: wgpu::IndexFormat;

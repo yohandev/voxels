@@ -1,6 +1,8 @@
 use winit::window::Window;
 use wgpu::*;
 
+use crate::*;
+
 /// represents a render context tied to a window. it stores
 /// everything needed to render to a surface, which in this
 /// case, is a winit window.
@@ -76,14 +78,20 @@ impl Renderer
     /// screen-space, rasterizes them, etc. The pipeline
     /// builder seeks to map part of that pipeline in an easy
     /// way. 
-    pub fn pipeline(&self) -> crate::PipelineBuilder
+    pub fn pipeline(&self) -> PipelineBuilder
     {
-        crate::PipelineBuilder::new(self)
+        PipelineBuilder::new(self)
     }
 
     /// create a new uniform buffer.
-    pub fn uniform<T: crate::marker::BufferData>(&self, data: T) -> crate::Uniform<T>
+    pub fn uniform<T: crate::marker::BufferData>(&self, data: T) -> Uniform<T>
     {
-        crate::Uniform::<T>::new(self, data)
+        Uniform::<T>::new(self, data)
+    }
+
+    /// create new geometry
+    pub fn geometry<V: Vertex, I: Index>(&self, vertices: &[V], indices: &[I]) -> Geometry<V, I>
+    {
+        Geometry::new(self, vertices, indices)   
     }
 }
