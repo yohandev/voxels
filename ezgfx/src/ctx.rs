@@ -1,10 +1,10 @@
-use winit::window::Window;
+use raw_window_handle::*;
 
 use crate::*;
 
 /// represents a render context tied to a window. it stores
 /// everything needed to render to a surface, which in this
-/// case, is a winit window.
+/// case, is a window.
 #[derive(Debug)]
 pub struct Renderer
 {
@@ -17,16 +17,14 @@ pub struct Renderer
 
 impl Renderer
 {
-    /// create a renderer from a winit window
-    pub fn from_window(window: &Window) -> Self
+    /// create a renderer from a window
+    pub fn from_window<T: HasRawWindowHandle>(window: &T, width: u32, height: u32) -> Self
     {
-        futures::executor::block_on(Self::async_from_window(window))
+        futures::executor::block_on(Self::async_from_window(window, width, height))
     }
 
-    async fn async_from_window(window: &Window) -> Self
+    async fn async_from_window<T: HasRawWindowHandle>(window: &T, width: u32, height: u32) -> Self
     {
-        let size = window.inner_size();                 // winit size
-
         let surface = wgpu::Surface::create             // surface
         (
             window
@@ -58,8 +56,8 @@ impl Renderer
         {
             usage: wgpu::TextureUsage::OUTPUT_ATTACHMENT,
             format: wgpu::TextureFormat::Bgra8UnormSrgb,
-            width: size.width,
-            height: size.height,
+            width,
+            height,
             present_mode: wgpu::PresentMode::Fifo
         };
         let sc = device.create_swap_chain               // swap chain
