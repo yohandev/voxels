@@ -34,7 +34,7 @@ let pip = renderer.pipeline()
 //
 // Bind group can be "recreated"(same layout, compatable with all pipelines) using
 // renderer.clone_bind_group(&my_bind_group, Texture::load("another/img.png"), Sampler::new(Nearest, Nearest));
-let my_bind_group = renderer.bind_group(Texture::load("path/img.png"), Sampler::new(Nearest, Nearest));
+let my_bind_group = renderer.bind_group(Fragment, Texture::load("path/img.png"), Sampler::new(Nearest, Nearest));
 
 // changes the ezgfx::Pipeline
 let my_pip = renderer
