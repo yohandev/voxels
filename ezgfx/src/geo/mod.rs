@@ -5,11 +5,11 @@ use crate::*;
 /// drawn.
 pub struct Geometry<V: Vertex, I: Index>
 {
-    v_buf: wgpu::Buffer,
-    i_buf: wgpu::Buffer,
+    pub(crate) v_buf: wgpu::Buffer,
+    pub(crate) i_buf: wgpu::Buffer,
 
-    v_len: usize,
-    i_len: usize,
+    pub(crate) v_len: usize,
+    pub(crate) i_len: usize,
 
     v_ty: std::marker::PhantomData<V>,
     i_ty: std::marker::PhantomData<I>,

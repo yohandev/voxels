@@ -20,7 +20,7 @@ pub struct Uniform<T: BufferData>
     ty: std::marker::PhantomData<T>,
 }
 
-impl<T: BufferData> crate::ShaderBindable for Uniform<T>
+impl<T: BufferData> crate::Bind for Uniform<T>
 {
     fn binding_type(&self) -> wgpu::BindingType
     {

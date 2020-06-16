@@ -1,14 +1,16 @@
 mod uniform;
 mod builder;
+mod group;
 
 pub use uniform::*;
 pub use builder::*;
+pub use group::*;
 
 /// a bind-able shader resource, to be used within
 /// ezgfx::Renderer::pipeline()'s pipeline builder.
 /// there already are general implementations of this
 /// trait, such as Texture, Uniform, and Sampler.
-pub trait ShaderBindable
+pub trait Bind
 {
     /// get the wgpu binding type for this bindable
     /// resource. self shouldn't be needed, but is

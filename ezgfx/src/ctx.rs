@@ -1,5 +1,4 @@
 use winit::window::Window;
-use wgpu::*;
 
 use crate::*;
 
@@ -9,11 +8,14 @@ use crate::*;
 #[derive(Debug)]
 pub struct Renderer
 {
-    pub(crate) surface:    Surface,
-    pub(crate) device:     Device,
-    pub(crate) queue:      Queue,
-    pub(crate) sc_desc:    SwapChainDescriptor,
-    pub(crate) sc:         SwapChain,
+    pub(crate) surface:    wgpu::Surface,
+    pub(crate) device:     wgpu::Device,
+    pub(crate) queue:      wgpu::Queue,
+    pub(crate) sc_desc:    wgpu::SwapChainDescriptor,
+    pub(crate) sc:         wgpu::SwapChain,
+
+    pub(crate) frame:      Option<wgpu::SwapChainOutput>,
+    pub(crate) pass_cmds:  Option<wgpu::CommandEncoder>,
 }
 
 impl Renderer
@@ -26,50 +28,53 @@ impl Renderer
 
     async fn async_from_window(window: &Window) -> Self
     {
-        let size = window.inner_size();             // winit size
+        let size = window.inner_size();                 // winit size
 
-        let surface = Surface::create               // surface
+        let surface = wgpu::Surface::create             // surface
         (
             window
         );
 
-        let aopt = RequestAdapterOptions            // adapter options
+        let aopt = wgpu::RequestAdapterOptions          // adapter options
         {
-            power_preference: PowerPreference::Default,
+            power_preference: wgpu::PowerPreference::Default,
             compatible_surface: Some(&surface)
         };
-        let adapter = Adapter::request              // adapter
+        let adapter = wgpu::Adapter::request            // adapter
         (
             &aopt,
-            BackendBit::PRIMARY
+            wgpu::BackendBit::PRIMARY
         )
         .await
         .unwrap();
 
-        let (device, queue) = adapter.request_device   // device, queue
+        let (device, queue) = adapter.request_device    // device, queue
         (
-            &DeviceDescriptor
+            &wgpu::DeviceDescriptor
             {
-                extensions: Extensions { anisotropic_filtering: false },
-                limits: Limits::default()
+                extensions: wgpu::Extensions { anisotropic_filtering: false },
+                limits: wgpu::Limits::default()
             }
         ).await;
 
-        let sc_desc = SwapChainDescriptor           // swap chain description
+        let sc_desc = wgpu::SwapChainDescriptor         // swap chain description
         {
-            usage: TextureUsage::OUTPUT_ATTACHMENT,
-            format: TextureFormat::Bgra8UnormSrgb,
+            usage: wgpu::TextureUsage::OUTPUT_ATTACHMENT,
+            format: wgpu::TextureFormat::Bgra8UnormSrgb,
             width: size.width,
             height: size.height,
-            present_mode: PresentMode::Fifo
+            present_mode: wgpu::PresentMode::Fifo
         };
-        let sc = device.create_swap_chain              // swap chain
+        let sc = device.create_swap_chain               // swap chain
         (
             &surface,
             &sc_desc
         );
+        
+        let frame = None;                               // swap chain output
+        let pass_cmds = None;                           // render pass command encoder
 
-        Self { surface, device, queue, sc_desc, sc }
+        Self { surface, device, queue, sc_desc, sc, frame, pass_cmds }
     }
 
     /// create a new pipeline using the pipeline builder.
@@ -94,4 +99,30 @@ impl Renderer
     {
         Geometry::new(self, vertices, indices)   
     }
+
+    /// get the next frame for rendering
+    pub fn frame(&mut self)
+    {
+        self.frame = Some               // frame texture
+        (
+            self.sc
+                .get_next_texture()
+                .expect("timeout getting texture")
+        );
+        
+        self.pass_cmds = Some           // render pass encoder
+        (
+            self.device.create_command_encoder
+            (
+                &wgpu::CommandEncoderDescriptor { label: Some("render_pass_encoder") }
+            )
+        );
+    }
+
+    // /// create a new render pass. this must be called after the
+    // /// ezgfx::Renderer::frame() call
+    // pub fn render_pass(&mut self, clear: [f64; 4]) -> RenderPass
+    // {
+    //     RenderPass::new(self, clear)
+    // }
 }
