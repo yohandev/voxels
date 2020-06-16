@@ -127,11 +127,4 @@ impl Renderer
 
         self.queue.submit(&[ encoder.finish() ]);
     }
-
-    // /// create a new render pass. this must be called after the
-    // /// ezgfx::Renderer::frame() call
-    // pub fn render_pass(&mut self, clear: [f64; 4]) -> RenderPass
-    // {
-    //     RenderPass::new(self, clear)
-    // }
 }
