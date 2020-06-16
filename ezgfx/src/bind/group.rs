@@ -18,6 +18,7 @@ use crate::{ Bind, Renderer, ShaderKind };
 /// this example contains two bind groups, one at set = 0 and
 /// at set = 1. The first bind group is composed of (Texture,
 /// Sampler) while the other is (Uniform).
+#[derive(Debug)]
 pub struct BindGroup<T: BindGroupTuple>
 {
     /// get this bind group's bindings, which is a combination
@@ -70,6 +71,22 @@ impl<T: BindGroupTuple> BindGroup<T>
         );
 
         Self { bindings, layout, bind }
+    }
+}
+
+/// non-generic trait for ezgfx::BindGroup. Used to object-ify the otherwise
+/// generic struct, to be used internally by ezgfx.
+pub trait IBindGroup
+{
+    /// get this bind group's wgpu layout
+    fn layout(&self) -> &wgpu::BindGroupLayout;
+}
+
+impl<T: BindGroupTuple> IBindGroup for BindGroup<T>
+{
+    fn layout(&self) -> &wgpu::BindGroupLayout
+    {
+        self.layout.as_ref()
     }
 }
 

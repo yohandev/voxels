@@ -13,7 +13,7 @@ pub struct Shader
 impl Shader
 {
     /// compile a shader from its source GLSL code
-    pub fn from_source(renderer: crate::Renderer, kind: ShaderKind, src: &str) -> Self
+    pub fn from_source(renderer: &crate::Renderer, kind: ShaderKind, src: &str) -> Self
     {
         use std::io::Cursor;
         use shaderc::*;

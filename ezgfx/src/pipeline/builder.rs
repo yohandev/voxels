@@ -1,10 +1,9 @@
 /// a struct that builds a render pipeline.
 /// see ezgfx::Renderer::pipeline() for details.
-#[derive(Debug)]
 pub struct PipelineBuilder<'a>
 {
     pub(crate) ctx: RendererRef<'a>,
-    pub(crate) sets: Vec<ShaderResourceSet<'a>>,
+    pub(crate) sets: BindGroupSets<'a>,
 
     vert_shader: Option<&'a crate::Shader>,
     frag_shader: Option<&'a crate::Shader>,
@@ -31,9 +30,9 @@ struct PipelineSettings
 /// pipeline builder.
 type RendererRef<'a> = &'a crate::Renderer;
 
-/// a temporary reference to a bind group layout,
+/// a temporary reference to an ezgfx::BindGroup,
 /// which describes a GLSL "set" mapping ```layout(set=N,binding=M)```.
-type ShaderResourceSet<'a> = Option<&'a wgpu::BindGroupLayout>;
+type BindGroupSets<'a> = &'a [&'a dyn crate::IBindGroup];
 
 impl<'a> PipelineBuilder<'a>
 {
@@ -45,7 +44,7 @@ impl<'a> PipelineBuilder<'a>
         Self
         {
             ctx: renderer,
-            sets: vec![],
+            sets: &[],
 
             vert_shader: None,
             frag_shader: None,
@@ -72,24 +71,21 @@ impl<'a> PipelineBuilder<'a>
         self
     }
 
-    /// start defining a new set, then chain to that set's
-    /// bindings. in a GLSL shader:
+    /// define this pipeline's bind groups, in ascending set order
+    /// coresponding to a GLSL shader:
     /// ```glsl
     /// layout(set = N, binding = A) uniform texture2D t_diffuse;
     /// layout(set = N, binding = B) uniform sampler s_diffuse;
     /// ```
-    /// this ```PipelineBuilder::set(N)``` call would "push" a scope to
-    /// edit the bindings, "A" and "B," within the set "N."
-    pub fn set(mut self, slot: u32) -> crate::BindGroupBuilder<'a>
+    /// A single bind group would contain bindings A and B, and belong
+    /// to set N. Assuming there's sets N0, N1, N* this call would
+    /// look like: ```builder.bindings(&[&bind_group_N0, &bind_group_N1,
+    /// &bind_group_N*]);```
+    /// where bind_group_N* is an ezgfx::BindGroup created beforehand.
+    pub fn bindings(mut self, sets: &'a [&'a dyn crate::IBindGroup]) -> Self
     {
-        // make room for slot
-        if self.sets.len() < slot as usize
-        {
-            self.sets.resize(slot as usize, None);
-        }
-
-        // return bind group editor
-        crate::BindGroupBuilder::new(self, slot)
+        self.sets = sets;
+        self
     }
 
     /// override the default face winding mode.
@@ -170,7 +166,7 @@ impl<'a> PipelineBuilder<'a>
             {
                 bind_group_layouts: self.sets
                     .iter()
-                    .map(|e| e.expect("pipelines cannot have gaps in its sets!"))
+                    .map(|e| e.layout())
                     .collect::<Vec<&'a wgpu::BindGroupLayout>>()
                     .as_slice()
             }

@@ -88,6 +88,13 @@ impl Renderer
         PipelineBuilder::new(self)
     }
 
+    /// create a brand new bind group, ensuing a new bind group layout
+    /// and an actual bind group. see ezgfx::BindGroup for more.
+    pub fn bind_group<T: BindGroupTuple>(&self, stage: ShaderKind, bindings: T) -> BindGroup<T>
+    {
+        BindGroup::new(self, stage, bindings)
+    }
+
     /// create a new uniform buffer.
     pub fn uniform<T: crate::marker::BufferData>(&self, data: T) -> Uniform<T>
     {
@@ -98,6 +105,12 @@ impl Renderer
     pub fn geometry<V: Vertex, I: Index>(&self, vertices: &[V], indices: &[I]) -> Geometry<V, I>
     {
         Geometry::new(self, vertices, indices)   
+    }
+
+    /// create a new shader module from its source code
+    pub fn shader(&self, kind: ShaderKind, src: &str) -> Shader
+    {
+        Shader::from_source(self, kind, src)
     }
 
     /// get the next frame for rendering

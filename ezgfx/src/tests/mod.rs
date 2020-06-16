@@ -9,17 +9,46 @@ buffer_data!
     }
 );
 
+buffer_data!
+(
+    #[derive(Default)]
+    struct PosColVertex
+    {
+        pos: [f32; 3],
+        col: [f32; 3],
+    }
+);
+
+impl Vertex for PosColVertex
+{
+    const DESC: &'static [VertexAttr] = &[VertexAttr::Float3, VertexAttr::Float3];
+}
+
 // no test, just making sure it doesn't err
 fn test_pipeline_api()
 {
     let renderer = Renderer::from_window(todo!());
     
-    let mvp = renderer.uniform(ViewProjUniform::default());
-    let mut mvp_bind = None;
+    // the shaders
+    let vs = renderer.shader(ShaderKind::Vertex, "");
+    let fs = renderer.shader(ShaderKind::Fragment, "");
 
-    renderer.pipeline()
-        .set(0)
-            .binding(0, ShaderKind::Vertex, &mvp)
-            .build(&mut mvp_bind)
+    // the uniforms
+    let mvp = renderer.bind_group
+    (
+        ShaderKind::Vertex,
+        (renderer.uniform(ViewProjUniform::default()),),
+    );
+    
+    // the pipeline
+    let pipeline = renderer
+        .pipeline()
+            .bindings(&[&mvp])
+            
+            .shader(&vs)
+            .shader(&fs)
+
+            .vertex::<PosColVertex>()
+            .index::<u32>()
         .build();
 }
