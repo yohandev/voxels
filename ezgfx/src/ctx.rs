@@ -13,9 +13,6 @@ pub struct Renderer
     pub(crate) queue:      wgpu::Queue,
     pub(crate) sc_desc:    wgpu::SwapChainDescriptor,
     pub(crate) sc:         wgpu::SwapChain,
-
-    pub(crate) frame:      Option<wgpu::SwapChainOutput>,
-    pub(crate) pass_cmds:  Option<wgpu::CommandEncoder>,
 }
 
 impl Renderer
@@ -71,10 +68,7 @@ impl Renderer
             &sc_desc
         );
         
-        let frame = None;                               // swap chain output
-        let pass_cmds = None;                           // render pass command encoder
-
-        Self { surface, device, queue, sc_desc, sc, frame, pass_cmds }
+        Self { surface, device, queue, sc_desc, sc, }
     }
 
     /// create a new pipeline using the pipeline builder.
@@ -113,23 +107,25 @@ impl Renderer
         Shader::from_source(self, kind, src)
     }
 
-    /// get the next frame for rendering
-    pub fn frame(&mut self)
+    /// get the next frame from the swapchain and begin a render pass,
+    /// which encodes the rendering instructions and does the actual
+    /// drawing.
+    ///
+    /// it takes in a rendering function, where all the rendering happens.
+    pub fn render_pass<F>(&mut self, func: F) where F: FnOnce(&mut Renderer, RenderPass)
     {
-        self.frame = Some               // frame texture
-        (
-            self.sc
-                .get_next_texture()
-                .expect("timeout getting texture")
-        );
+        let frame = self.sc
+            .get_next_texture()
+            .expect("timeout getting texture");
         
-        self.pass_cmds = Some           // render pass encoder
+        let mut encoder = self.device.create_command_encoder
         (
-            self.device.create_command_encoder
-            (
-                &wgpu::CommandEncoderDescriptor { label: Some("render_pass_encoder") }
-            )
+            &wgpu::CommandEncoderDescriptor { label: Some("render_pass_encoder") }
         );
+
+        func(self, RenderPass::new(&mut encoder, &frame.view));
+
+        self.queue.submit(&[ encoder.finish() ]);
     }
 
     // /// create a new render pass. this must be called after the

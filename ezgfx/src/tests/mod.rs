@@ -39,6 +39,9 @@ fn test_pipeline_api()
         ShaderKind::Vertex,
         (renderer.uniform(ViewProjUniform::default()),),
     );
+
+    // the geometry
+    let geo = renderer.geometry(&[PosColVertex::default()], &[0u32]);
     
     // the pipeline
     let pipeline = renderer
@@ -51,4 +54,17 @@ fn test_pipeline_api()
             .vertex::<PosColVertex>()
             .index::<u32>()
         .build();
+
+    renderer.render_pass
+    (
+        |_, mut pass|
+        {
+            pass.begin_clear(0.1, 0.2, 0.3, 1.0);
+
+            pass.bind_group(0, &mvp);
+            pass.geometry(&geo);
+
+            pass.draw(0..1);
+        }
+    )
 }

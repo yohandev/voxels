@@ -80,6 +80,9 @@ pub trait IBindGroup
 {
     /// get this bind group's wgpu layout
     fn layout(&self) -> &wgpu::BindGroupLayout;
+
+    /// get this bind group's wgpu bind
+    fn bind(&self) -> &wgpu::BindGroup;
 }
 
 impl<T: BindGroupTuple> IBindGroup for BindGroup<T>
@@ -87,6 +90,11 @@ impl<T: BindGroupTuple> IBindGroup for BindGroup<T>
     fn layout(&self) -> &wgpu::BindGroupLayout
     {
         self.layout.as_ref()
+    }
+
+    fn bind(&self) -> &wgpu::BindGroup
+    {
+        &self.bind
     }
 }
 
