@@ -18,8 +18,12 @@ impl Game for TestGame
         // weird behaviours. 
         app.add_defaults();
 
+        // rendering
+        app.add_plugin_ezgfx();
+
         // add your systems here
         app.register_system(ezgame::events::APP_UPDATE_EVENT, my_system());
+        app.register_system(ezgame::events::APP_RENDER_EVENT, my_rendering_system());
 
         // you can have as many worlds as you want.
         // ezgame is powered by Legion, so entities
@@ -29,13 +33,15 @@ impl Game for TestGame
         // everything is an entity, including windows!
         let window_components =
         {
+            use plugins::ezgfx::components::*;
             use components::*;
 
             vec!
             [(
                 Window::request(),      // required
                 WindowSize::default(),  // optional
-                WindowTitle::default()  // optional
+                WindowTitle::default(), // optional
+                Renderer::default(),    // plugin required
             )]
         };
 
@@ -70,5 +76,25 @@ fn my_system() -> Box<dyn legion::Schedulable>
             }
 
             println!(" }}");
+        })
+}
+
+fn my_rendering_system() -> Box<dyn legion::Schedulable>
+{
+    use plugins::ezgfx::components::Renderer;
+
+    use legion::*;
+
+    SystemBuilder::new("my_rendering_sytem")
+        .with_query(<Write<Renderer>>::query())
+        .build(|_, world, _, query|
+        {
+            for mut ctx in query.iter_mut(world)
+            {
+                ctx.render_pass(|_, mut pass|
+                {
+                    pass.begin_clear(0.1, 0.2, 0.3, 1.0);
+                });
+            }
         })
 }

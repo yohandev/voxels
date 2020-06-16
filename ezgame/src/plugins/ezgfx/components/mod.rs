@@ -94,3 +94,11 @@ impl Renderer
         self.unwrap_mut().render_pass(func);
     }
 }
+
+impl Default for Renderer
+{
+    fn default() -> Self
+    {
+        Self(None)
+    }
+}
