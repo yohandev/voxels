@@ -88,69 +88,43 @@ pub trait BindGroupTuple
     fn bind_entries(&self) -> Vec<wgpu::Binding>;
 }
 
-impl<T0: Bind> BindGroupTuple for T0
+/// macro that implements the ezgfx::BindGroupTuple trait for variadic
+/// sized tuples.
+macro_rules! impl_bind_group_tuple
 {
-    fn layout_entries(&self, stage: wgpu::ShaderStage) -> Vec<wgpu::BindGroupLayoutEntry>
+    ({$($gen_name:ident),*}, {$($num:tt),*}) =>
     {
-        vec!
-        [
-            wgpu::BindGroupLayoutEntry
+        impl<$($gen_name: Bind),*> BindGroupTuple for ($($gen_name),*,)
+        {
+            fn layout_entries(&self, stage: wgpu::ShaderStage) -> Vec<wgpu::BindGroupLayoutEntry>
             {
-                binding: 0,
-                visibility: stage,
-                ty: self.binding_type(),
-            },
-        ]
-    }
+                vec!
+                [
+                    $(wgpu::BindGroupLayoutEntry
+                    {
+                        binding: $num,
+                        visibility: stage,
+                        ty: self.$num.binding_type(),
+                    }),*
+                ]
+            }
 
-    fn bind_entries(&self) -> Vec<wgpu::Binding>
-    {
-        vec!
-        [
-            wgpu::Binding
+            fn bind_entries(&self) -> Vec<wgpu::Binding>
             {
-                binding: 0,
-                resource: self.resource(),
-            },
-        ]
-    }
+                vec!
+                [
+                    $(wgpu::Binding
+                    {
+                        binding: $num,
+                        resource: self.$num.resource(),
+                    }),*
+                ]
+            }
+        }
+    };
 }
 
-impl<T0: Bind, T1: Bind> BindGroupTuple for (T0, T1)
-{
-    fn layout_entries(&self, stage: wgpu::ShaderStage) -> Vec<wgpu::BindGroupLayoutEntry>
-    {
-        vec!
-        [
-            wgpu::BindGroupLayoutEntry
-            {
-                binding: 0,
-                visibility: stage,
-                ty: self.0.binding_type(),
-            },
-            wgpu::BindGroupLayoutEntry
-            {
-                binding: 1,
-                visibility: stage,
-                ty: self.1.binding_type(),
-            },
-        ]
-    }
-
-    fn bind_entries(&self) -> Vec<wgpu::Binding>
-    {
-        vec!
-        [
-            wgpu::Binding
-            {
-                binding: 0,
-                resource: self.0.resource(),
-            },
-            wgpu::Binding
-            {
-                binding: 1,
-                resource: self.1.resource(),
-            },
-        ]
-    }
-}
+impl_bind_group_tuple!({T0}, {0});
+impl_bind_group_tuple!({T0, T1}, {0, 1});
+impl_bind_group_tuple!({T0, T1, T2, T3}, {0, 1, 2, 3});
+impl_bind_group_tuple!({T0, T1, T2, T3, T4}, {0, 1, 2, 3, 4});
