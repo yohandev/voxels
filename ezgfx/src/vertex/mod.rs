@@ -1,6 +1,6 @@
 /// represents a generic vertex that can be passed to
 /// render pipelines.
-pub trait Vertex: Sized
+pub trait Vertex: crate::BufferData
 {
     /// vertex description to pass to tbe pipeline
     const DESC: &'static [VertexAttr];
