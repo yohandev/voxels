@@ -1,3 +1,6 @@
+#![allow(unused_variables)]
+#![allow(dead_code)]
+
 use crate::*;
 
 buffer_data!
@@ -27,6 +30,7 @@ impl Vertex for PosColVertex
 // no test, just making sure it doesn't err
 fn test_pipeline_api()
 {
+    #[allow(unreachable_code)]
     let renderer = Renderer::from_window(todo!());
     
     // the shaders
