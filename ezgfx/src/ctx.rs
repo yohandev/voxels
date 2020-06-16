@@ -95,7 +95,9 @@ impl Renderer
         Uniform::<T>::new(self, data)
     }
 
-    /// create new geometry
+    /// create new geometry. the slices passed in aren't consumed or
+    /// stored to be retrieved later. you have to store them yourself
+    /// to access them again, if needed.
     pub fn geometry<V: Vertex, I: Index>(&self, vertices: &[V], indices: &[I]) -> Geometry<V, I>
     {
         Geometry::new(self, vertices, indices)   

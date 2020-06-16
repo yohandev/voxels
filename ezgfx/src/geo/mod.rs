@@ -40,4 +40,16 @@ impl<V: Vertex, I: Index> Geometry<V, I>
 
         Self { v_buf, i_buf, v_len, i_len, v_ty, i_ty }
     }
+
+    /// get the number of indices in this geometry
+    pub fn num_indices(&self) -> usize
+    {
+        self.i_len
+    }
+
+    /// get the number of vertices in this geometry
+    pub fn num_vertices(&self) -> usize
+    {
+        self.v_len
+    }
 }
