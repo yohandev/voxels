@@ -69,6 +69,33 @@ impl Renderer
         Self { surface, device, queue, sc_desc, sc, }
     }
 
+    /// resize the renderer
+    pub fn resize(&mut self, width: u32, height: u32)
+    {
+        self.sc_desc.width = width;         // width
+        self.sc_desc.height = height;       // height
+        self.sc =                           // swap chain
+        self.device.create_swap_chain
+        (
+            &self.surface,
+            &self.sc_desc
+        );
+    }
+
+    /// report the current width of the output texture of the
+    /// renderer.
+    pub fn width(&self) -> u32
+    {
+        self.sc_desc.width
+    }
+
+    /// report the current height of the output texture of the
+    /// renderer.
+    pub fn height(&self) -> u32
+    {
+        self.sc_desc.height
+    }
+
     /// create a new pipeline using the pipeline builder.
     /// the rendering pipeline is what takes your buffers:
     /// vertices, indices, uniforms, etc. and maps them to
