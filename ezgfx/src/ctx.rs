@@ -16,6 +16,7 @@ pub struct Renderer
 
 impl Renderer
 {
+    /// create a renderer from a winit window
     pub fn from_window(window: &Window) -> Self
     {
         futures::executor::block_on(Self::async_from_window(window))
@@ -69,8 +70,20 @@ impl Renderer
         Self { surface, device, queue, sc_desc, sc }
     }
 
+    /// create a new pipeline using the pipeline builder.
+    /// the rendering pipeline is what takes your buffers:
+    /// vertices, indices, uniforms, etc. and maps them to
+    /// screen-space, rasterizes them, etc. The pipeline
+    /// builder seeks to map part of that pipeline in an easy
+    /// way. 
     pub fn pipeline(&self) -> crate::PipelineBuilder
     {
         crate::PipelineBuilder::new(self)
+    }
+
+    /// create a new uniform buffer.
+    pub fn uniform<T: crate::marker::BufferData>(&self, data: T) -> crate::Uniform<T>
+    {
+        crate::Uniform::<T>::new(self, data)
     }
 }
