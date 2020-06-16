@@ -17,3 +17,13 @@ pub const APP_QUIT: &str = "app_quit_event";
 /// to use the ezgame::resources::Time resource to retreive
 /// the delta time. 
 pub const APP_UPDATE_EVENT: &str = "app_update_event";
+
+/// event invoked by ezgame's window system. it's called
+/// with the os' vsync rate, and is useful for rendering
+/// pre/post processing actions.
+pub const APP_RENDER_EVENT: &str = "app_render_event";
+
+/// event invoked when an ezgame::*::Window component has been
+/// succesfully initialized. This is useful for window-dependent
+/// resources, such as the ezgfx plugin's Renderer.
+pub const APP_WINDOW_CREATION_EVENT: &str = "app_window_created";

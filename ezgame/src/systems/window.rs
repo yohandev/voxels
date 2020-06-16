@@ -15,6 +15,9 @@ pub(crate) fn system_create_window(app: &mut Application, target: &EventLoopWind
     // query window components
     let query = <(Write<Window>, TryRead<WindowSize>, TryRead<WindowTitle>)>::query();
 
+    // whether event should be invoked
+    let mut success = false;
+
     // iterate every world non-exlusively
     for world in app.worlds_mut()
     {
@@ -43,7 +46,15 @@ pub(crate) fn system_create_window(app: &mut Application, target: &EventLoopWind
 
             // finally, build window into component
             win.init(build.build(target));
+
+            // keep track of whether event should be emmited
+            success |= win.get().is_some();
         }
+    }
+    if success
+    {
+        // invoke event
+        app.invoke(crate::events::APP_WINDOW_CREATION_EVENT);
     }
 }
 
@@ -95,8 +106,7 @@ pub fn window_system() -> Box<dyn Schedulable>
                         }
                         winit::event::Event::RedrawRequested(_) =>
                         {
-                            // -- render logic --
-                            //state.on_render(self);
+                            invoke.invoke(crate::events::APP_RENDER_EVENT);
                         }
                         winit::event::Event::MainEventsCleared =>
                         {
