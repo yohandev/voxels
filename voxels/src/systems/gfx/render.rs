@@ -7,7 +7,7 @@ pub(super) fn system() -> Box<dyn Schedulable>
 {
     SystemBuilder::new("render_system")
         // components
-        .with_query(<Write<components::Renderer>>::query())
+        .with_query(<Write<components::Graphics>>::query())
         // resources
         .write_resource::<Option<SimpleGfxResources>>()
         // system

@@ -47,7 +47,7 @@ impl Game for TestGame
                 Window::request(),      // required
                 WindowSize::default(),  // optional
                 WindowTitle::default(), // optional
-                Renderer::default(),    // plugin required
+                Graphics::default(),    // plugin required
             )]
         };
 

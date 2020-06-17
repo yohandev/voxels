@@ -1,7 +1,7 @@
 use legion::prelude::*;
 
 use crate::resources::EventsQueue;
-use super::components::Renderer;
+use super::components::Graphics;
 use crate::components::Window;
 
 /// system that initializes the Renderer component
@@ -9,7 +9,7 @@ pub fn renderer_system() -> Box<dyn Schedulable>
 {
     SystemBuilder::new("ezgfx_renderer_system")
         .write_resource::<EventsQueue>()
-        .with_query(<(Write<Renderer>, Read<Window>)>::query())
+        .with_query(<(Write<Graphics>, Read<Window>)>::query())
         .build(|_, world, invoke, query|
         {
             for (mut ctx, win) in query.iter_mut(world)

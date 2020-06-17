@@ -44,7 +44,7 @@ pub(super) fn system() -> Box<dyn Schedulable>
 
     SystemBuilder::new("gfx_init_system")
         // components
-        .with_query(<Read<components::Renderer>>::query())
+        .with_query(<Read<components::Graphics>>::query())
         // resources
         .write_resource::<Option<SimpleGfxResources>>()
         // system

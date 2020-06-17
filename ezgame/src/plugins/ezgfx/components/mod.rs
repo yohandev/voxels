@@ -5,9 +5,9 @@
 /// component is succesfully initialized. use ```Renderer::is_init()```
 /// to check whether this component is ready.
 #[derive(Debug)]
-pub struct Renderer(Option<ezgfx::Renderer>);
+pub struct Graphics(Option<ezgfx::Renderer>);
 
-impl Renderer
+impl Graphics
 {
     /// has this renderer been initialized using the window component
     /// on the same entity? if so, it should be safe to use the
@@ -95,7 +95,7 @@ impl Renderer
     }
 }
 
-impl Default for Renderer
+impl Default for Graphics
 {
     fn default() -> Self
     {
