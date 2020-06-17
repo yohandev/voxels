@@ -158,7 +158,7 @@ impl<'a> PipelineBuilder<'a>
         self
     }
 
-    pub fn build(self) -> wgpu::RenderPipeline
+    pub fn build(self) -> super::Pipeline
     {
         let layout = self.ctx.device.create_pipeline_layout
         (
@@ -172,7 +172,7 @@ impl<'a> PipelineBuilder<'a>
             }
         );
 
-        self.ctx.device.create_render_pipeline
+        let pipeline = self.ctx.device.create_render_pipeline
         (
             &wgpu::RenderPipelineDescriptor
             {
@@ -229,7 +229,8 @@ impl<'a> PipelineBuilder<'a>
                 sample_mask: !0,
                 alpha_to_coverage_enabled: false,
             }
-        )
+        );
+        super::Pipeline(pipeline)
     }
 }
 

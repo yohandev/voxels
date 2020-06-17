@@ -76,6 +76,16 @@ impl<'a> RenderPass<'a>
         pass.set_bind_group(set, group.bind(), &[]);
     }
 
+    /// set the render pipeline to use for the next draw call
+    pub fn pipeline(&mut self, pipeline: &'a Pipeline)
+    {
+        let pass = self.pass
+            .as_mut()
+            .expect("attempting to bind a pipeline before a RenderPass::begin_* call!");
+
+        pass.set_pipeline(&pipeline.0);
+    }
+
     /// draw the last set geometry
     pub fn draw(&mut self, instances: std::ops::Range<u32>)
     {

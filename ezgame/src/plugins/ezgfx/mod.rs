@@ -2,6 +2,8 @@ pub mod components;
 pub mod systems;
 pub mod events;
 
+pub use ezgfx::*;
+
 impl crate::Application
 {
     /// add ezgfx systems and resources. they won't interfere with any of your

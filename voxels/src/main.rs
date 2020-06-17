@@ -18,7 +18,7 @@ impl Game for TestGame
         // weird behaviours. 
         app.add_defaults();
 
-        // rendering
+        // add rendering plugin's sytems and resources
         app.add_plugin_ezgfx();
 
         // add your systems here
@@ -96,5 +96,24 @@ fn my_rendering_system() -> Box<dyn legion::Schedulable>
                     pass.begin_clear(0.1, 0.2, 0.3, 1.0);
                 });
             }
+        })
+}
+
+fn my_rendering_init_system() -> Box<dyn legion::Schedulable>
+{
+    use plugins::ezgfx::components::Renderer;
+
+    use legion::*;
+
+    struct RenderData
+    {
+        //pipeline: plugins::ezgfx::Pipeline
+    }
+
+    SystemBuilder::new("my_rendering_init_system")
+        .with_query(<Read<Renderer>>::query())
+        .build(|_, world, _, query|
+        {
+
         })
 }
