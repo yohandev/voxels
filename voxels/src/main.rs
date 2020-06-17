@@ -48,6 +48,12 @@ impl Game for TestGame
                 WindowSize::default(),  // optional
                 WindowTitle::default(), // optional
                 Graphics::default(),    // plugin required
+            ),
+            (
+                Window::request(),      // required
+                WindowSize::default(),  // optional
+                WindowTitle::default(), // optional
+                Graphics::default(),    // plugin required
             )]
         };
 
