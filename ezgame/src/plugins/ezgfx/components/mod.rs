@@ -84,14 +84,25 @@ impl Graphics
         self.unwrap().shader(kind, src)
     }
 
-    /// get the next frame from the swapchain and begin a render pass,
-    /// which encodes the rendering instructions and does the actual
-    /// drawing.
-    ///
-    /// it takes in a rendering function, where all the rendering happens.
-    pub fn render_pass<F>(&mut self, func: F) where F: for<'a> FnOnce(&'a mut ezgfx::Renderer, ezgfx::RenderPass<'a>)
+    /// get the next output texture from the swapchain
+    pub fn frame(&mut self) -> ezgfx::Frame
     {
-        self.unwrap_mut().render_pass(func);
+        self.unwrap_mut().frame()
+    }
+
+    /// begin a render pass, which encodes the rendering instructions
+    /// and does the actual drawing.
+    /// it clear the output texture from the given frame with the given
+    /// colour.
+    pub fn render_pass<'a>(&self, frame: &'a mut ezgfx::Frame, clear: [f64; 4]) -> ezgfx::RenderPass<'a>
+    {
+        self.unwrap().render_pass(frame, clear)
+    }
+
+    /// submit a frame's current render pass for rendering
+    pub fn submit(&self, frame: &mut ezgfx::Frame)
+    {
+        self.unwrap().submit(frame)
     }
 }
 

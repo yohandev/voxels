@@ -134,24 +134,29 @@ impl Renderer
         Shader::from_source(self, kind, src)
     }
 
-    /// get the next frame from the swapchain and begin a render pass,
-    /// which encodes the rendering instructions and does the actual
-    /// drawing.
-    ///
-    /// it takes in a rendering function, where all the rendering happens.
-    pub fn render_pass<F>(&mut self, func: F) where F: for<'a> FnOnce(&'a mut Renderer, RenderPass<'a>)
+    /// get the next output texture from the swapchain
+    pub fn frame(&mut self) -> Frame
     {
-        let frame = self.sc
-            .get_next_texture()
-            .expect("timeout getting texture");
-        
-        let mut encoder = self.device.create_command_encoder
+        Frame::new(self)
+    }
+
+    /// begin a render pass, which encodes the rendering instructions
+    /// and does the actual drawing.
+    /// it clear the output texture from the given frame with the given
+    /// colour.
+    pub fn render_pass<'a>(&self, frame: &'a mut Frame, clear: [f64; 4]) -> RenderPass<'a>
+    {
+        frame.encoder = Some(self.device.create_command_encoder
         (
             &wgpu::CommandEncoderDescriptor { label: Some("render_pass_encoder") }
-        );
+        ));
 
-        func(self, RenderPass::new(&mut encoder, &frame.view));
+        RenderPass::new(frame, clear)
+    }
 
-        self.queue.submit(&[ encoder.finish() ]);
+    /// submit a frame's current render pass for rendering
+    pub fn submit(&self, frame: &mut Frame)
+    {
+        self.queue.submit(&[ frame.encoder.take().unwrap().finish() ]);
     }
 }
