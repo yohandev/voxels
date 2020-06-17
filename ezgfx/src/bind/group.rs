@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::{ Bind, Renderer, ShaderKind };
 
@@ -31,7 +31,7 @@ pub struct BindGroup<T: BindGroupTuple>
     pub bindings:   T,
 
     /// wgpu layout shared across bind groups
-    layout:         Rc<wgpu::BindGroupLayout>,
+    layout:         Arc<wgpu::BindGroupLayout>,
     /// wgpu bind group unique to this object
     bind:           wgpu::BindGroup,
 }
@@ -44,7 +44,7 @@ impl<T: BindGroupTuple> BindGroup<T>
     {
         let wgpu_stage = stage.to_wgpu();           // wgpu shader stage
 
-        let layout = Rc::new                        // bind group layout
+        let layout = Arc::new                       // bind group layout
         (
             ctx.device.create_bind_group_layout
             (

@@ -12,6 +12,8 @@ pub struct SimpleGfxResources
     pub geo: Geometry<SimpleVertex, u16>,   // shared geometry
 
     pub pipeline: Pipeline,                 // shared rendering pipeline
+
+    pub vp: ViewProjBindGroup,              // shared view projection uniform
 }
 
 buffer_data!
@@ -27,3 +29,14 @@ impl Vertex for SimpleVertex
 {
     const DESC: &'static [VertexAttr] = &[VertexAttr::Float3, VertexAttr::Float3];
 }
+
+buffer_data!
+(
+    #[derive(Default)]
+    pub struct ViewProjUniform
+    {
+        pub mat: float4x4
+    }
+);
+
+type ViewProjBindGroup = BindGroup<(Uniform<ViewProjUniform>,)>;

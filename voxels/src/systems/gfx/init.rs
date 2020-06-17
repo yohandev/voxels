@@ -70,7 +70,10 @@ pub(super) fn system() -> Box<dyn Schedulable>
                         .shader(&fs)
                     .build();
 
-                res.replace(SimpleGfxResources { vs, fs, geo, pipeline });
+                let vp = ctx.uniform(ViewProjUniform::default());
+                let vp = ctx.bind_group(ShaderKind::Vertex, (vp,));
+
+                res.replace(SimpleGfxResources { vs, fs, geo, pipeline, vp });
             }
         })
 }
