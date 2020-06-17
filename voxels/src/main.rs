@@ -1,3 +1,7 @@
+mod components;
+mod resources;
+mod systems;
+
 use ezgame::*;
 
 fn main()
@@ -21,9 +25,11 @@ impl Game for TestGame
         // add rendering plugin's sytems and resources
         app.add_plugin_ezgfx();
 
+        // add your resources here
+        resources::add_resources(app);
+
         // add your systems here
-        app.register_system(ezgame::events::APP_UPDATE, my_system());
-        app.register_system(ezgame::events::APP_RENDER, my_rendering_system());
+        systems::add_systems(app);
 
         // you can have as many worlds as you want.
         // ezgame is powered by Legion, so entities
@@ -33,8 +39,8 @@ impl Game for TestGame
         // everything is an entity, including windows!
         let window_components =
         {
-            use plugins::ezgfx::components::*;
-            use components::*;
+            use ezgame::plugins::ezgfx::components::*;
+            use ezgame::components::*;
 
             vec!
             [(
@@ -50,70 +56,4 @@ impl Game for TestGame
 
         Self
     }
-}
-
-fn my_system() -> Box<dyn legion::Schedulable>
-{
-    use resources::{ Time, Input };
-
-    use winit::event::VirtualKeyCode;
-    use legion::*;
-
-    SystemBuilder::new("my_system")
-        .read_resource::<Time>()
-        .read_resource::<Input>()
-        .build(|_, _, (time, input), _|
-        {
-            print!("frame {{ delta_time: {}ms", time.delta_time_f32() * 1000.0);
-
-            if input.key_down(VirtualKeyCode::Space)
-            {
-                print!(", space is down!");
-            }
-            else
-            {
-                print!(", space is up!");
-            }
-
-            println!(" }}");
-        })
-}
-
-fn my_rendering_system() -> Box<dyn legion::Schedulable>
-{
-    use plugins::ezgfx::components::Renderer;
-
-    use legion::*;
-
-    SystemBuilder::new("my_rendering_sytem")
-        .with_query(<Write<Renderer>>::query())
-        .build(|_, world, _, query|
-        {
-            for mut ctx in query.iter_mut(world)
-            {
-                ctx.render_pass(|_, mut pass|
-                {
-                    pass.begin_clear(0.1, 0.2, 0.3, 1.0);
-                });
-            }
-        })
-}
-
-fn my_rendering_init_system() -> Box<dyn legion::Schedulable>
-{
-    use plugins::ezgfx::components::Renderer;
-
-    use legion::*;
-
-    struct RenderData
-    {
-        //pipeline: plugins::ezgfx::Pipeline
-    }
-
-    SystemBuilder::new("my_rendering_init_system")
-        .with_query(<Read<Renderer>>::query())
-        .build(|_, world, _, query|
-        {
-
-        })
 }

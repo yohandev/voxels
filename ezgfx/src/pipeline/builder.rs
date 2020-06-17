@@ -186,7 +186,7 @@ impl<'a> PipelineBuilder<'a>
                 },
                 fragment_stage: Some(wgpu::ProgrammableStageDescriptor
                 {
-                    module: self.vert_shader
+                    module: self.frag_shader
                         .expect("pipeline must have a fragment shader!")
                         .module(),
                     entry_point: "main",

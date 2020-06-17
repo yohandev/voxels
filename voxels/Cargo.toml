@@ -7,6 +7,7 @@ edition = "2018"
 
 [dependencies]
 ezgame = { path = "../ezgame" }
+ezmath = { path = "../ezmath" }
 
 [features]
 default = ["ezgame/plugin-ezgfx"]
