@@ -26,6 +26,9 @@ pub(super) fn system() -> Box<dyn Schedulable>
                     let mut pass = ctx.render_pass(&mut frame, [0.1, 0.2, 0.3, 1.0]);
 
                     pass.pipeline(&res.pipeline);
+                    pass.geometry(&res.geo);
+
+                    pass.draw(0..1);
                 }
                 ctx.submit(&mut frame);
             }
