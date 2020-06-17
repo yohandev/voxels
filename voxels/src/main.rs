@@ -22,8 +22,8 @@ impl Game for TestGame
         app.add_plugin_ezgfx();
 
         // add your systems here
-        app.register_system(ezgame::events::APP_UPDATE_EVENT, my_system());
-        app.register_system(ezgame::events::APP_RENDER_EVENT, my_rendering_system());
+        app.register_system(ezgame::events::APP_UPDATE, my_system());
+        app.register_system(ezgame::events::APP_RENDER, my_rendering_system());
 
         // you can have as many worlds as you want.
         // ezgame is powered by Legion, so entities

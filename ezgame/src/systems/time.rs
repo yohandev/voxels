@@ -24,7 +24,7 @@ pub fn time_system() -> Box<dyn Schedulable>
             }
             if let winit::event::Event::MainEventsCleared = event.0
             {
-                invoke.invoke(crate::events::APP_UPDATE_EVENT);
+                invoke.invoke(crate::events::APP_UPDATE);
             }
         })
 }

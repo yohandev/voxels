@@ -54,7 +54,7 @@ pub(crate) fn system_create_window(app: &mut Application, target: &EventLoopWind
     if success
     {
         // invoke event
-        app.invoke(crate::events::APP_WINDOW_CREATION_EVENT);
+        app.invoke(crate::events::APP_WINDOW_CREATION);
     }
 }
 
@@ -106,7 +106,7 @@ pub fn window_system() -> Box<dyn Schedulable>
                         }
                         winit::event::Event::RedrawRequested(_) =>
                         {
-                            invoke.invoke(crate::events::APP_RENDER_EVENT);
+                            invoke.invoke(crate::events::APP_RENDER);
                         }
                         winit::event::Event::MainEventsCleared =>
                         {

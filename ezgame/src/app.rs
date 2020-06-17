@@ -35,6 +35,9 @@ impl Application
         // build game
         T::build(&mut app);
 
+        // start event
+        app.invoke(events::APP_START);
+
         // run game
         EventLoop::new().run
         (
@@ -55,7 +58,7 @@ impl Application
                 }
 
                 // invoke systems for new event
-                app.invoke(events::APP_POLL_EVENT);
+                app.invoke(events::APP_POLL);
 
                 // process events
                 systems::system_process_invokes(&mut app, flow);
@@ -173,7 +176,7 @@ impl Application
         // systems
         self.register_schedule
         (
-            events::APP_POLL_EVENT,
+            events::APP_POLL,
             Schedule::builder()
                 .add_system(systems::window_system())
                 .add_system(systems::input_system())

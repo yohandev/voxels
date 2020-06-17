@@ -10,6 +10,6 @@ impl crate::Application
     /// - ezgfx_renderer_system: initializes the ezgfx::Renderer component
     pub fn add_plugin_ezgfx(&mut self)
     {
-        self.register_system(crate::events::APP_WINDOW_CREATION_EVENT, systems::renderer_system());
+        self.register_system(crate::events::APP_WINDOW_CREATION, systems::renderer_system());
     }
 }
