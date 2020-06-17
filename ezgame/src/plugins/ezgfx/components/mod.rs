@@ -89,7 +89,7 @@ impl Graphics
     /// drawing.
     ///
     /// it takes in a rendering function, where all the rendering happens.
-    pub fn render_pass<F>(&mut self, func: F) where F: FnOnce(&mut ezgfx::Renderer, ezgfx::RenderPass)
+    pub fn render_pass<F>(&mut self, func: F) where F: for<'a> FnOnce(&'a mut ezgfx::Renderer, ezgfx::RenderPass<'a>)
     {
         self.unwrap_mut().render_pass(func);
     }

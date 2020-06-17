@@ -139,7 +139,7 @@ impl Renderer
     /// drawing.
     ///
     /// it takes in a rendering function, where all the rendering happens.
-    pub fn render_pass<F>(&mut self, func: F) where F: FnOnce(&mut Renderer, RenderPass)
+    pub fn render_pass<F>(&mut self, func: F) where F: for<'a> FnOnce(&'a mut Renderer, RenderPass<'a>)
     {
         let frame = self.sc
             .get_next_texture()

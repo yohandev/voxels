@@ -46,7 +46,7 @@ pub(super) fn system() -> Box<dyn Schedulable>
         // components
         .with_query(<Read<components::Graphics>>::query())
         // resources
-        .write_resource::<Option<SimpleGfxResources>>()
+        .write_resource::<&mut Option<SimpleGfxResources>>()
         // system
         .build(move |_, world, res, query|
         {
