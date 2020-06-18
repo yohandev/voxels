@@ -16,7 +16,12 @@ pub struct Chunk
     pos: int3,
 }
 
-/// tag for chunks that need generation
+/// tag to mark a chunk as currently loading
+#[derive(Debug, Clone, PartialEq)]
+pub struct ChunkLoadTag;
+
+/// tag for chunks that need generation. this shouldn't
+/// be added directly.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ChunkGenerateTag;
 

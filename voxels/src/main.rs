@@ -70,7 +70,7 @@ impl Game for TestGame
 
             (0..30).map(|i| (Chunk::new(ezmath::int3::new(i * game::CHUNK_SIZE as i32, 0, 0)),))
         };
-        world.insert((crate::components::game::ChunkGenerateTag,), chunk_components);
+        world.insert((crate::components::game::ChunkLoadTag,), chunk_components);
 
         Self
     }
