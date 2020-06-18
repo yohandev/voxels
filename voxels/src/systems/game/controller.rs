@@ -20,7 +20,7 @@ pub fn system() -> Box<dyn Schedulable>
             {
                 if input.key_down(KeyCode::K) { pos.0.z += 0.075; } else if input.key_down(KeyCode::I) { pos.0.z -= 0.075; }
                 if input.key_down(KeyCode::L) { pos.0.x += 0.075; } else if input.key_down(KeyCode::J) {  pos.0.x -= 0.075; }
-                if input.key_down(KeyCode::Space) { pos.0.y += 0.075; } else if input.key_down(KeyCode::M) {  pos.0.y -= 0.075; }                
+                if input.key_down(KeyCode::Space) { pos.0.y += 0.075; } else if input.key_down(KeyCode::M) {  pos.0.y -= 0.075; }
             }
         })
 }

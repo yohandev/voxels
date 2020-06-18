@@ -41,7 +41,7 @@ pub(super) fn system() -> Box<dyn Schedulable>
             for (cam, ltw) in query.iter(world)
             {
                 // (view) projection matrix
-                let vp = if let Some(ltw) = ltw { cam.proj * ltw.0.inverse() } else { cam.proj };
+                let vp = if let Some(ltw) = &ltw { cam.proj * ltw.0.inverse() } else { cam.proj };
 
                 // update uniforms
                 ctx.update_uniform(&res.vp.bindings.0, ViewProjUniform::new(vp));
