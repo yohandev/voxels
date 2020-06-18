@@ -26,5 +26,9 @@ pub fn time_system() -> Box<dyn Schedulable>
             {
                 invoke.invoke(crate::events::APP_UPDATE);
             }
+            if let winit::event::Event::RedrawRequested(_) = event.0
+            {
+                invoke.invoke(crate::events::APP_RENDER);
+            }
         })
 }

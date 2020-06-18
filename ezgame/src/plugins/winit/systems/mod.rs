@@ -77,10 +77,6 @@ pub fn window_system() -> Box<dyn Schedulable>
                         _ => {}
                     }
                 }
-                winit::event::Event::RedrawRequested(_) =>
-                {
-                    invoke.invoke(crate::events::APP_RENDER);
-                }
                 winit::event::Event::MainEventsCleared =>
                 {
                     window.request_redraw();
