@@ -27,7 +27,7 @@ pub fn system() -> Box<dyn Schedulable>
             }
             let ctx = ctx.as_ref().unwrap();
 
-            for (ent, chunk) in query.iter_entities(world)
+            query.par_entities_for_each(world, |(ent, chunk)|
             {
                 // geometry buffer
                 let mut vertices = Vec::<ChunkVertex>::new();
@@ -83,7 +83,7 @@ pub fn system() -> Box<dyn Schedulable>
                     
                 // done meshing, remove tag
                 cmd.remove_tag::<ChunkRemeshTag>(ent);
-            }
+            })
         })
 }
 
