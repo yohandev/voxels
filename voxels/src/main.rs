@@ -1,6 +1,7 @@
 mod components;
 mod resources;
 mod systems;
+mod game;
 
 use ezgame::*;
 
