@@ -9,5 +9,7 @@ edition = "2018"
 ezgame = { path = "../ezgame" }
 ezmath = { path = "../ezmath" }
 
+noise = "0.6.0"
+
 [features]
 default = ["ezgame/plugin-ezgfx"]

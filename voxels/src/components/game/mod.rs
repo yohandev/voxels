@@ -1,3 +1,3 @@
 mod chunk;
 
-use chunk::*;
+pub use chunk::*;

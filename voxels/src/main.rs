@@ -46,6 +46,7 @@ impl Game for TestGame
         // are valid across worlds.
         let world = app.create_world();
 
+        // insert standard camera into world
         let camera_components = 
         {
             use crate::components::transform::*;
@@ -61,6 +62,15 @@ impl Game for TestGame
             )]
         };
         world.insert((), camera_components);
+
+        // insert chunks into world
+        let chunk_components =
+        {
+            use crate::components::game::*;
+
+            (0..30).map(|i| (Chunk::new(ezmath::int3::new(i * game::CHUNK_SIZE as i32, 0, 0)),))
+        };
+        world.insert((crate::components::game::ChunkGenerateTag,), chunk_components);
 
         Self
     }
