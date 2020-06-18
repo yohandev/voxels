@@ -1,4 +1,6 @@
-use winit::event::{ VirtualKeyCode, MouseButton };
+#[allow(non_snake_case)]
+pub type KeyCode = winit::event::VirtualKeyCode;
+pub type MouseButton = winit::event::MouseButton;
 
 /// resource that stores raw keyboard, mouse, and [TODO] controller
 /// input. It caches physical buttons that are held or up, as well as
@@ -48,7 +50,7 @@ impl Input
     /// is the key pressed this frame or held for the duration
     /// of this frame? useful for continuous input actions,
     /// such as character movement.
-    pub fn key_down(&self, code: VirtualKeyCode) -> bool
+    pub fn key_down(&self, code: KeyCode) -> bool
     {
         match self.keys[code as usize]
         {
@@ -60,20 +62,20 @@ impl Input
 
     /// was the key up and then pressed exactly during this frame?
     /// useful for impulsive actions, like jumping.
-    pub fn key_pressed(&self, code: VirtualKeyCode) -> bool
+    pub fn key_pressed(&self, code: KeyCode) -> bool
     {
         self.keys[code as usize] == InputState::Pressed
     }
 
     /// was the key down and then released exactly druing this
     /// frame?
-    pub fn key_released(&self, code: VirtualKeyCode) -> bool
+    pub fn key_released(&self, code: KeyCode) -> bool
     {
         self.keys[code as usize] == InputState::Released
     }
 
     /// opposite of Input::key_down()
-    pub fn key_up(&self, code: VirtualKeyCode) -> bool
+    pub fn key_up(&self, code: KeyCode) -> bool
     {
         !self.key_down(code)
     }
@@ -153,7 +155,7 @@ impl Input
 
     /// get the state of the key for this frame. it's preferred
     /// to use Input::key_up(), Input::key_down(), etc.
-    pub fn key_state(&self, code: VirtualKeyCode) -> InputState
+    pub fn key_state(&self, code: KeyCode) -> InputState
     {
         self.keys[code as usize]
     }
