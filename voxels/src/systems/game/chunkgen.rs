@@ -15,7 +15,9 @@ pub fn system() -> Box<dyn Schedulable>
     SystemBuilder::new("chunk_generation_system")
         // components
         .with_query(<Write<Chunk>>::query().filter(tag::<ChunkGenerateTag>()))
+        // tags
         .write_component::<ChunkGenerateTag>()
+        .write_component::<ChunkRemeshTag>()
         // systems
         .build(|cmd, world, _, query|
         {
@@ -50,6 +52,7 @@ pub fn system() -> Box<dyn Schedulable>
 
                 // remove and set tags
                 cmd.remove_tag::<ChunkGenerateTag>(ent);
+                cmd.add_tag(ent, ChunkRemeshTag);
             }
         })
 }

@@ -25,6 +25,11 @@ pub struct ChunkLoadTag;
 #[derive(Debug, Clone, PartialEq)]
 pub struct ChunkGenerateTag;
 
+/// tag for chunks that need remeshing. this shouldn't
+/// be added directly.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ChunkRemeshTag;
+
 impl Chunk
 {
     /// create a new chunk at the given position
