@@ -53,4 +53,26 @@ impl<T: BufferData> Uniform<T>
 
         Self { buffer, size, ty }
     }
+
+    /// update the data inside the uniform buffer
+    pub(crate) fn update(&self, ctx: &crate::Renderer, data: T)
+    {
+        let mut encoder = ctx.device.create_command_encoder
+        (
+            &wgpu::CommandEncoderDescriptor
+            {
+                label: Some("update_buffer_encoder")
+            }
+        );
+
+        let staging = ctx.device.create_buffer_with_data
+        (
+            bytemuck::cast_slice(&[data]),
+            wgpu::BufferUsage::COPY_SRC
+        );
+
+        encoder.copy_buffer_to_buffer(&staging, 0, &self.buffer, 0, self.size as wgpu::BufferAddress);
+    
+        ctx.queue.submit(&[ encoder.finish() ]);
+    }
 }

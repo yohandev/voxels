@@ -10,9 +10,9 @@ pub(super) fn system() -> Box<dyn Schedulable>
 {
     let vertices: [SimpleVertex; 3] =
     [
-        SimpleVertex { pos: float3::new(-0.5, -0.5, 0.0), col: float3::x() },
-        SimpleVertex { pos: float3::new(0.5, -0.5, 0.0), col: float3::y()  },
-        SimpleVertex { pos: float3::new(0.0, 0.5, 0.0), col: float3::z()   },
+        SimpleVertex { pos: float3::new(-0.5, -0.5, -1.0), col: float3::x() },
+        SimpleVertex { pos: float3::new(0.5, -0.5, -1.0), col: float3::y()  },
+        SimpleVertex { pos: float3::new(0.0, 0.5, -1.0), col: float3::z()   },
     ];
     let indices: [u16; 3] = [0, 1, 2];    
 
@@ -24,11 +24,16 @@ pub(super) fn system() -> Box<dyn Schedulable>
 
         layout(location=0) out vec3 v_col;
 
+        layout(set=0, binding=0) uniform Globals
+        {
+            mat4 u_view_proj;
+        };
+
         void main()
         {
             v_col = a_col;
 
-            gl_Position = vec4(a_pos, 1.0);
+            gl_Position = u_view_proj * vec4(a_pos, 1.0);
         }
     ";
     const FS_SRC: &str = r"
@@ -57,16 +62,17 @@ pub(super) fn system() -> Box<dyn Schedulable>
 
             let geo = ctx.geometry(&vertices, &indices);
 
+            let vp = ctx.uniform(ViewProjUniform::default());
+            let vp = ctx.bind_group(ShaderKind::Vertex, (vp,));
+
             let pipeline = ctx
                 .pipeline()
+                    .bindings(&[&vp])
                     .vertex::<SimpleVertex>()
                     .index::<u16>()
                     .shader(&vs)
                     .shader(&fs)
                 .build();
-
-            let vp = ctx.uniform(ViewProjUniform::default());
-            let vp = ctx.bind_group(ShaderKind::Vertex, (vp,));
 
             res.replace(SimpleGfxResourcesStruct { vs, fs, geo, pipeline, vp });
         })

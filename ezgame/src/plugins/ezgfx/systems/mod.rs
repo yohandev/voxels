@@ -6,9 +6,9 @@ use crate::resources::EventsQueue;
 use super::resources::Renderer;
 
 /// system that initializes the Renderer resource
-pub fn renderer_system() -> Box<dyn Schedulable>
+pub fn init_system() -> Box<dyn Schedulable>
 {
-    SystemBuilder::new("ezgfx_renderer_system")
+    SystemBuilder::new("ezgfx_renderer_init_system")
         // resource
         .read_resource::<Window>()
         .write_resource::<Renderer>()
@@ -25,5 +25,33 @@ pub fn renderer_system() -> Box<dyn Schedulable>
             
             // invoke event
             invoke.invoke(super::events::EZGFX_READY);
+        })
+}
+
+/// resizes the renderer's frame buffer
+pub fn resize_system() -> Box<dyn Schedulable>
+{
+    SystemBuilder::new("ezgfx_renderer_resize_system")
+        .read_resource::<Window>()
+        .write_resource::<Renderer>()
+        .build(|_, _, (window, renderer), _|
+        {
+            // renderer not initialized
+            if renderer.is_none()
+            {
+                return;
+            }
+
+            // get window size
+            let size = window
+                .as_ref()
+                .unwrap()
+                .inner_size();
+
+            // update swapchain size
+            renderer
+                .as_mut()
+                .unwrap()
+                .resize(size.width, size.height);
         })
 }

@@ -41,4 +41,12 @@ buffer_data!
     }
 );
 
+impl ViewProjUniform
+{
+    pub fn new(mat: float4x4) -> Self
+    {
+        Self { mat }
+    }
+}
+
 type ViewProjBindGroup = BindGroup<(Uniform<ViewProjUniform>,)>;

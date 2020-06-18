@@ -13,7 +13,7 @@ pub(super) fn system() -> Box<dyn Schedulable>
         .write_resource::<Renderer>()
         .write_resource::<SimpleGfxResources>()
         // system
-        .build(|_, _, (ctx, res), _|
+        .build(|_, world, (ctx, res), query|
         {
             // resources not loaded yet
             if res.is_none()
@@ -27,6 +27,12 @@ pub(super) fn system() -> Box<dyn Schedulable>
             // output frame
             let mut frame = ctx.frame();
 
+            // get first camera
+            for cam in query.iter(world)
+            {
+                ctx.update_uniform(&res.vp.bindings.0, ViewProjUniform::new(cam.proj));
+            }
+
             // <frame>
             {
                 // render pass
@@ -35,6 +41,9 @@ pub(super) fn system() -> Box<dyn Schedulable>
                 // material, geometry
                 pass.pipeline(&res.pipeline);
                 pass.geometry(&res.geo);
+
+                // uniforms
+                pass.bind_group(0, &res.vp);
 
                 // draw one instance
                 pass.draw(0..1);

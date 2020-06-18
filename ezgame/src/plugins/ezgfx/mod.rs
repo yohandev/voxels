@@ -17,6 +17,8 @@ impl crate::Application
     pub fn add_plugin_ezgfx(&mut self)
     {
         self.resources().insert(resources::Renderer::None);
-        self.register_system(crate::plugins::winit::events::WINDOW_CREATION, systems::renderer_system());
+
+        self.register_system(crate::plugins::winit::events::WINDOW_CREATION, systems::init_system());
+        self.register_system(crate::plugins::winit::events::WINDOW_RESIZE, systems::resize_system());
     }
 }

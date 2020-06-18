@@ -120,6 +120,12 @@ impl Renderer
         Uniform::<T>::new(self, data)
     }
 
+    // update the data inside the uniform buffer
+    pub fn update_uniform<T: BufferData>(&self, uniform: &Uniform<T>, data: T)
+    {
+        uniform.update(self, data);
+    }
+
     /// create new geometry. the slices passed in aren't consumed or
     /// stored to be retrieved later. you have to store them yourself
     /// to access them again, if needed.
