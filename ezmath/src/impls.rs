@@ -36,6 +36,8 @@ pub trait Mat2x2<T: Scalar>
 {
     /// constructs a new matrix from translation transformation
     fn translation(translation: T) -> Self;
+    /// returns the inverse of the matrix
+    fn inverse(&self) -> Self;
 }
 
 /// trait to add capabilities to nalgebra's 3x3 matrix
@@ -45,6 +47,8 @@ pub trait Mat3x3<T: Scalar>
     fn translation(translation: nalgebra::Vector2<T>) -> Self;
     /// constructs a new matrix from an euler angle rotation
     fn rotation(euler_angle: T) -> Self;
+    /// returns the inverse of the matrix
+    fn inverse(&self) -> Self;
 }
 
 /// trait to add capabilities to nalgebra's 4x4 matrix
@@ -56,6 +60,8 @@ pub trait Mat4x4<T: Scalar>
     fn translation(translation: nalgebra::Vector3<T>) -> Self;
     /// constructs a new matrix from euler angles rotation
     fn rotation(euler_angles: nalgebra::Vector3<T>) -> Self;
+    /// returns the inverse of the matrix
+    fn inverse(&self) -> Self;
 }
 
 impl<T: Scalar> Vec2<T> for nalgebra::Vector2<T>
@@ -103,6 +109,11 @@ impl<T: Scalar> Mat2x2<T> for nalgebra::Matrix2<T>
     {
         nalgebra::Translation1::new(n).to_homogeneous()
     }
+
+    fn inverse(&self) -> Self
+    {
+        self.try_inverse().unwrap_or(*self)
+    }
 }
 
 impl<T: Scalar> Mat3x3<T> for nalgebra::Matrix3<T>
@@ -115,6 +126,11 @@ impl<T: Scalar> Mat3x3<T> for nalgebra::Matrix3<T>
     fn rotation(n: T) -> Self
     {
         nalgebra::Rotation2::new(n).to_homogeneous()
+    }
+
+    fn inverse(&self) -> Self
+    {
+        self.try_inverse().unwrap_or(*self)
     }
 }
 
@@ -133,5 +149,10 @@ impl<T: Scalar> Mat4x4<T> for nalgebra::Matrix4<T>
     fn rotation(n: nalgebra::Vector3<T>) -> Self
     {
         nalgebra::Rotation3::from_euler_angles(n.x, n.y, n.z).to_homogeneous()
+    }
+
+    fn inverse(&self) -> Self
+    {
+        self.try_inverse().unwrap_or(*self)
     }
 }

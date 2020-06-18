@@ -47,11 +47,16 @@ impl Game for TestGame
 
         let camera_components = 
         {
+            use crate::components::transform::*;
             use crate::components::gfx::Camera;
 
             vec!
             [(
                 Camera::new(45f32.to_radians(), 0.01, 100.0, 1.0, 1.0),
+                LocalToWorld::default(),
+
+                Translation(ezmath::float3::new(0.0, 0.0, 10.0)),
+                Rotation::default()
             )]
         };
         world.insert((), camera_components);

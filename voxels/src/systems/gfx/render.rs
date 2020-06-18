@@ -1,6 +1,8 @@
 use ezgame::plugins::ezgfx::resources::*;
 use ezgame::legion::*;
+use ezmath::*;
 
+use crate::components::transform::LocalToWorld;
 use crate::components::gfx::*;
 use crate::resources::gfx::*;
 
@@ -8,7 +10,15 @@ pub(super) fn system() -> Box<dyn Schedulable>
 {
     SystemBuilder::new("render_system")
         // components
-        .with_query(<Read<Camera>>::query())
+        .with_query
+        (
+            <(Read<Camera>, TryRead<LocalToWorld>)>::query()
+                .filter
+                (
+                    changed::<Camera>() |
+                    changed::<LocalToWorld>()
+                )
+        )
         // resources
         .write_resource::<Renderer>()
         .write_resource::<SimpleGfxResources>()
@@ -28,9 +38,13 @@ pub(super) fn system() -> Box<dyn Schedulable>
             let mut frame = ctx.frame();
 
             // get first camera
-            for cam in query.iter(world)
+            for (cam, ltw) in query.iter(world)
             {
-                ctx.update_uniform(&res.vp.bindings.0, ViewProjUniform::new(cam.proj));
+                // (view) projection matrix
+                let vp = if let Some(ltw) = ltw { cam.proj * ltw.0.inverse() } else { cam.proj };
+
+                // update uniforms
+                ctx.update_uniform(&res.vp.bindings.0, ViewProjUniform::new(vp));
 
                 // break after first camera
                 break;
