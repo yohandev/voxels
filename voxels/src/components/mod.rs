@@ -1,1 +1,1 @@
-mod gfx;
+pub mod gfx;

@@ -1,4 +1,5 @@
 pub mod components;
+pub mod resources;
 pub mod systems;
 pub mod events;
 
@@ -10,9 +11,12 @@ impl crate::Application
     /// components and may impact some ezgame provided ones, but adding these
     /// gives you the capabilities of ezgfx binded to work with ECS.
     /// # list of systems
-    /// - ezgfx_renderer_system: initializes the ezgfx::Renderer component
+    /// - ezgfx_renderer_system: initializes the ezgfx::resource::Renderer
+    /// # list of resources
+    /// - None Renderer
     pub fn add_plugin_ezgfx(&mut self)
     {
-        self.register_system(crate::events::APP_WINDOW_CREATION, systems::renderer_system());
+        self.resources().insert(resources::Renderer::None);
+        self.register_system(crate::plugins::winit::events::WINDOW_CREATION, systems::renderer_system());
     }
 }

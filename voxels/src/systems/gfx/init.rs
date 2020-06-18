@@ -1,4 +1,5 @@
-use ezgame::plugins::ezgfx::*;
+use ezgame::plugins::ezgfx::resources::*;
+use ezgame::plugins::ezgfx::ShaderKind;
 use ezgame::legion::*;
 use ezmath::*;
 
@@ -43,37 +44,30 @@ pub(super) fn system() -> Box<dyn Schedulable>
     ";
 
     SystemBuilder::new("gfx_init_system")
-        // components
-        .with_query(<Read<components::Graphics>>::query())
         // resources
-        .write_resource::<Option<SimpleGfxResources>>()
+        .write_resource::<SimpleGfxResources>()
+        .read_resource::<Renderer>()
         // system
-        .build(move |_, world, res, query|
+        .build(move |_, _, (res, ctx), _|
         {
-            if res.is_some()
-            {
-                println!("[warn] there's either two renderers or event was emited twice!")
-            }
+            let ctx = ctx.as_ref().unwrap();
+            
+            let vs = ctx.shader(ShaderKind::Vertex, VS_SRC);
+            let fs = ctx.shader(ShaderKind::Fragment, FS_SRC);
 
-            for ctx in query.iter(world)
-            {
-                let vs = ctx.shader(ShaderKind::Vertex, VS_SRC);
-                let fs = ctx.shader(ShaderKind::Fragment, FS_SRC);
+            let geo = ctx.geometry(&vertices, &indices);
 
-                let geo = ctx.geometry(&vertices, &indices);
+            let pipeline = ctx
+                .pipeline()
+                    .vertex::<SimpleVertex>()
+                    .index::<u16>()
+                    .shader(&vs)
+                    .shader(&fs)
+                .build();
 
-                let pipeline = ctx
-                    .pipeline()
-                        .vertex::<SimpleVertex>()
-                        .index::<u16>()
-                        .shader(&vs)
-                        .shader(&fs)
-                    .build();
+            let vp = ctx.uniform(ViewProjUniform::default());
+            let vp = ctx.bind_group(ShaderKind::Vertex, (vp,));
 
-                let vp = ctx.uniform(ViewProjUniform::default());
-                let vp = ctx.bind_group(ShaderKind::Vertex, (vp,));
-
-                res.replace(SimpleGfxResources { vs, fs, geo, pipeline, vp });
-            }
+            res.replace(SimpleGfxResourcesStruct { vs, fs, geo, pipeline, vp });
         })
 }

@@ -1,17 +1,19 @@
-use ezgame::plugins::ezgfx::*;
+use ezgame::plugins::ezgfx::resources::*;
 use ezgame::legion::*;
 
+use crate::components::gfx::*;
 use crate::resources::gfx::*;
 
 pub(super) fn system() -> Box<dyn Schedulable>
 {
     SystemBuilder::new("render_system")
         // components
-        .with_query(<Write<components::Graphics>>::query())
+        .with_query(<Read<Camera>>::query())
         // resources
-        .write_resource::<Option<SimpleGfxResources>>()
+        .write_resource::<Renderer>()
+        .write_resource::<SimpleGfxResources>()
         // system
-        .build(|_, world, res, query|
+        .build(|_, _, (ctx, res), _|
         {
             // resources not loaded yet
             if res.is_none()
@@ -20,28 +22,25 @@ pub(super) fn system() -> Box<dyn Schedulable>
             }
             let res = res.as_ref().unwrap();
 
-            // go through every renderer, though there should
-            // only be one
-            for mut ctx in query.iter_mut(world)
+            let ctx = ctx.as_mut().unwrap();
+            
+            // output frame
+            let mut frame = ctx.frame();
+
+            // <frame>
             {
-                // output frame
-                let mut frame = ctx.frame();
+                // render pass
+                let mut pass = ctx.render_pass(&mut frame, [0.1, 0.2, 0.3, 1.0]);
 
-                // <frame>
-                {
-                    // render pass
-                    let mut pass = ctx.render_pass(&mut frame, [0.1, 0.2, 0.3, 1.0]);
+                // material, geometry
+                pass.pipeline(&res.pipeline);
+                pass.geometry(&res.geo);
 
-                    // material, geometry
-                    pass.pipeline(&res.pipeline);
-                    pass.geometry(&res.geo);
-
-                    // draw one instance
-                    pass.draw(0..1);
-                }
-                // </frame>
-
-                ctx.submit(&mut frame);
+                // draw one instance
+                pass.draw(0..1);
             }
+            // </frame>
+
+            ctx.submit(&mut frame);
         })
 }

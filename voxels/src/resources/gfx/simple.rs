@@ -2,9 +2,11 @@ use ezgame::plugins::ezgfx::*;
 use ezmath::*;
 
 /// resource storage required for simple rendering.
-/// this is stored as an Option<SimpleGfxResources> in
-/// the ECS world.
-pub struct SimpleGfxResources
+/// this is stored as an pption in the ECS world.
+pub type SimpleGfxResources = Option<SimpleGfxResourcesStruct>;
+
+/// use SimpleGfxResource instead.
+pub struct SimpleGfxResourcesStruct
 {
     pub vs: Shader,                         // shared vertex shader
     pub fs: Shader,                         // shared fragment shader

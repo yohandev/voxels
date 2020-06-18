@@ -31,28 +31,30 @@ impl Game for TestGame
         // add your systems here
         systems::add_systems(app);
 
+        // request window
+        app.resources().insert
+        (
+            plugins::winit::resources::WindowRequest::new()
+                .width(600)
+                .height(600)
+                .title("voxels")
+        );
+        
         // you can have as many worlds as you want.
         // ezgame is powered by Legion, so entities
         // are valid across worlds.
         let world = app.create_world();
 
-        // everything is an entity, including windows!
-        let window_components =
+        let camera_components = 
         {
-            use ezgame::plugins::ezgfx::components::*;
-            use ezgame::components::*;
+            use crate::components::gfx::Camera;
 
             vec!
             [(
-                Window::request(),      // required
-                WindowSize::default(),  // optional
-                WindowTitle::default(), // optional
-                Graphics::default(),    // plugin required
+                Camera::new(45f32.to_radians(), 0.01, 100.0, 1.0, 1.0),
             )]
         };
-
-        // finally, "insert the window" into the ECS world
-        world.insert((), window_components);
+        world.insert((), camera_components);
 
         Self
     }

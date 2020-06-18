@@ -27,8 +27,3 @@ pub const APP_UPDATE: &str = "app_update_event";
 /// with the os' vsync rate, and is useful for rendering
 /// pre/post processing actions.
 pub const APP_RENDER: &str = "app_render_event";
-
-/// event invoked when an ezgame::*::Window component has been
-/// succesfully initialized. This is useful for window-dependent
-/// resources, such as the ezgfx plugin's Renderer.
-pub const APP_WINDOW_CREATION: &str = "app_window_created";

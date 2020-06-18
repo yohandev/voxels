@@ -1,34 +1,29 @@
 use legion::prelude::*;
 
-use crate::resources::EventsQueue;
-use super::components::Graphics;
-use crate::components::Window;
+use crate::plugins::winit::resources::Window;
 
-/// system that initializes the Renderer component
+use crate::resources::EventsQueue;
+use super::resources::Renderer;
+
+/// system that initializes the Renderer resource
 pub fn renderer_system() -> Box<dyn Schedulable>
 {
     SystemBuilder::new("ezgfx_renderer_system")
+        // resource
+        .read_resource::<Window>()
+        .write_resource::<Renderer>()
         .write_resource::<EventsQueue>()
-        .with_query(<(Write<Graphics>, Read<Window>)>::query())
-        .build(|_, world, invoke, query|
+        // system
+        .build(|_, _, (window, renderer, invoke), _|
         {
-            for (mut ctx, win) in query.iter_mut(world)
-            {
-                if ctx.is_init()
-                {
-                    continue;
-                }
+            // retrieve window
+            let window = window.as_ref().unwrap();
+            let size   = window.inner_size();
 
-                if !win.is_init()
-                {
-                    continue;
-                }
-
-                if let Some(win) = win.get()
-                {
-                    ctx.init(win);
-                    invoke.invoke(super::events::EZGFX_READY);
-                }
-            }
+            // create renderer
+            **renderer = Some(ezgfx::Renderer::from_window(window, size.width, size.height));
+            
+            // invoke event
+            invoke.invoke(super::events::EZGFX_READY);
         })
 }

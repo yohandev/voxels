@@ -7,6 +7,6 @@ pub fn system() -> Box<dyn Schedulable>
         .read_resource::<resources::Time>()
         .build(|_, _, time, _|
         {
-            println!("dt: {}ms", time.delta_time_f32() * 1000.0);
+            println!("{} FPS", (1.0 / time.delta_time_f32()).round());
         })
 }

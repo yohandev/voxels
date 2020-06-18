@@ -47,7 +47,7 @@ impl Application
                 *flow = ControlFlow::Poll;
                 
                 // special system: create windows
-                systems::system_create_window(&mut app, window_target);
+                plugins::winit::systems::system_create_window(&mut app, window_target);
 
                 // push current event into loop
                 if let Some(static_event) = event.to_static()
@@ -159,26 +159,28 @@ impl Application
     /// components and may impact some ezgame provided ones, but adding these
     /// will prevent some headaches and weird behaviours.
     /// # list of systems
-    /// - window_system: processes events for the Window component
+    /// - window_system: processes events for the Window component, from winit plugin.
     /// - input_system: processes events and caches input states
     /// - time_system: processes events and calls game loop events
     /// # list of resources
     /// - EventsQueue: used by the engine to queue and poll system events
     /// - Input: interprets and caches key and button presses
     /// - Time: caches delta time and other game time information
+    /// - None Window
     pub fn add_defaults(&mut self)
     {
         // resources
         self.resources().insert(resources::EventsQueue::new());
         self.resources().insert(resources::Input::new());
         self.resources().insert(resources::Time::new());
+        self.resources().insert(plugins::winit::resources::Window::None);
 
         // systems
         self.register_schedule
         (
             events::APP_POLL,
             Schedule::builder()
-                .add_system(systems::window_system())
+                .add_system(plugins::winit::systems::window_system())
                 .add_system(systems::input_system())
                 .add_system(systems::time_system())
                 .build()
