@@ -31,6 +31,9 @@ pub(super) fn system() -> Box<dyn Schedulable>
             for cam in query.iter(world)
             {
                 ctx.update_uniform(&res.vp.bindings.0, ViewProjUniform::new(cam.proj));
+
+                // break after first camera
+                break;
             }
 
             // <frame>
