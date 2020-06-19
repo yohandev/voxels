@@ -1,0 +1,10 @@
+[package]
+name = "ezmath"
+version = "0.1.0"
+authors = ["yohandev"]
+edition = "2018"
+
+[dependencies]
+num-traits = "0.2.12"
+nalgebra = "0.21.0"
+simba = "0.1.5"

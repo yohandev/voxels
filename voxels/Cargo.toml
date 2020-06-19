@@ -1,0 +1,15 @@
+[package]
+name = "voxels"
+version = "0.1.0"
+authors = ["yohandev"]
+edition = "2018"
+
+
+[dependencies]
+ezgame = { path = "../ezgame" }
+ezmath = { path = "../ezmath" }
+
+noise = "0.6.0"
+
+[features]
+default = ["ezgame/plugin-ezgfx"]

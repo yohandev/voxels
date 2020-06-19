@@ -1,0 +1,12 @@
+[package]
+name = "ezgfx"
+version = "0.1.0"
+authors = ["yohandev"]
+edition = "2018"
+
+[dependencies]
+raw-window-handle = "0.3.3"
+bytemuck = "1.2.0"
+futures = "0.3.5"
+shaderc = "0.6.2"
+wgpu = "0.5.0"
