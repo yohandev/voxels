@@ -10,8 +10,5 @@ pub mod systems;
 pub mod plugins;
 pub mod events;
 
-pub mod legion { pub use legion::prelude::*; }
-pub mod winit { pub use winit::*; }
-
-use crate::legion::*;
-use crate::winit::*;
+pub use ::legion::prelude as legion;
+pub use ::winit;

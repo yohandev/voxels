@@ -2,7 +2,8 @@ use super::*;
 
 use std::collections::HashMap;
 
-use event_loop::*;
+use winit::event_loop::*;
+use self::legion::*;
 
 /// The application is the core of the game. Most of its functions,
 /// apart from a few internal things, are pure ECS. The most
