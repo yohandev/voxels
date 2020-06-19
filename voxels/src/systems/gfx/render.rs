@@ -20,14 +20,14 @@ pub(super) fn system() -> Box<dyn Schedulable>
                 )
         )
         // chunk components
-        .with_query(<Read<ChunkMesh>>::query())
-        .read_component::<ChunkMesh>()
+        // .with_query(<Read<ChunkMesh>>::query())
+        // .read_component::<ChunkMesh>()
         // resources
         .write_resource::<Renderer>()
         .write_resource::<SimpleGfxResources>()
         .read_resource::<ChunkGfxResources>()
         // system
-        .build(|_, world, (ctx, global_res, chunk_res), (cam_query, chunk_query)|
+        .build(|_, world, (ctx, global_res, chunk_res), query|
         {
             // resources not loaded yet
             if global_res.is_none()
@@ -42,7 +42,7 @@ pub(super) fn system() -> Box<dyn Schedulable>
             let mut frame = ctx.frame();
 
             // get first camera
-            for (cam, ltw) in cam_query.iter(world)
+            for (cam, ltw) in query.iter(world)
             {
                 // (view) projection matrix
                 let vp = if let Some(ltw) = &ltw { cam.proj * ltw.0.inverse() } else { cam.proj };
@@ -91,6 +91,11 @@ pub(super) fn system() -> Box<dyn Schedulable>
                 // {
                 //     pass.geometry(&chunk.geo);
                 // }
+                for geo in &chunk_res.chunk_geo
+                {
+                    pass.geometry(&geo);
+                    pass.draw(0..1);
+                }
             }
             // </frame>
 

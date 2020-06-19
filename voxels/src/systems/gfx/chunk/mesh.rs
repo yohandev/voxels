@@ -37,7 +37,7 @@ pub fn system() -> Box<dyn Schedulable>
             let res = res.as_mut().unwrap();
 
             let mut meshes = vec![];
-            query.par_entities_for_each(world, |(ent, chunk)|
+            for (ent, chunk) in query.iter_entities(world)//, |(ent, chunk)|
             {
                 // geometry buffer
                 let mut vertices = Vec::<ChunkVertex>::new();
@@ -82,19 +82,20 @@ pub fn system() -> Box<dyn Schedulable>
                 }
 
                 // create mesh
-                let mesh = ChunkMesh
-                {
-                    geo: ctx.geometry(&vertices[..], &indices[..])
-                };
+                // let mesh = ChunkMesh
+                // {
+                //     geo: ctx.geometry(&vertices[..], &indices[..])
+                // };
 
                 // assign mesh component
                 //cmd.add_component(ent, mesh);
-                //meshes.push(ctx.geometry(&vertices[..], &indices[..]));
+                meshes.push(ctx.geometry(&vertices[..], &indices[..]));
                 println!("remeshed chunk!");
                     
                 // done meshing, remove tag
                 cmd.remove_tag::<ChunkRemeshTag>(ent);
-            })
+            }
+            res.chunk_geo.append(&mut meshes);
         })
 }
 
