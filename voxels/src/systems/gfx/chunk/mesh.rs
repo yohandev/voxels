@@ -4,7 +4,6 @@ use ezmath::*;
 
 use crate::components::game::*;
 use crate::resources::game::*;
-use crate::components::gfx::*;
 use crate::resources::gfx::*;
 use crate::game::*;
 
@@ -18,7 +17,6 @@ pub fn system() -> Box<dyn Schedulable>
         .write_resource::<ChunkGfxResources>()
         // components
         .with_query(<Read<Chunk>>::query().filter(tag::<ChunkRemeshTag>()))
-        .write_component::<ChunkMesh>()
         // tags
         .write_component::<ChunkRemeshTag>()
         // system
@@ -81,21 +79,24 @@ pub fn system() -> Box<dyn Schedulable>
                     return;
                 }
 
-                // create mesh
-                // let mesh = ChunkMesh
-                // {
-                //     geo: ctx.geometry(&vertices[..], &indices[..])
-                // };
+                // position uniform
+                let pos = ctx.uniform(ChunkPosition { position: chunk.position() });
 
-                // assign mesh component
-                //cmd.add_component(ent, mesh);
-                meshes.push(ctx.geometry(&vertices[..], &indices[..]));
+                //create mesh
+                let mesh = ChunkMesh
+                {
+                    geo: ctx.geometry(&vertices[..], &indices[..]),
+                    pos: ctx.clone_bind_group(&res.pos_uni, (pos,))
+                };
+
+                //push mesh
+                meshes.push(mesh);
                 println!("remeshed chunk!");
                     
                 // done meshing, remove tag
                 cmd.remove_tag::<ChunkRemeshTag>(ent);
             }
-            res.chunk_geo.append(&mut meshes);
+            res.chunk_meshes.append(&mut meshes);
         })
 }
 

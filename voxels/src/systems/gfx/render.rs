@@ -91,9 +91,10 @@ pub(super) fn system() -> Box<dyn Schedulable>
                 // {
                 //     pass.geometry(&chunk.geo);
                 // }
-                for geo in &chunk_res.chunk_geo
+                for mesh in &chunk_res.chunk_meshes
                 {
-                    pass.geometry(&geo);
+                    pass.bind_group(1, &mesh.pos);
+                    pass.geometry(&mesh.geo);
                     pass.draw(0..1);
                 }
             }

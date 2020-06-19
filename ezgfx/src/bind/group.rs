@@ -72,6 +72,25 @@ impl<T: BindGroupTuple> BindGroup<T>
 
         Self { bindings, layout, bind }
     }
+
+    /// create a new bind group "inspired" by this one, sharing
+    /// the layout and pipeline compatibilities
+    pub(crate) fn clone(&self, ctx: &Renderer, bindings: T) -> Self
+    {
+        let bind = ctx.device.create_bind_group     // bind group
+        (
+            &wgpu::BindGroupDescriptor
+            {
+                layout: self.layout
+                    .as_ref(),
+                bindings: bindings
+                    .bind_entries()
+                    .as_slice(),
+                label: Some("ezgfx_bind_group_cloned")
+            }
+        );
+        Self { bindings, layout: self.layout.clone(), bind }
+    }
 }
 
 /// non-generic trait for ezgfx::BindGroup. Used to object-ify the otherwise

@@ -4,7 +4,6 @@ use ezmath::*;
 /// resource storage required for simple rendering.
 /// this is stored as an pption in the ECS world.
 pub type ChunkGfxResources = Option<ChunkGfxRes>;
-pub type ChunkGeometry = Geometry<ChunkVertex, u32>;
 
 /// use ChunkGfxResources instead.
 pub struct ChunkGfxRes
@@ -12,10 +11,24 @@ pub struct ChunkGfxRes
     pub vs: Shader,                         // shared vertex shader
     pub fs: Shader,                         // shared fragment shader
 
+    pub pos_uni: ChunkPosBind,              // shared chunk position uniform
+
     pub pipeline: Pipeline,                 // shared rendering pipeline
 
-    pub chunk_geo: Vec<ChunkGeometry>,      // storage of chunk geometry
+    pub chunk_meshes: Vec<ChunkMesh>,       // storage of chunk meshes
 }
+
+/// the geometry and position uniform of a chunk
+pub struct ChunkMesh
+{
+    pub geo: ChunkGeometry,
+    pub pos: ChunkPosBind,
+}
+
+/// geometry of a given chunk
+pub type ChunkGeometry = Geometry<ChunkVertex, u32>;
+/// position bind group of a chunk
+pub type ChunkPosBind = BindGroup<(Uniform<ChunkPosition>,)>;
 
 buffer_data!
 (
@@ -37,6 +50,16 @@ buffer_data!
     pub struct ChunkVertex
     {
         compressed: u32
+    }
+);
+
+buffer_data!
+(
+    /// uniform for a chunk position
+    #[derive(Default)]
+    pub struct ChunkPosition
+    {
+        pub position: int3
     }
 );
 

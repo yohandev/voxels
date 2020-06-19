@@ -17,16 +17,16 @@ pub fn system() -> Box<dyn Schedulable>
         {
             mat4 u_view_proj;
         };
-        // layout(set = 1, binding = 0) uniform ChunkOffset
-        // {
-        //     ivec3 u_offset;
-        // };
+        layout(set = 1, binding = 0) uniform ChunkOffset
+        {
+            ivec3 u_offset;
+        };
         
         void main()
         {
-            float x = float(a_compressed >> 26);// + float(u_offset.x);
-            float y = float((a_compressed >> 20) & 63);// + float(u_offset.y);
-            float z = float((a_compressed >> 14) & 63);// + float(u_offset.z);
+            float x = float(a_compressed >> 26) + float(u_offset.x);
+            float y = float((a_compressed >> 20) & 63) + float(u_offset.y);
+            float z = float((a_compressed >> 14) & 63) + float(u_offset.z);
         
             float u = float((a_compressed >> 7) & 127) / 128;
             float v = float(a_compressed & 127) / 128;
@@ -63,17 +63,20 @@ pub fn system() -> Box<dyn Schedulable>
 
             let vp = &global_res.as_ref().unwrap().vp;
 
+            let pos = ctx.uniform(ChunkPosition::default());
+            let pos_uni = ctx.bind_group(ShaderKind::Vertex, (pos,));
+
             let pipeline = ctx
                 .pipeline()
-                    .bindings(&[vp])
+                    .bindings(&[vp, &pos_uni])
                     .vertex::<ChunkVertex>()
                     .index::<u32>()
                     .shader(&vs)
                     .shader(&fs)
                 .build();
 
-            let chunk_geo = vec![];
+            let chunk_meshes = vec![];
 
-            chunk_res.replace(ChunkGfxRes { vs, fs, pipeline, chunk_geo });
+            chunk_res.replace(ChunkGfxRes { vs, fs, pos_uni, pipeline, chunk_meshes });
         })
 }

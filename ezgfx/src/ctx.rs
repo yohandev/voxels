@@ -114,6 +114,14 @@ impl Renderer
         BindGroup::new(self, stage, bindings)
     }
 
+    /// create a new bind group, "inspired" from the source bind group.
+    /// data will be different, but the layout and compatiblities will be
+    /// shared.
+    pub fn clone_bind_group<T: BindGroupTuple>(&self, source: &BindGroup<T>, bindings: T) -> BindGroup<T>
+    {
+        source.clone(self, bindings)
+    }
+
     /// create a new uniform buffer.
     pub fn uniform<T: crate::marker::BufferData>(&self, data: T) -> Uniform<T>
     {
