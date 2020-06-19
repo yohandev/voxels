@@ -5,21 +5,24 @@ use ezmath::*;
 use crate::components::game::*;
 use crate::resources::game::*;
 use crate::components::gfx::*;
+use crate::resources::gfx::*;
 use crate::game::*;
 
+/// system that remeshes Chunks with the ChunkRemeshTag tag
 pub fn system() -> Box<dyn Schedulable>
 {
     SystemBuilder::new("chunk_mesh_system")
         // resources
         .read_resource::<Renderer>()
         .read_resource::<LoadedChunks>()
+        .write_resource::<ChunkGfxResources>()
         // components
         .with_query(<Read<Chunk>>::query().filter(tag::<ChunkRemeshTag>()))
         .write_component::<ChunkMesh>()
         // tags
         .write_component::<ChunkRemeshTag>()
         // system
-        .build(|cmd, world, (ctx, loaded), query|
+        .build(|cmd, world, (ctx, loaded, res), query|
         {
             if ctx.is_none()
             {
@@ -27,6 +30,13 @@ pub fn system() -> Box<dyn Schedulable>
             }
             let ctx = ctx.as_ref().unwrap();
 
+            if res.is_none()
+            {
+                return;
+            }
+            let res = res.as_mut().unwrap();
+
+            let mut meshes = vec![];
             query.par_entities_for_each(world, |(ent, chunk)|
             {
                 // geometry buffer
@@ -78,7 +88,8 @@ pub fn system() -> Box<dyn Schedulable>
                 };
 
                 // assign mesh component
-                cmd.add_component(ent, mesh);
+                //cmd.add_component(ent, mesh);
+                //meshes.push(ctx.geometry(&vertices[..], &indices[..]));
                 println!("remeshed chunk!");
                     
                 // done meshing, remove tag
