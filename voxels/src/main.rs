@@ -54,7 +54,7 @@ impl Game for TestGame
 
             vec!
             [(
-                Camera::new(45f32.to_radians(), 0.01, 100.0, 1.0, 1.0),
+                Camera::new(45f32.to_radians(), 0.01, 1000.0, 1.0, 1.0),
                 LocalToWorld::default(),
 
                 Translation(ezmath::float3::new(0.0, 0.0, 10.0)),
@@ -64,11 +64,14 @@ impl Game for TestGame
         world.insert((), camera_components);
 
         // insert chunks into world
-        let chunk_components =
+        let chunk_components: Vec<(crate::components::game::Chunk,)> =
         {
             use crate::components::game::*;
 
-            (0..30).map(|i| (Chunk::new(ezmath::int3::new(i * game::CHUNK_SIZE as i32, 0, 0)),))
+            (0..5)
+                .flat_map(|x| (0..5).map(move |z| (x, z)))
+                .map(|(x, z)| (Chunk::new(ezmath::int3::new(x * game::CHUNK_SIZE as i32, 0, z * game::CHUNK_SIZE as i32)),))
+                .collect()
         };
         world.insert((crate::components::game::ChunkLoadTag,), chunk_components);
 
