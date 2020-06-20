@@ -1,19 +1,19 @@
 # `custom-ecs` branch proposal
 ```rust
 // -- components --
-#[derive(Debug, Default, Clone)]
+#[component]
 struct CPosition(f32, f32);
-#[derive(Debug, Default, Clone)]
+#[component]
 struct CVelocity(f32, f32);
 
 // -- resources --
-#[derive(Debug, Default)]
+#[resource]
 struct RGravity(f32);
 
 // -- events --
-#[derive(Debug, Default, Copy, Clone)]
+#[event]
 struct StartEvent;
-#[derive(Debug, Default, Copy, Clone)]
+#[event]
 struct UpdateEvent(f32);
 
 // -- system --
@@ -66,5 +66,14 @@ impl System<StartEvent> for SPhysics
     {
         *gravity = -9.8;
     }
+}
+
+fn build(app: &mut Application)
+{
+    // create a new registry
+    app.registry();
+
+    // add the system
+    app.system(SPhysics);
 }
 ```
