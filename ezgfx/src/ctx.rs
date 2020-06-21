@@ -151,6 +151,11 @@ impl Renderer
         Texture::new(self, path.to_str().unwrap(), image::open(path))
     }
 
+    pub fn sampler(&self, desc: &SamplerDesc) -> Sampler
+    {
+        Sampler::new(self, desc)
+    }
+
     /// create new geometry. the slices passed in aren't consumed or
     /// stored to be retrieved later. you have to store them yourself
     /// to access them again, if needed.

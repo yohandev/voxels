@@ -1,5 +1,9 @@
 use image::*;
 
+/// a texture bind-able shader resource. on its own,
+/// it's useless, but can be combined in a bind group
+/// with an ezgfx::Sampler to add textures to your
+/// renders.
 pub struct Texture
 {
     view: wgpu::TextureView

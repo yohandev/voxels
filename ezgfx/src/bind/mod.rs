@@ -1,9 +1,11 @@
-mod texture;
 mod uniform;
+mod texture;
+mod sampler;
 mod group;
 
-pub use texture::*;
 pub use uniform::*;
+pub use texture::*;
+pub use sampler::*;
 pub use group::*;
 
 /// a bind-able shader resource, to be used within
