@@ -13,6 +13,8 @@ pub struct PipelineBuilder<'a>
 
     index_format: Option<wgpu::IndexFormat>,
 
+    depth: Option<wgpu::DepthStencilStateDescriptor>,
+    
     settings: PipelineSettings,
 }
 
@@ -53,6 +55,8 @@ impl<'a> PipelineBuilder<'a>
             vert_stride: 0,
 
             index_format: None,
+
+            depth: None,
 
             settings: Default::default(),
         }
@@ -155,6 +159,32 @@ impl<'a> PipelineBuilder<'a>
     pub fn index<T: crate::Index>(mut self) -> Self
     {
         self.index_format = Some(T::DESC);
+        self
+    }
+
+    /// turn depth testing on or off. default is off
+    pub fn depth(mut self, test: bool) -> Self
+    {
+        if test
+        {
+            self.depth = Some
+            (
+                wgpu::DepthStencilStateDescriptor
+                {
+                    format: wgpu::TextureFormat::Depth32Float,
+                    depth_write_enabled: true,
+                    depth_compare: wgpu::CompareFunction::Less,
+                    stencil_front: wgpu::StencilStateFaceDescriptor::IGNORE,
+                    stencil_back: wgpu::StencilStateFaceDescriptor::IGNORE,
+                    stencil_read_mask: 0,
+                    stencil_write_mask: 0,
+                }
+            );
+        }
+        else
+        {
+            self.depth = None;
+        }
         self
     }
 
