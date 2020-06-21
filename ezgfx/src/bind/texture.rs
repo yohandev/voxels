@@ -94,4 +94,37 @@ impl Texture
             view: tex.create_default_view()                 // texture view
         }
     }
+
+    /// create a new depth texture
+    pub(crate) fn new_depth(ctx: &crate::Renderer, width: u32, height: u32) -> Self
+    {
+        let size = wgpu::Extent3d
+        {
+            width,
+            height,
+            depth: 1,
+        };
+
+        let tex = ctx.device.create_texture                 // texture
+        (
+            &wgpu::TextureDescriptor
+            {
+                label: Some("ezgfx_depth_texture"),
+                size,
+                array_layer_count: 1,
+                mip_level_count: 1,
+                sample_count: 1,
+                dimension: wgpu::TextureDimension::D2,
+                format: wgpu::TextureFormat::Depth32Float,
+                usage: wgpu::TextureUsage::OUTPUT_ATTACHMENT
+                    | wgpu::TextureUsage::SAMPLED 
+                    | wgpu::TextureUsage::COPY_SRC,
+            }
+        );
+
+        Self
+        {
+            view: tex.create_default_view()                 // texture view
+        }
+    }
 }
