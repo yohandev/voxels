@@ -1,6 +1,8 @@
+mod texture;
 mod uniform;
 mod group;
 
+pub use texture::*;
 pub use uniform::*;
 pub use group::*;
 

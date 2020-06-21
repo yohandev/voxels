@@ -134,6 +134,23 @@ impl Renderer
         uniform.update(self, data);
     }
 
+    /// create a new texture from bytes of an image file.
+    /// ```rust
+    /// renderer.texture_bytes("my_texture.png", include_bytes!("my_texture.png"));
+    /// ```
+    pub fn texture_bytes(&self, name: &str, bytes: &[u8]) -> Texture
+    {
+        Texture::new(self, name, image::load_from_memory(bytes))
+    }
+
+    /// create a new texture from the path of the image
+    pub fn texture<T: AsRef<std::path::Path>>(&self, path: T) -> Texture
+    {
+        let path = path.as_ref();
+
+        Texture::new(self, path.to_str().unwrap(), image::open(path))
+    }
+
     /// create new geometry. the slices passed in aren't consumed or
     /// stored to be retrieved later. you have to store them yourself
     /// to access them again, if needed.
