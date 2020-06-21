@@ -12,6 +12,7 @@ use crate::marker::BufferData;
 /// and meshes(such as the view-projection matrix), or instance
 /// data. the data can be updated through the ezgfx::Renderer
 /// object, using ```renderer.update_buffer(&mut buffer, data);```.
+#[derive(Debug)]
 pub struct Uniform<T: BufferData>
 {
     buffer: wgpu::Buffer,

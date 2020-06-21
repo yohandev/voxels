@@ -13,6 +13,8 @@ pub struct Renderer
     pub(crate) queue:      wgpu::Queue,
     pub(crate) sc_desc:    wgpu::SwapChainDescriptor,
     pub(crate) sc:         wgpu::SwapChain,
+
+    depth: Texture,
 }
 
 impl Renderer
@@ -65,8 +67,11 @@ impl Renderer
             &surface,
             &sc_desc
         );
-        
-        Self { surface, device, queue, sc_desc, sc, }
+
+        let depth =                                     // depth texture
+            Texture::new_depth(&device, width, height);
+
+        Self { surface, device, queue, sc_desc, sc, depth }
     }
 
     /// resize the renderer
@@ -80,6 +85,8 @@ impl Renderer
             &self.surface,
             &self.sc_desc
         );
+        self.depth =                        // depth texture
+            Texture::new_depth(&self.device, width, height);
     }
 
     /// report the current width of the output texture of the
@@ -94,6 +101,13 @@ impl Renderer
     pub fn height(&self) -> u32
     {
         self.sc_desc.height
+    }
+
+    /// get the bind group behind the depth texture. this becomes
+    /// invalid after each resize
+    pub fn depth(&self) -> &Texture
+    {
+        &self.depth
     }
 
     /// create a new pipeline using the pipeline builder.

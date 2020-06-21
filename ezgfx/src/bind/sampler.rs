@@ -2,6 +2,7 @@
 /// name implies, samples textures. this is
 /// kind of like a colour picker in photo
 /// editing software.
+#[derive(Debug)]
 pub struct Sampler
 {
     smp: wgpu::Sampler
@@ -15,16 +16,16 @@ pub struct SamplerDesc
     /// filter op when a texture is magnified
     /// (tex is X size, but is rendered at Y
     /// size where Y > X)
-    mag: Filter,
+    pub mag: Filter,
     /// filter op when a texture is minified
     /// (tex is X size, but is rendered at Y
     /// size where Y < X)
-    min: Filter,
+    pub min: Filter,
     /// edge operation for (u, v)
-    edge: (Edge, Edge),
+    pub edge: (Edge, Edge),
     /// what kind of sampler will this be in
     /// GLSL code? `sampler` or `samplerShadow`
-    mode: Mode
+    pub mode: Mode
 }
 
 /// filter op in a sampler nearest

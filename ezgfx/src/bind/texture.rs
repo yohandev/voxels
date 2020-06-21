@@ -4,6 +4,7 @@ use image::*;
 /// it's useless, but can be combined in a bind group
 /// with an ezgfx::Sampler to add textures to your
 /// renders.
+#[derive(Debug)]
 pub struct Texture
 {
     view: wgpu::TextureView
@@ -100,7 +101,7 @@ impl Texture
     }
 
     /// create a new depth texture
-    pub(crate) fn new_depth(ctx: &crate::Renderer, width: u32, height: u32) -> Self
+    pub(crate) fn new_depth(device: &wgpu::Device, width: u32, height: u32) -> Self
     {
         let size = wgpu::Extent3d
         {
@@ -109,7 +110,7 @@ impl Texture
             depth: 1,
         };
 
-        let tex = ctx.device.create_texture                 // texture
+        let tex = device.create_texture                 // texture
         (
             &wgpu::TextureDescriptor
             {
