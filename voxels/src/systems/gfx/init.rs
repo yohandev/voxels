@@ -72,6 +72,7 @@ pub(super) fn system() -> Box<dyn Schedulable>
                     .index::<u16>()
                     .shader(&vs)
                     .shader(&fs)
+                    .depth(true)
                 .build();
 
             res.replace(SimpleGfxResourcesStruct { vs, fs, geo, pipeline, vp });

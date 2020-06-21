@@ -73,6 +73,7 @@ pub fn system() -> Box<dyn Schedulable>
                     .index::<u32>()
                     .shader(&vs)
                     .shader(&fs)
+                    .depth(true)
                 .build();
 
             let chunk_meshes = vec![];

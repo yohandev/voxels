@@ -238,7 +238,7 @@ impl<'a> PipelineBuilder<'a>
                     write_mask: wgpu::ColorWrite::ALL,
                     
                 }],
-                depth_stencil_state: None,
+                depth_stencil_state: self.depth,
                 vertex_state: wgpu::VertexStateDescriptor
                 {
                     index_format: self.index_format
