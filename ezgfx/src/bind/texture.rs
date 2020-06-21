@@ -7,7 +7,7 @@ use image::*;
 #[derive(Debug)]
 pub struct Texture
 {
-    view: wgpu::TextureView
+    pub(crate) view: wgpu::TextureView
 }
 
 impl crate::Bind for Texture

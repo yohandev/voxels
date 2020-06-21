@@ -194,14 +194,14 @@ impl Renderer
     /// and does the actual drawing.
     /// it clear the output texture from the given frame with the given
     /// colour.
-    pub fn render_pass<'a>(&self, frame: &'a mut Frame, clear: [f64; 4]) -> RenderPass<'a>
+    pub fn render_pass<'a>(&'a self, frame: &'a mut Frame, clear: [f64; 4]) -> RenderPass<'a>
     {
         frame.encoder = Some(self.device.create_command_encoder
         (
             &wgpu::CommandEncoderDescriptor { label: Some("render_pass_encoder") }
         ));
 
-        RenderPass::new(frame, clear)
+        RenderPass::new(self, frame, clear)
     }
 
     /// submit a frame's current render pass for rendering

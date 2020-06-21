@@ -17,7 +17,7 @@ pub struct RenderPass<'a>
 impl<'a> RenderPass<'a>
 {
     /// create render pass. this shouldn't be called directly.
-    pub(crate) fn new(frame: &'a mut Frame, clear: [f64; 4]) -> Self
+    pub(crate) fn new(ctx: &'a Renderer, frame: &'a mut Frame, clear: [f64; 4]) -> Self
     {
         let pass = frame.encoder
             .as_mut()
@@ -43,7 +43,19 @@ impl<'a> RenderPass<'a>
                         }
                     }
                 ],
-                depth_stencil_attachment: None,
+                depth_stencil_attachment: Some
+                (
+                    wgpu::RenderPassDepthStencilAttachmentDescriptor
+                    {
+                        attachment: &ctx.depth().view,
+                        depth_load_op: wgpu::LoadOp::Clear,
+                        depth_store_op: wgpu::StoreOp::Store,
+                        clear_depth: 1.0,
+                        stencil_load_op: wgpu::LoadOp::Clear,
+                        stencil_store_op: wgpu::StoreOp::Store,
+                        clear_stencil: 0,
+                    }
+                ),
             }
         );
         Self
