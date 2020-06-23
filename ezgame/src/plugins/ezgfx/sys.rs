@@ -36,7 +36,7 @@ impl System for SysRenderer
                 // create renderer
                 **renderer = Some(ezgfx::Renderer::from_window(window, size.width, size.height));    
             }
-
+            
             // resize renderer
             if window_events.poll().any(|p| *p == WindowEvent::Resized)
             {

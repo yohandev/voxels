@@ -5,7 +5,7 @@ pub trait System
 {
     /// build the system, inserting required resources
     /// and returning the system closure. that closure
-    /// is run once every frame
+    /// is run everytime an event is polled.
     fn build(&self, app: &mut Application) -> SystemFn;
 }
 
