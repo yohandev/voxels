@@ -43,6 +43,15 @@ type ScheduleBuilder = ::legion::systems::schedule::Builder;
 
 impl Systems
 {
+    pub(crate) fn new() -> Self
+    {
+        Self
+        {
+            exe: None,
+            add: Some(Default::default()),
+        }
+    }
+
     /// insert a system into the schedule
     pub(crate) fn insert<T: System>(&mut self, app: &mut Application, sys: T)
     {
