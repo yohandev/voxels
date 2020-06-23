@@ -57,22 +57,10 @@ fn process_event(event: &winit::event::Event<()>, window: &winit::window::Window
             }
             match event
             {
-                winit::event::WindowEvent::Resized(size) => Some
-                (
-                    WindowEvent::Resized(size.width, size.height)
-                ),
-                winit::event::WindowEvent::CloseRequested => Some
-                (
-                    WindowEvent::Closed
-                ),
-                winit::event::WindowEvent::ScaleFactorChanged {new_inner_size, ..} => Some
-                (
-                    WindowEvent::Resized(new_inner_size.width, new_inner_size.height)
-                ),
-                winit::event::WindowEvent::Moved(pos) => Some
-                (
-                    WindowEvent::Moved(pos.x, pos.y)
-                ),
+                winit::event::WindowEvent::Resized(_) => Some(WindowEvent::Resized),
+                winit::event::WindowEvent::CloseRequested => Some(WindowEvent::Closed),
+                winit::event::WindowEvent::ScaleFactorChanged {..} => Some(WindowEvent::Resized),
+                winit::event::WindowEvent::Moved(_) => Some(WindowEvent::Moved),
                 _ => None
             }
         }

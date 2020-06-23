@@ -28,10 +28,12 @@ pub struct ResWindowRequest
 pub struct ResWindowEvents(Vec<WindowEvent>);
 
 /// window event stored in the window events resource
+#[derive(Debug, Eq, PartialEq)]
 pub enum WindowEvent
 {
-    Resized(u32, u32),
-    Moved(i32, i32),
+    Resized,
+    Moved,
+    Created,
     Closed,
 }
 
