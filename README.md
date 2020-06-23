@@ -2,7 +2,7 @@
 refactors the way systems works
 
 ```rust
-struct System
+trait System
 {
     fn build(Application) -> Schedulable;
 }
