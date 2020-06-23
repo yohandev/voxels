@@ -8,6 +8,8 @@ impl System for SysRenderer
 {
     fn build(&self, app: &mut Application) -> SystemFn
     {
+        app.resources().insert(ResRenderer::None);
+
         use crate::plugins::win::*;
         use crate::legion::*;
 
