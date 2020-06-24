@@ -6,7 +6,8 @@ use crate::*;
 pub type SysFn = Box<dyn legion::prelude::Schedulable>;
 
 /// an event-responding system, that operates on entities
-/// and their components.
+/// and their components. it's convention that systems
+/// are prefixed with an `S`.
 pub trait System
 {
     /// event this system will respond to. the event
@@ -17,6 +18,13 @@ pub trait System
     /// if system `B` depends on system `A`, you
     /// should make `B::ORDER` equal to `A::ORDER + 1`.
     const ORDER: Order;
+
+    /// should the system flush the command buffers
+    /// before execution? this is so that this system
+    /// can see entities and components added/removed
+    /// by previous systems. ie: `SRender` system would
+    /// most probably need this.
+    const FLUSH: bool = false;
 
     /// get the executing function of this system. use
     /// the `sys` function to implement this, and see

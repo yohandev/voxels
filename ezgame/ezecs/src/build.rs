@@ -12,6 +12,8 @@ struct Sys
 {
     exe: crate::SysFn,
     ord: crate::Order,
+    
+    flush: bool,
 }
 
 impl PartialEq for Sys
