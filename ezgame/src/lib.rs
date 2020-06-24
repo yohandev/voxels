@@ -10,5 +10,5 @@ pub mod systems;
 pub mod plugins;
 pub mod events;
 
-pub use ::legion::prelude as legion;
+pub use ::ezgame_ecs as ecs;
 pub use ::winit;
