@@ -23,10 +23,10 @@ impl Application
         let mut app = Self::create();
 
         // build game
-        T::build(&mut app);
+        app.build::<T>();
 
         // start event
-        app.invoke(events::APP_START);
+        app.events().push(&evt::START);
 
         // run game
         winit::event_loop::EventLoop::new().run
@@ -37,7 +37,7 @@ impl Application
                 *flow = winit::event_loop::ControlFlow::Poll;
                 
                 // special system: create windows
-                plugins::winit::systems::system_create_window(&mut app, window_target);
+                //plugins::winit::systems::system_create_window(&mut app, window_target);
 
                 // push current event into loop
                 if let Some(static_event) = event.to_static()
@@ -48,10 +48,11 @@ impl Application
                 }
 
                 // invoke systems for new event
-                app.invoke(events::APP_POLL);
+                app.events().push(&evt::POLL);
 
                 // process events
-                systems::system_process_invokes(&mut app, flow);
+                app.systems.process(&mut app.active, &mut app.resources);
+                //systems::system_process_invokes(&mut app, flow);
             }
         );
     }
@@ -118,5 +119,20 @@ impl Application
 
         // return
         Self { resources, systems, active }
+    }
+
+    /// build the game on this app
+    fn build<T: Game>(&mut self)
+    {
+        T::build(self);
+    }
+
+    /// shortcut for `app.resources.get<REvents>`
+    fn events(&mut self) -> &ecs::REvents
+    {
+        &self
+            .resources()
+            .get::<ecs::REvents>()
+            .unwrap()
     }
 }

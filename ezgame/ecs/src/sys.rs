@@ -36,3 +36,9 @@ pub trait System
     /// the legion docs for more help.
     fn exe() -> SysFn;
 }
+
+/// creates a new system builder
+pub fn sys(name: &'static str) -> SystemBuilder
+{
+    SystemBuilder::new(name)
+}

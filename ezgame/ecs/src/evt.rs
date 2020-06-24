@@ -10,7 +10,7 @@ pub struct Event(&'static str);
 pub type Order = isize;
 
 /// system execution order
-pub mod order
+pub mod ord
 {
     /// system will have high priority and be
     /// amongst the first to be executed.
