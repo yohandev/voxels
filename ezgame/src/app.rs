@@ -25,8 +25,11 @@ impl Application
         // build game
         app.build::<T>();
 
+        // prepare systems
+        app.prepare();
+
         // start event
-        app.events().push(&evt::START);
+        app.invoke(&evt::START);
 
         // run game
         winit::event_loop::EventLoop::new().run
@@ -44,11 +47,11 @@ impl Application
                 {
                     app
                         .resources()
-                        .insert(resources::WinitEvent(static_event));
+                        .insert(static_event);
                 }
 
                 // invoke systems for new event
-                app.events().push(&evt::POLL);
+                app.invoke(&evt::POLL);
 
                 // process events
                 app.systems.process(&mut app.active, &mut app.resources);
@@ -105,7 +108,7 @@ impl Application
     fn create() -> Self
     {
         // resources and systems
-        let resources = ecs::Resources::default();
+        let mut resources = ecs::Resources::default();
         let systems = ecs::EventSystems::default();
         
         // universe
@@ -127,12 +130,19 @@ impl Application
         T::build(self);
     }
 
-    /// shortcut for `app.resources.get<REvents>`
-    fn events(&mut self) -> &ecs::REvents
+    /// prepare currently added systems
+    fn prepare(&mut self)
     {
-        &self
+        self.systems.build(&mut self.resources);
+    }
+
+    /// shortcut for `app.resources.get<REvents>.push`
+    fn invoke(&mut self, e: &ecs::Event)
+    {
+        self
             .resources()
             .get::<ecs::REvents>()
             .unwrap()
+            .push(e);
     }
 }

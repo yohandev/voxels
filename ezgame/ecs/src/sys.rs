@@ -13,7 +13,7 @@ pub type Systems = legion::prelude::Schedule;
 /// an event-responding system, that operates on entities
 /// and their components. it's convention that systems
 /// are prefixed with an `S`.
-pub trait System
+pub trait System: 'static
 {
     /// event this system will respond to. the event
     /// itself can't have data directly, and should
@@ -30,6 +30,16 @@ pub trait System
     /// by previous systems. ie: `SRender` system would
     /// most probably need this.
     const FLUSH: bool = false;
+
+    /// before any system logic is run, insert resources
+    /// inside the app so the game doesn't crash. this is
+    /// optional, but should absolutely not run any logic!
+    /// order within an event is guarenteed, but order of
+    /// different evens is arbitrary.
+    fn prepare(_: &mut Resources)
+    {
+        // ...
+    }
 
     /// get the executing function of this system. use
     /// the `sys` function to implement this, and see

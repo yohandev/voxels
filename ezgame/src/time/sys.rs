@@ -14,6 +14,11 @@ impl System for STime
     const EVENT: Event = evt::POLL;
     const ORDER: Order = ord::HIGH;
 
+    fn prepare(r: &mut Resources)
+    {
+        r.insert(super::RTime::new());
+    }
+
     fn exe() -> SysFn
     {
         // begin...

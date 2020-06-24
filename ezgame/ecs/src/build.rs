@@ -14,8 +14,13 @@ struct Sys
     exe: crate::SysFn,
     ord: crate::Order,
 
+    prep: PrepFn,
+
     flush: bool,
 }
+
+/// closure version of System::prepare()
+type PrepFn = Box<dyn FnOnce(&mut crate::Resources)>;
 
 impl Builder
 {
@@ -29,27 +34,33 @@ impl Builder
             exe: T::exe(),
             ord: T::ORDER,
             flush: T::FLUSH,
+            prep: Box::new(T::prepare),
         });
     }
 
     /// build the Systems, consuming the
     /// builder `self`.
-    pub fn build(mut self) -> crate::Systems
+    pub fn build(mut self, r: &mut crate::Resources) -> crate::Systems
     {
         let mut s = crate::Systems::builder();
 
-        loop
+        // iterate in priority order
+        while let Some(sys) = self.sys.pop()
         {
-            if let Some(sys) = self.sys.pop()
+            // prepare systems
+            (sys.prep)(r);
+
+            // flush(?)
+            if sys.flush
             {
-                if sys.flush
-                {
-                    s = s.flush();
-                }
-                s = s.add_system(sys.exe);
+                s = s.flush();
             }
-            else { break; }
+
+            // add to schedule
+            s = s.add_system(sys.exe);
         }
+
+        // finalize schedule
         s.build()
     }
 }

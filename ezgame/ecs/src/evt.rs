@@ -1,7 +1,8 @@
 /// event that triggers systems when invoked.
-/// representation is a namespace(`str`) + id(`str`).
-#[derive(Debug, Eq, PartialEq, Hash, Copy, Clone)]
-pub struct Event(&'static str);
+/// representation is a static string which
+/// should follow the format: `namespace_id`.
+/// ie: `ezgame_update`
+pub type Event = &'static str;
 
 /// system execution order, ascending. if system
 /// `A::ORDER = 0`, `B::ORDER = 27`, and `C::ORDER
@@ -73,15 +74,5 @@ impl REvents
     pub(crate) fn is_empty(&self) -> bool
     {
         self.queue.is_empty()
-    }
-}
-
-impl Event
-{
-    /// create a new event(doesn't actually
-    /// invoke it)
-    pub fn new(name: &'static str) -> Self
-    {
-        Self(name)
     }
 }

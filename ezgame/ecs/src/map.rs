@@ -21,7 +21,8 @@ enum SystemOven
 impl EventSystems
 {
     /// recursively process all events inside
-    /// the REvents resource.
+    /// the REvents resource. if some systems
+    /// aren't built, they will be built dynamically.
     pub fn process(&mut self, registry: &mut Registry, resources: &mut Resources)
     {
         // retrieve events
@@ -43,21 +44,22 @@ impl EventSystems
         while let Some(e) = events.pop()
         {
             // get systems
-            if let Some(systems) = self.map.get_mut(&e)
+            if let Some(oven) = self.map.get_mut(&e)
             {
                 // finalize build
-                if let SystemOven::Baking(b) = systems
+                if let SystemOven::Baking(b) = oven
                 {
-                    *systems = SystemOven::Baked
+                    *oven = SystemOven::Baked
                     (
-                        b.take()
+                        b
+                        .take()
                         .unwrap()
-                        .build()
+                        .build(resources)
                     );
                 }
                 
                 // run systems
-                if let SystemOven::Baked(sys) = systems
+                if let SystemOven::Baked(sys) = oven
                 {
                     sys.execute(registry, resources);
                 }
@@ -94,6 +96,29 @@ impl EventSystems
                 );
                 // baking, append!
                 self.insert::<T>();
+            }
+        }
+    }
+
+    /// explicitely build all systems currently
+    /// added, inserting their resources into the
+    /// app.
+    pub fn build(&mut self, resources: &mut Resources)
+    {
+        // go through every event arbitrarily
+        for oven in self.map.values_mut()
+        {
+            // only build unbaked
+            if let SystemOven::Baking(b) = oven
+            {
+                // bake
+                *oven = SystemOven::Baked
+                (
+                    b
+                    .take()
+                    .unwrap()
+                    .build(resources)
+                );
             }
         }
     }
