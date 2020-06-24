@@ -37,9 +37,9 @@ pub use legion::prelude::
 
     // traits
     ResourceSet,
+    // Schedulable,
     
     //Runnable,
-    //Schedulable,
     //Schedule,
     //System,
 };
