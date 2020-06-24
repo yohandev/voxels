@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 legion = "0.2.1"
 winit = "0.22.2"
+ezecs = { path = "./ezecs" }
 
 ezgfx = { path = "../ezgfx", optional = true }
 
