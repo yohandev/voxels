@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 legion = "0.2.4"
+crossbeam = "0.7.3"
