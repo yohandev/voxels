@@ -1,5 +1,5 @@
 [package]
-name = "ezecs"
+name = "ezgame-ecs"
 version = "0.1.0"
 authors = ["yohandev"]
 edition = "2018"
