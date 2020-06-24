@@ -34,12 +34,12 @@ pub use legion::prelude::
     BitSet,
     Resources,
     SystemBuilder,
+    // Schedule,
 
     // traits
     ResourceSet,
     // Schedulable,
     
     //Runnable,
-    //Schedule,
     //System,
 };

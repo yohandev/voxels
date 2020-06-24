@@ -5,6 +5,11 @@ use crate::*;
 /// function.
 pub type SysFn = Box<dyn legion::prelude::Schedulable>;
 
+/// a collection of systems, that may run in parallel.
+/// basically, a legion`Schedule`. use the `Builder`
+/// to create one of these, and not Systems::builder().
+pub type Systems = legion::prelude::Schedule;
+
 /// an event-responding system, that operates on entities
 /// and their components. it's convention that systems
 /// are prefixed with an `S`.

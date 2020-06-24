@@ -1,6 +1,7 @@
 use std::collections::BinaryHeap;
 
 /// `Systems` builder
+#[derive(Default)]
 pub struct Builder
 {
     sys: BinaryHeap<Sys>
@@ -12,8 +13,45 @@ struct Sys
 {
     exe: crate::SysFn,
     ord: crate::Order,
-    
+
     flush: bool,
+}
+
+impl Builder
+{
+    /// push a system, which is sorted by
+    /// its order using the inner binary
+    /// heap.
+    pub fn push<T: crate::System>(&mut self)
+    {
+        self.sys.push(Sys
+        {
+            exe: T::exe(),
+            ord: T::ORDER,
+            flush: T::FLUSH,
+        });
+    }
+
+    /// build the Systems, consuming the
+    /// builder `self`.
+    pub fn build(mut self) -> crate::Systems
+    {
+        let mut s = crate::Systems::builder();
+
+        loop
+        {
+            if let Some(sys) = self.sys.pop()
+            {
+                if sys.flush
+                {
+                    s = s.flush();
+                }
+                s = s.add_system(sys.exe);
+            }
+            else { break; }
+        }
+        s.build()
+    }
 }
 
 impl PartialEq for Sys
