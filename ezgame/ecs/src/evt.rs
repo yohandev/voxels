@@ -75,3 +75,13 @@ impl REvents
         self.queue.is_empty()
     }
 }
+
+impl Event
+{
+    /// create a new event(doesn't actually
+    /// invoke it)
+    pub fn new(name: &'static str) -> Self
+    {
+        Self(name)
+    }
+}
