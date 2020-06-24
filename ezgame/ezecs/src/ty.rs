@@ -34,7 +34,7 @@ pub use legion::prelude::
     BitSet,
     Resources,
     SystemBuilder,
-    // Schedule,
+    //Schedule,
 
     // traits
     ResourceSet,

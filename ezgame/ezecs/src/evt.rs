@@ -1,8 +1,6 @@
 /// event that triggers systems when invoked.
-/// internally, it's just a number but the user
-/// facing representation is a namespace(`str`) +
-/// id(`str`).
-pub struct Event(usize);
+/// representation is a namespace(`str`) + id(`str`).
+pub struct Event(&'static str);
 
 /// system execution order, ascending. if system
 /// `A::ORDER = 0`, `B::ORDER = 27`, and `C::ORDER
