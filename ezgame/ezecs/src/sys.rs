@@ -1,7 +1,7 @@
 use crate::*;
 
 /// system function, which does the actual logic of
-/// a system and is returned in the `System::get_fn`
+/// a system and is returned in the `System::exe`
 /// function.
 pub type SysFn = Box<dyn legion::prelude::Schedulable>;
 
@@ -21,5 +21,5 @@ pub trait System
     /// get the executing function of this system. use
     /// the `sys` function to implement this, and see
     /// the legion docs for more help.
-    fn get_fn() -> SysFn;
+    fn exe() -> SysFn;
 }
