@@ -39,8 +39,8 @@ impl Application
                 // poll events until quit
                 *flow = winit::event_loop::ControlFlow::Poll;
                 
-                // special system: create windows
-                //plugins::winit::systems::system_create_window(&mut app, window_target);
+                // poll window requests
+                window::create_window(&mut app, window_target);
 
                 // push current event into loop
                 if let Some(static_event) = event.to_static()
@@ -55,7 +55,6 @@ impl Application
 
                 // process events
                 app.systems.process(&mut app.active, &mut app.resources);
-                //systems::system_process_invokes(&mut app, flow);
             }
         );
     }
@@ -137,7 +136,7 @@ impl Application
     }
 
     /// shortcut for `app.resources.get<REvents>.push`
-    fn invoke(&mut self, e: ecs::Event)
+    pub(crate) fn invoke(&mut self, e: ecs::Event)
     {
         self
             .resources()
