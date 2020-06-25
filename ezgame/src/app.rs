@@ -45,13 +45,12 @@ impl Application
                 // push current event into loop
                 if let Some(static_event) = event.to_static()
                 {
-                    app
-                        .resources()
-                        .insert(static_event);
-                }
+                    // insert latest event
+                    app.resources().insert(static_event);
 
-                // invoke systems for new event
-                app.invoke(evt::POLL);
+                    // invoke systems for new event
+                    app.invoke(evt::POLL);
+                }
 
                 // process events
                 app.systems.process(&mut app.active, &mut app.resources);
