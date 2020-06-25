@@ -58,9 +58,9 @@ impl REvents
     /// push an event to the event queue. note
     /// that the event won't be immediately
     /// executed, and duplicates can occur.
-    pub fn push(&self, e: &Event)
+    pub fn push(&self, e: Event)
     {
-        self.queue.push(*e);
+        self.queue.push(e);
     }
 
     /// internal: pop the events queue for

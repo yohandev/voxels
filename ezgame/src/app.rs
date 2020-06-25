@@ -29,7 +29,7 @@ impl Application
         app.prepare();
 
         // start event
-        app.invoke(&evt::START);
+        app.invoke(evt::START);
 
         // run game
         winit::event_loop::EventLoop::new().run
@@ -51,7 +51,7 @@ impl Application
                 }
 
                 // invoke systems for new event
-                app.invoke(&evt::POLL);
+                app.invoke(evt::POLL);
 
                 // process events
                 app.systems.process(&mut app.active, &mut app.resources);
@@ -137,7 +137,7 @@ impl Application
     }
 
     /// shortcut for `app.resources.get<REvents>.push`
-    fn invoke(&mut self, e: &ecs::Event)
+    fn invoke(&mut self, e: ecs::Event)
     {
         self
             .resources()
