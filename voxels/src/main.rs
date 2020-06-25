@@ -2,7 +2,7 @@
 //mod resources;
 //mod systems;
 mod client;
-mod game;
+mod shared;
 
 use ezgame::*;
 
