@@ -11,3 +11,6 @@ pub mod evt;
 
 pub use ::ezgame_ecs as ecs;
 pub use ::winit;
+
+#[cfg(feature="plugin-ezgfx")]
+pub mod gfx;

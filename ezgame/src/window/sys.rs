@@ -46,7 +46,7 @@ impl System for SWindow
                     {
                         winit::event::WindowEvent::Resized(_) =>
                         {
-                            r_events.push(super::evt::WINDOW_RESIZED);
+                            r_events.push(super::evt::RESIZED);
                         }
                         winit::event::WindowEvent::CloseRequested =>
                         {
@@ -54,7 +54,7 @@ impl System for SWindow
                         }
                         winit::event::WindowEvent::ScaleFactorChanged {..} =>
                         {
-                            r_events.push(super::evt::WINDOW_RESIZED);
+                            r_events.push(super::evt::RESIZED);
                         },
                         _ => {}
                     }
