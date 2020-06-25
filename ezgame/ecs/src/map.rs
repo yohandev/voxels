@@ -100,6 +100,13 @@ impl EventSystems
         }
     }
 
+    /// insert all the systems in a bundle,
+    /// automatically figuring out ordering and events.
+    pub fn bundle<T: SystemBundle>(&mut self)
+    {
+        T::insert(self);
+    }
+
     /// explicitely build all systems currently
     /// added, inserting their resources into the
     /// app.
