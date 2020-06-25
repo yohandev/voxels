@@ -3,7 +3,7 @@ use ezgame::gfx::*;
 
 use super::super::*;
 
-/// system that iniitializes the RGraphicsShared
+/// system that initializes the RGraphicsShared
 /// resource
 pub struct SGraphicsShared;
 
@@ -15,6 +15,11 @@ impl System for SGraphicsShared
 {
     const EVENT: Event = evt::READY;
     const ORDER: Order = ord::HIGH;
+
+    fn prepare(r: &mut Resources)
+    {
+        r.insert(RGraphicsShared::None);
+    }
 
     fn exe() -> SysFn
     {
@@ -40,6 +45,11 @@ impl System for SGraphicsChunk
 {
     const EVENT: Event = evt::READY;
     const ORDER: Order = SGraphicsShared::ORDER + 1;
+
+    fn prepare(r: &mut Resources)
+    {
+        r.insert(RGraphicsChunk::None);
+    }
 
     fn exe() -> SysFn
     {
