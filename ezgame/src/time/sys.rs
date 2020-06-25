@@ -39,11 +39,11 @@ impl System for STime
             }
             if let winit::event::Event::MainEventsCleared = &**r_winit
             {
-                r_events.push(evt::UPDATE);
+                r_events.push(super::evt::UPDATE);
             }
             if let winit::event::Event::RedrawRequested(_) = &**r_winit
             {
-                r_events.push(evt::RENDER);
+                r_events.push(super::evt::RENDER);
             }
         })
     }
