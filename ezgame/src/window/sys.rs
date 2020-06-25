@@ -10,6 +10,11 @@ impl System for SWindow
     const EVENT: Event = evt::POLL;
     const ORDER: Order = ord::HIGH;
 
+    fn prepare(r: &mut Resources)
+    {
+        r.insert(super::RWindow::None);
+    }
+
     fn exe() -> SysFn
     {
         // begin...
