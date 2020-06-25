@@ -2,14 +2,14 @@ use ezgame::gfx::*;
 use ezmath::*;
 
 /// shared graphic resources for chunks
-pub struct RGraphicsChunk
-{
-    pub vs: Shader,         // shared vertex shader
-    pub fs: Shader,         // shared fragment shader
+pub type RGraphicsChunk = Option
+<(
+    Shader,         // shared vertex shader
+    Shader,         // shared fragment shader
 
-    pub bind: ChunkPosBind, // shared chunk position uniform
-    pub pipeline: Pipeline, // shared rendering pipeline
-}
+    ChunkPosBind,   // shared chunk position uniform
+    Pipeline,       // shared rendering pipeline
+)>;
 
 /// the geometry and position uniform of a chunk
 pub struct ChunkMesh

@@ -2,10 +2,10 @@ use ezgame::gfx::*;
 use ezmath::*;
 
 /// shared graphic resources
-pub struct RGraphicsShared
-{
-    pub vp: ViewProjBindGroup,  //view projection uniform
-}
+pub type RGraphicsShared = Option
+<(
+    ViewProjBindGroup,  // view projection bind group
+)>;
 
 buffer_data!
 (
