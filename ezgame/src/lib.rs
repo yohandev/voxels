@@ -14,3 +14,17 @@ pub use ::winit;
 
 #[cfg(feature="plugin-ezgfx")]
 pub mod gfx;
+
+/// system bundle consisting of game systems
+#[cfg(not(feature="plugin-ezgfx"))]
+pub type GameBundle = (window::SWindow, input::SInput, time::STime);
+
+#[cfg(feature="plugin-ezgfx")]
+pub type GameBundle =
+(
+    window::SWindow,
+    input::SInput,
+    time::STime,
+    gfx::SGraphicsInit,
+    gfx::SGraphicsResize
+);

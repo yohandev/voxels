@@ -117,6 +117,7 @@ impl Application
 
         // insert engine resources
         resources.insert(factory);
+        resources.insert(ecs::REvents::default());
 
         // return
         Self { resources, systems, active }

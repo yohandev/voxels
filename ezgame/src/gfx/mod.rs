@@ -4,3 +4,5 @@ mod sys;
 
 pub use res::*;
 pub use sys::*;
+
+pub use ezgfx::*;
