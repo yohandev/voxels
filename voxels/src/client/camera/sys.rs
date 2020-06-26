@@ -44,6 +44,8 @@ impl System for SCameraUniform
     const EVENT: Event = time::evt::RENDER;
     const ORDER: Order = ord::HIGH;
 
+    const FLUSH: bool = true;
+
     fn exe() -> SysFn
     {
         // begin...

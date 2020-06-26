@@ -11,6 +11,10 @@ pub type RGraphicsChunk = Option
     Pipeline,       // shared rendering pipeline
 )>;
 
+/// resource that stores all the
+/// chunk meshes
+pub type RChunkMeshes = dashmap::DashMap<int3, ChunkMesh>;
+
 /// the geometry and position uniform of a chunk
 pub struct ChunkMesh
 {

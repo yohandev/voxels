@@ -9,6 +9,7 @@ edition = "2018"
 ezgame = { path = "../ezgame" }
 ezmath = { path = "../ezmath" }
 
+dashmap = "3.11.4"
 noise = "0.6.0"
 
 [features]

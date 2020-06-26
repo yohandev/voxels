@@ -8,3 +8,9 @@ pub const CHUNK_LAYER: usize = CHUNK_SIZE * CHUNK_SIZE;
 /// cube of CHUNK_SIZE = 32 * 32 * 32
 /// total number of full blocks in a chunk
 pub const CHUNK_VOLUME: usize = CHUNK_LAYER * CHUNK_SIZE;
+
+mod cmp;
+mod tag;
+
+pub use cmp::*;
+pub use tag::*;

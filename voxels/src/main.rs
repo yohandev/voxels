@@ -19,8 +19,8 @@ impl Game for TestGame
     {
         app.systems().bundle::<GameBundle>();
 
-        // add your systems here
-        //systems::add_systems(app);
+        app.systems().bundle::<shared::Bundle>();
+        app.systems().bundle::<client::Bundle>();
 
         // request window
         app.resources().insert

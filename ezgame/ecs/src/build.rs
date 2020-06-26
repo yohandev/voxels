@@ -32,7 +32,7 @@ impl Builder
         self.sys.push(Sys
         {
             exe: T::exe(),
-            ord: T::ORDER,
+            ord: -T::ORDER,
             flush: T::FLUSH,
             prep: Box::new(T::prepare),
         });
