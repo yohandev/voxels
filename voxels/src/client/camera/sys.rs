@@ -55,13 +55,13 @@ impl System for SCameraUniform
         (
             <(
                 Read<super::CCamera>,
-                TryRead<crate::shared::transform::CLocalToWorld>
+                TryRead<crate::common::transform::CLocalToWorld>
             )>::query()
             .filter
             (
                 tag::<super::TMainCamera>() &
                 (changed::<super::CCamera>() |
-                changed::<crate::shared::transform::CLocalToWorld>())
+                changed::<crate::common::transform::CLocalToWorld>())
             )
         )
         // resources...

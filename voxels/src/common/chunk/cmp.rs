@@ -1,6 +1,6 @@
 use ezmath::*;
 
-use crate::shared::Block;
+use crate::common::Block;
 use super::*;
 
 /// chunk component
