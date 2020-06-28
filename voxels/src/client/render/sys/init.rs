@@ -85,7 +85,7 @@ impl System for SGraphicsChunk
                     .depth(true)
                 .build();
             
-            r_chunk.replace((vs, fs, pos, pipeline));
+            r_chunk.replace((vs, fs, pos, pipeline, Default::default()));
         })
     }
 }

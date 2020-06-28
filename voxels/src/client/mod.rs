@@ -1,8 +1,10 @@
 mod camera;
 mod render;
+mod mesh;
 
 pub use camera::*;
 pub use render::*;
+pub use mesh::*;
 
 // client system bundle
 pub type Bundle =

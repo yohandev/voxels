@@ -21,7 +21,6 @@ impl System for SRender
         // resources...
         .read_resource::<crate::client::RGraphicsShared>()
         .read_resource::<crate::client::RGraphicsChunk>()
-        //read_resource::<crate::client::RChunkMeshes>()
         .write_resource::<RGraphics>()
         // system...
         .build(|_, world, (r_shared, r_chunk, r_gfx), q_chunks|
@@ -53,19 +52,13 @@ impl System for SRender
                     // pipeline
                     pass.pipeline(&chunk.3);
 
-                    // fetch meshes
-                    //let meshes = r_meshes.into_read_only();
-
                     // iter meshes
-                    // for (chunk, mesh) in meshes
-                    // {
-                    //     // if let Some(mesh) = r_meshes.get(&chunk.position())
-                    //     // {
-                    //         pass.bind_group(1, &mesh.pos);
-                    //         //pass.geometry(&mesh.geo);
-                    //         pass.draw(0..1);
-                    //     //}
-                    // }
+                    for mesh in chunk.4.values()
+                    {
+                        pass.bind_group(1, &mesh.pos);
+                        pass.geometry(&mesh.geo);
+                        pass.draw(0..1);
+                    }
                 }
             }
             // </frame>

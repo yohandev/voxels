@@ -9,11 +9,13 @@ pub type RGraphicsChunk = Option
 
     ChunkPosBind,   // shared chunk position uniform
     Pipeline,       // shared rendering pipeline
+
+    ChunkMeshes,    // pool of chunk meshes
 )>;
 
 /// resource that stores all the
 /// chunk meshes
-pub type RChunkMeshes = dashmap::DashMap<int3, ChunkMesh>;
+type ChunkMeshes = std::collections::HashMap<int3, ChunkMesh>;
 
 /// the geometry and position uniform of a chunk
 pub struct ChunkMesh
