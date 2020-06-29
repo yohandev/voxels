@@ -16,14 +16,12 @@ impl System for SRender
     {
         // begin...
         sys("render_system")
-        // components...
-        .with_query(<(Read<crate::common::chunk::CChunk>, Read<crate::client::ChunkMesh>)>::query())
         // resources...
         .read_resource::<crate::client::RGraphicsShared>()
         .read_resource::<crate::client::RGraphicsChunk>()
         .write_resource::<RGraphics>()
         // system...
-        .build(|_, world, (r_shared, r_chunk, r_gfx), q_chunks|
+        .build(|_, _, (r_shared, r_chunk, r_gfx), _|
         {
             if r_gfx.is_none()
             {
