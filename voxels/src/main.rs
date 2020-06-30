@@ -1,7 +1,8 @@
-mod components;
-mod resources;
-mod systems;
-mod game;
+//mod components;
+//mod resources;
+//mod systems;
+mod common;
+mod client;
 
 use ezgame::*;
 
@@ -16,64 +17,65 @@ impl Game for TestGame
 {
     fn build(app: &mut Application) -> Self
     {
-        // add common systems and resources. they won't
-        // interfere with any of your components and may
-        // impact some ezgame provided ones, but adding
-        // these might prevent some headaches and
-        // weird behaviours. 
-        app.add_defaults();
+        app.systems().bundle::<GameBundle>();
 
-        // add rendering plugin's sytems and resources
-        app.add_plugin_ezgfx();
-
-        // add your resources here
-        resources::add_resources(app);
-
-        // add your systems here
-        systems::add_systems(app);
+        app.systems().bundle::<common::Bundle>();
+        app.systems().bundle::<client::Bundle>();
 
         // request window
         app.resources().insert
         (
-            plugins::winit::resources::WindowRequest::new()
+            window::RWindowRequest::new()
                 .width(600)
                 .height(600)
                 .title("voxels")
         );
         
-        // you can have as many worlds as you want.
-        // ezgame is powered by Legion, so entities
-        // are valid across worlds.
-        let world = app.create_world();
-
         // insert standard camera into world
         let camera_components = 
         {
-            use crate::components::transform::*;
-            use crate::components::gfx::Camera;
+            use crate::common::transform::*;
+            use crate::client::camera::*;
 
-            vec!
-            [(
-                Camera::new(45f32.to_radians(), 0.01, 1000.0, 1.0, 1.0),
-                LocalToWorld::default(),
+            (
+                (TMainCamera,),
+                vec!
+                [(
+                    CCamera::new(45f32.to_radians(), 0.01, 1000.0, 1.0, 1.0),
+                    CLocalToWorld::default(),
 
-                Translation(ezmath::float3::new(0.0, 0.0, 10.0)),
-                Rotation::default()
-            )]
+                    CTranslation(ezmath::float3::new(0.0, 0.0, 10.0)),
+                    CRotation::default()
+                )]
+            )
         };
-        world.insert((), camera_components);
+        app
+            .registry()
+            .insert(camera_components.0, camera_components.1);
 
         // insert chunks into world
-        let chunk_components: Vec<(crate::components::game::Chunk,)> =
+        let chunk_components =
         {
-            use crate::components::game::*;
+            use crate::common::chunk::*;
 
-            (0..5)
+            const SIZE: i32 = crate::common::CHUNK_SIZE as i32;
+
+            let cmp: Vec<(CChunk, CBlockBuffer)> = (0..5)
                 .flat_map(|x| (0..5).map(move |z| (x, z)))
-                .map(|(x, z)| (Chunk::new(ezmath::int3::new(x * game::CHUNK_SIZE as i32, 0, z * game::CHUNK_SIZE as i32)),))
-                .collect()
+                .map
+                (
+                    |(x, z)|
+                    (
+                        CChunk::new(ezmath::int3::new(x * SIZE, 0, z * SIZE)),
+                        CBlockBuffer::new(),
+                    )
+                )
+                .collect();
+            cmp
         };
-        world.insert((crate::components::game::ChunkLoadTag,), chunk_components);
+        app
+            .registry()
+            .insert((crate::common::chunk::TUngenerated,), chunk_components);
 
         Self
     }

@@ -1,0 +1,9 @@
+[package]
+name = "ezgame-ecs"
+version = "0.1.0"
+authors = ["yohandev"]
+edition = "2018"
+
+[dependencies]
+legion = "0.2.4"
+crossbeam = "0.7.3"

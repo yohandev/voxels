@@ -4,11 +4,27 @@ mod app;
 pub use game::*;
 pub use app::*;
 
-pub mod components;
-pub mod resources;
-pub mod systems;
-pub mod plugins;
-pub mod events;
+pub mod window;
+pub mod input;
+pub mod time;
+pub mod evt;
 
-pub use ::legion::prelude as legion;
+pub use ::ezgame_ecs as ecs;
 pub use ::winit;
+
+#[cfg(feature="plugin-ezgfx")]
+pub mod gfx;
+
+/// system bundle consisting of game systems
+#[cfg(not(feature="plugin-ezgfx"))]
+pub type GameBundle = (window::SWindow, input::SInput, time::STime);
+
+#[cfg(feature="plugin-ezgfx")]
+pub type GameBundle =
+(
+    window::SWindow,
+    input::SInput,
+    time::STime,
+    gfx::SGraphicsInit,
+    gfx::SGraphicsResize
+);
