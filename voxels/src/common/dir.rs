@@ -40,6 +40,30 @@ impl Into<usize> for Direction
     }
 }
 
+impl From<usize> for Direction
+{
+    fn from(num: usize) -> Self
+    {
+        match num % 6
+        {
+            0 => Direction::ZPos,
+            1 => Direction::XPos,
+            2 => Direction::ZNeg,
+            3 => Direction::XNeg,
+            4 => Direction::YPos,
+            5 => Direction::YNeg,
+        }
+    } 
+}
+
+impl From<u8> for Direction
+{
+    fn from(num: u8) -> Self
+    {
+        (num as usize).into()
+    }
+}
+
 impl Into<int3> for Direction
 {
     fn into(self) -> int3
