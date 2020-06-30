@@ -3,6 +3,12 @@ use ezgame::gfx::*;
 use ezgame::time;
 use ezmath::*;
 
+use crate::client::gfx::
+{
+    RGraphicsShared, 
+    ViewProjUniform
+};
+
 /// updates the camera view-proj uniform
 pub struct SCameraUniform;
 
@@ -32,7 +38,7 @@ impl System for SCameraUniform
             )
         )
         // resources...
-        .read_resource::<super::super::RGraphicsShared>()
+        .read_resource::<RGraphicsShared>()
         .write_resource::<RGraphics>()
         // system...
         .build(|_, world, (r_shared, r_gfx), q_cam|
@@ -66,7 +72,7 @@ impl System for SCameraUniform
                 };
 
                 // update uniforms
-                ctx.update_uniform(&shared.0.bindings.0, super::super::ViewProjUniform::new(vp));
+                ctx.update_uniform(&shared.0.bindings.0, ViewProjUniform::new(vp));
 
                 // break after first camera
                 break;

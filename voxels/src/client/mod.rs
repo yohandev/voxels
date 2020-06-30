@@ -1,17 +1,12 @@
-mod camera;
-mod render;
-mod mesh;
-
-pub use camera::*;
-pub use render::*;
-pub use mesh::*;
+pub mod camera;
+pub mod gfx;
 
 // client system bundle
 pub type Bundle =
 (
     camera::SCameraResize,
     camera::SCameraUniform,
-    render::SGraphicsShared,
-    render::SGraphicsChunk,
-    render::SRender,
+    gfx::SGraphicsShared,
+    gfx::SGraphicsChunk,
+    gfx::SRender,
 );

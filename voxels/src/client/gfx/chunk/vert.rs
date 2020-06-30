@@ -1,34 +1,6 @@
 use ezgame::gfx::*;
 use ezmath::*;
 
-/// shared graphic resources for chunks
-pub type RGraphicsChunk = Option
-<(
-    Shader,         // shared vertex shader
-    Shader,         // shared fragment shader
-
-    ChunkPosBind,   // shared chunk position uniform
-    Pipeline,       // shared rendering pipeline
-
-    ChunkMeshes,    // pool of chunk meshes
-)>;
-
-/// resource that stores all the
-/// chunk meshes
-type ChunkMeshes = std::collections::HashMap<int3, ChunkMesh>;
-
-/// the geometry and position uniform of a chunk
-pub struct ChunkMesh
-{
-    pub geo: ChunkGeometry,
-    pub pos: ChunkPosBind,
-}
-
-/// geometry of a given chunk
-pub type ChunkGeometry = Geometry<ChunkVertex, u32>;
-/// position bind group of a chunk
-pub type ChunkPosBind = BindGroup<(Uniform<ChunkPosition>,)>;
-
 buffer_data!
 (
     /// compressed vertex layout
