@@ -4,6 +4,7 @@ use crate::shared::{ Block, CHUNK_SIZE, CHUNK_LAYER, CHUNK_VOLUME };
 
 /// component that stores a buffer of blocks,
 /// typically associated with a CChunk component.
+#[derive(Clone)]
 pub struct CBlockBuffer
 {
     /// raw blocks storage
