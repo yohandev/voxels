@@ -5,6 +5,7 @@ pub use dir::*;
 pub mod transform;
 pub mod debug;
 pub mod world;
+pub mod gen;
 
 /// shared system bundle
 pub type Bundle =

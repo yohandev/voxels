@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::hash_map::*;
 use ezmath::*;
 
 use super::*;
@@ -32,7 +32,7 @@ impl World
 
         if !self.chunks.contains_key(&pos)
         {
-            self.chunks.insert(pos, Chunk::new());
+            self.chunks.insert(pos, Chunk::new(pos));
         }
     }
 
@@ -40,5 +40,17 @@ impl World
     pub fn seed(&self) -> u32
     {
         self.seed
+    }
+
+    /// get an iterator over all the loaded chunks
+    pub fn chunks(&self) -> Values<'_, int3, Chunk>
+    {
+        self.chunks.values()
+    }
+
+    /// get a mutable iterator over all the loaded chunks
+    pub fn chunks_mut(&mut self) -> ValuesMut<'_, int3, Chunk>
+    {
+        self.chunks.values_mut()
     }
 }

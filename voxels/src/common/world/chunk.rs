@@ -17,12 +17,16 @@ pub struct Chunk
     /// raw blocks storage
     blocks: [Block; CHUNK_VOLUME],
 
+    /// min corner position
+    id: int3,
+
     /// current state
     state: ChunkState,
 }
 
 /// represents the state of a chunk for a given
 /// frame
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ChunkState
 {
     /// chunk hasn't been generated.
@@ -36,11 +40,12 @@ pub enum ChunkState
 impl Chunk
 {
     /// create a new chunk at the given position
-    pub(super) fn new() -> Self
+    pub(super) fn new(id: int3) -> Self
     {
         Self
         {
             blocks: [Block::default(); CHUNK_VOLUME],
+            id,
             state: ChunkState::Loading,
         }
     }
@@ -51,6 +56,19 @@ impl Chunk
         (r_pos.x as usize              ) +
         (r_pos.y as usize * CHUNK_SIZE ) +
         (r_pos.z as usize * CHUNK_LAYER)
+    }
+
+    /// returns the current state of the chunk
+    pub fn state(&self) -> ChunkState
+    {
+        self.state
+    }
+
+    /// get the position of the min corner in this
+    /// chunk.
+    pub fn id(&self) -> int3
+    {
+        self.id
     }
 }
 
