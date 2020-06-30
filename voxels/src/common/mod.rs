@@ -13,6 +13,7 @@ pub mod debug;
 /// shared system bundle
 pub type Bundle =
 (
-    debug::SDebugFps,
     transform::SLocalToWorld,
+    chunk::SChunkGen,
+    debug::SDebugFps,
 );

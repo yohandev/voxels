@@ -2,6 +2,7 @@ use ezmath::*;
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[allow(dead_code)]
 /// direction enum that can be translated to
 /// a u8, usize, and int vector
 pub enum Direction

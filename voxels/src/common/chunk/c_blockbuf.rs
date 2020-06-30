@@ -79,3 +79,9 @@ impl_index!((usize, usize, u32), 0, 1, 2);
 impl_index!((usize, u32, usize), 0, 1, 2);
 impl_index!((u32, usize, usize), 0, 1, 2);
 impl_index!((u32, usize, u32), 0, 1, 2);
+
+impl_index!((i32, u32, u32), 0, 1, 2);
+impl_index!((i32, i32, u32), 0, 1, 2);
+impl_index!((i32, u32, i32), 0, 1, 2);
+impl_index!((u32, i32, i32), 0, 1, 2);
+impl_index!((u32, i32, u32), 0, 1, 2);
