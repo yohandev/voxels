@@ -4,16 +4,6 @@ use ezmath::*;
 #[derive(Debug, Clone, Default)]
 pub struct CLocalToWorld(pub float4x4);
 
-/// translation component, to be used (optionally) with
-/// the LocalToWorld component
-#[derive(Debug, Clone, Default)]
-pub struct CTranslation(pub float3);
-
-/// rotation component, to be used(optionally) with the
-/// Rotation component
-#[derive(Debug, Clone, Default)]
-pub struct CRotation(pub float3);
-
 impl CLocalToWorld
 {
     /// get the forward of this local to world matrix
