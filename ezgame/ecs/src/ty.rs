@@ -43,3 +43,9 @@ pub use legion::prelude::
     //Runnable,
     //System,
 };
+
+pub use legion::borrow::
+{
+    Ref as CmpRef,
+    RefMut as CmpRefMut,
+};

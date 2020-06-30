@@ -24,6 +24,16 @@ pub enum Direction
     Down,
 }
 
+const DIR: [[i32; 3]; 6] =
+[
+    [  0,  0,  1  ],
+    [  1,  0,  0  ],
+    [  0,  0, -1  ],
+    [ -1,  0,  0  ],
+    [  0,  1,  0  ],
+    [  0, -1,  0  ],
+];
+
 impl Into<u8> for Direction
 {
     fn into(self) -> u8
@@ -52,6 +62,7 @@ impl From<usize> for Direction
             3 => Direction::XNeg,
             4 => Direction::YPos,
             5 => Direction::YNeg,
+            _ => Direction::ZPos,
         }
     } 
 }
@@ -68,15 +79,6 @@ impl Into<int3> for Direction
 {
     fn into(self) -> int3
     {
-        const DIR: [[i32; 3]; 6] =
-        [
-            [  0,  0,  1  ],
-            [  1,  0,  0  ],
-            [  0,  0, -1  ],
-            [ -1,  0,  0  ],
-            [  0,  1,  0  ],
-            [  0, -1,  0  ],
-        ];
         let n: usize = self.into();
 
         int3::new(DIR[n][0], DIR[n][1], DIR[n][2])
@@ -87,17 +89,31 @@ impl Into<float3> for Direction
 {
     fn into(self) -> float3
     {
-        const DIR: [[f32; 3]; 6] =
-        [
-            [  0.0,  0.0,  1.0  ],
-            [  1.0,  0.0,  0.0  ],
-            [  0.0,  0.0, -1.0  ],
-            [ -1.0,  0.0,  0.0  ],
-            [  0.0,  1.0,  0.0  ],
-            [  0.0, -1.0,  0.0  ],
-        ];
         let n: usize = self.into();
 
-        float3::new(DIR[n][0], DIR[n][1], DIR[n][2])
+        float3::new(DIR[n][0] as f32, DIR[n][1] as f32, DIR[n][2] as f32)
+    }
+}
+
+impl std::convert::TryFrom<(i32, i32, i32)> for Direction
+{
+    type Error = ();
+
+    fn try_from(vec: (i32, i32, i32)) -> Result<Self, ()>
+    {
+        let x = vec.0.signum();
+        let y = vec.1.signum();
+        let z = vec.2.signum();
+
+        for i in 0..6
+        {
+            if DIR[i][0] == x
+                && DIR[i][1] == y
+                && DIR[i][2] == z
+            {
+                return Ok(i.into());
+            }
+        }
+        Err(())
     }
 }

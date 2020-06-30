@@ -11,6 +11,18 @@ pub struct CBlockBuffer
     blocks: Box<[Block; CHUNK_VOLUME]>,
 }
 
+impl CBlockBuffer
+{
+    /// create a new, empty, block buffer
+    pub fn new() -> Self
+    {
+        Self
+        {
+            blocks: Box::new([Block::default(); CHUNK_VOLUME])
+        }
+    }
+}
+
 macro_rules! impl_index
 {
     ($index_ty:ty, $x: tt, $y: tt, $z: tt) =>

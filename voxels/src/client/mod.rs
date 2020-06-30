@@ -8,5 +8,6 @@ pub type Bundle =
     camera::SCameraUniform,
     gfx::SGraphicsShared,
     gfx::SGraphicsChunk,
+    gfx::SChunkMesh,
     gfx::SRender,
 );
