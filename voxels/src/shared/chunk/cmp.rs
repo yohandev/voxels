@@ -14,11 +14,6 @@ pub struct CChunk
     pos: int3,
 }
 
-pub struct CChunkNeighbor
-{
-    
-}
-
 impl CChunk
 {
     /// create a new chunk at the given position

@@ -1,16 +1,8 @@
-#![allow(dead_code)]
+mod c_blockbuf;
+mod c_chunk;
 
-/// number of blocks in one dimension of a chunk
-/// currently, chunks are 32x32x32
-pub const CHUNK_SIZE: usize = 32;
-/// square of CHUNK_SIZE = 32 * 32
-pub const CHUNK_LAYER: usize = CHUNK_SIZE * CHUNK_SIZE;
-/// cube of CHUNK_SIZE = 32 * 32 * 32
-/// total number of full blocks in a chunk
-pub const CHUNK_VOLUME: usize = CHUNK_LAYER * CHUNK_SIZE;
-
-mod cmp;
-mod tag;
-
-pub use cmp::*;
-pub use tag::*;
+pub use self::
+{
+    c_blockbuf::*,
+    c_chunk::*,
+};
