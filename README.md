@@ -121,3 +121,6 @@ let foo = float3::new(0.0, 1.0, 2.0);
 let bar = float4x4::identity();
 let baz = float4x4::perspective(600.0 / 400.0, 45.0, 0.01, 100.0);
 ```
+
+## `voxels`
+### tester game for the `ez` suite
