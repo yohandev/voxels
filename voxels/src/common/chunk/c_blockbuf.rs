@@ -1,6 +1,6 @@
 use ezmath::*;
 
-use crate::shared::{ Block, CHUNK_SIZE, CHUNK_LAYER, CHUNK_VOLUME };
+use crate::common::{ Block, CHUNK_SIZE, CHUNK_LAYER, CHUNK_VOLUME };
 
 /// component that stores a buffer of blocks,
 /// typically associated with a CChunk component.

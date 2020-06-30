@@ -2,7 +2,7 @@ use ezgame::time::evt;
 use ezgame::ecs::*;
 use ezgame::gfx::*;
 
-use crate::shared::chunk::CChunk;
+use crate::common::chunk::CChunk;
 use crate::client::gfx::
 {
     ChunkMesh,

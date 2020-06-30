@@ -1,8 +1,8 @@
 //mod components;
 //mod resources;
 //mod systems;
+mod common;
 mod client;
-mod shared;
 
 use ezgame::*;
 
@@ -19,7 +19,7 @@ impl Game for TestGame
     {
         app.systems().bundle::<GameBundle>();
 
-        app.systems().bundle::<shared::Bundle>();
+        app.systems().bundle::<common::Bundle>();
         app.systems().bundle::<client::Bundle>();
 
         // request window

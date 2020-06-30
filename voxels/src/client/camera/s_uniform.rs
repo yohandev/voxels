@@ -3,6 +3,7 @@ use ezgame::gfx::*;
 use ezgame::time;
 use ezmath::*;
 
+use crate::common::transform::CLocalToWorld;
 use crate::client::gfx::
 {
     RGraphicsShared, 
@@ -28,13 +29,13 @@ impl System for SCameraUniform
         (
             <(
                 Read<super::CCamera>,
-                TryRead<crate::shared::transform::CLocalToWorld>
+                TryRead<CLocalToWorld>
             )>::query()
             .filter
             (
                 tag::<super::TMainCamera>() &
                 (changed::<super::CCamera>() |
-                changed::<crate::shared::transform::CLocalToWorld>())
+                changed::<CLocalToWorld>())
             )
         )
         // resources...
