@@ -4,8 +4,9 @@ pub mod gfx;
 // client system bundle
 pub type Bundle =
 (
-    camera::SCameraResize,
+    camera::SFpsController,
     camera::SCameraUniform,
+    camera::SCameraResize,
     gfx::SGraphicsShared,
     gfx::SGraphicsChunk,
     gfx::SChunkMesh,
