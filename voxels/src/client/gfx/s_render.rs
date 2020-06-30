@@ -2,10 +2,8 @@ use ezgame::time::evt;
 use ezgame::ecs::*;
 use ezgame::gfx::*;
 
-use crate::common::chunk::CChunk;
 use crate::client::gfx::
 {
-    ChunkMesh,
     RGraphicsChunk,
     RGraphicsShared,
 };
@@ -24,14 +22,12 @@ impl System for SRender
     {
         // begin...
         sys("render_system")
-        // components...
-        .with_query(<(Read<CChunk>, Read<ChunkMesh>)>::query())
         // resources...
         .read_resource::<RGraphicsShared>()
         .read_resource::<RGraphicsChunk>()
         .write_resource::<RGraphics>()
         // system...
-        .build(|_, world, (r_shared, r_chunk, r_gfx), q_chunks|
+        .build(|_, _, (r_shared, r_chunk, r_gfx), _|
         {
             if r_gfx.is_none()
             {
