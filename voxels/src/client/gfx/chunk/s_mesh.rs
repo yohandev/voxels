@@ -74,7 +74,7 @@ impl System for SChunkMesh
                                 let dy = dir.y;
                                 let dz = dir.z;
 
-                                let neighbor = region.get(x + dx, y + dy, z + dz);
+                                let neighbor = region.get(x + dx, y + dy, z + dz, d);
 
                                 // only generate face is neighbor face isn't
                                 // full opaque
@@ -105,9 +105,9 @@ impl System for SChunkMesh
 
                 //push mesh
                 gfx_chunk.4.insert(chunk.pos(), mesh);
-                
+
                 println!("remeshed chunk!");
-                
+
                 // done meshing, remove tag
                 cmd.remove_tag::<TUpdated>(ent);
             }
@@ -145,6 +145,16 @@ impl<'a> Region<'a>
                 }
             }
         }
+
+        if neighbors[0].is_some()
+        && neighbors[1].is_some()
+        && neighbors[2].is_some()
+        && neighbors[3].is_some()
+        && neighbors[4].is_some()
+        && neighbors[5].is_some()
+        {
+            println!("all neighbors @ {}", center.0.pos());
+        }
         
         Self
         {
@@ -156,7 +166,7 @@ impl<'a> Region<'a>
     /// get a block in this region given the relative
     /// coordinates. returns None is the block isn't
     /// loaded.
-    fn get(&self, x: i32, y: i32, z: i32) -> Option<Block>
+    fn get(&self, x: i32, y: i32, z: i32, d: usize) -> Option<Block>
     {
         const SIZE: i32 = CHUNK_SIZE as i32;
 
@@ -164,21 +174,15 @@ impl<'a> Region<'a>
         || y < 0 || y >= SIZE
         || z < 0 || z >= SIZE
         {
-            use std::convert::TryFrom;
-
             let rx = x.rem_euclid(SIZE);
             let ry = y.rem_euclid(SIZE);
             let rz = z.rem_euclid(SIZE);
 
-            if let Ok(dir) = Direction::try_from((x, y, z))
+            if let Some(neighbor) = &self.neighbors[d]
             {
-                let i: usize = dir.into();
-
-                if let Some(neighbor) = &self.neighbors[i]
-                {
-                    Some(neighbor[(rx, ry, rz)])
-                } else { None }
-            } else { None }
+                Some(neighbor[(rx, ry, rz)])
+            }
+            else { None }
         }
         else
         {

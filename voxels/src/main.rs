@@ -62,11 +62,12 @@ impl Game for TestGame
 
             let cmp: Vec<(CChunk, CBlockBuffer)> = (0..5)
                 .flat_map(|x| (0..5).map(move |z| (x, z)))
+                .flat_map(|(x, z)| (-2..2).map(move |y| (x, y, z)))
                 .map
                 (
-                    |(x, z)|
+                    |(x, y, z)|
                     (
-                        CChunk::new(ezmath::int3::new(x * SIZE, 0, z * SIZE)),
+                        CChunk::new(ezmath::int3::new(x * SIZE, y * SIZE, z * SIZE)),
                         CBlockBuffer::new(),
                     )
                 )

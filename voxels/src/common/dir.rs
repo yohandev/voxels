@@ -101,19 +101,25 @@ impl std::convert::TryFrom<(i32, i32, i32)> for Direction
 
     fn try_from(vec: (i32, i32, i32)) -> Result<Self, ()>
     {
-        let x = vec.0.signum();
-        let y = vec.1.signum();
-        let z = vec.2.signum();
+        let x = vec.0.abs();
+        let y = vec.1.abs();
+        let z = vec.2.abs();
 
-        for i in 0..6
+        if x > y && x > z
         {
-            if DIR[i][0] == x
-                && DIR[i][1] == y
-                && DIR[i][2] == z
-            {
-                return Ok(i.into());
-            }
+            Ok(if vec.0 > 0 { Direction::XPos } else { Direction::XNeg })
         }
-        Err(())
+        else if y > x && y > z
+        {
+            Ok(if vec.1 > 0 { Direction::YPos } else { Direction::YNeg })
+        }
+        else if z > x && z > y
+        {
+            Ok(if vec.2 > 0 { Direction::ZPos } else { Direction::ZNeg })
+        }
+        else
+        {
+            Err(())
+        }
     }
 }

@@ -61,6 +61,8 @@ impl System for SChunkGen
                     }
                 }
 
+                println!("generated chunk!");
+
                 // remove and set tags
                 cmd.remove_tag::<TUngenerated>(ent);
                 cmd.add_tag(ent, TUpdated);
