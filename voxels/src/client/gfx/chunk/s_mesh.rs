@@ -40,11 +40,8 @@ impl System for SChunkMesh
             let gfx = r_gfx.as_ref().unwrap();
             let gfx_chunk = r_gfx_chunk.as_mut().unwrap();
 
-            println!("begin...");
             for (ent, (chunk, blocks)) in q_chunk.iter_entities(world)
             {
-                println!("querying");
-
                 // neighbors
                 let region = Region::new((&chunk, &blocks), world);
 
@@ -149,16 +146,6 @@ impl<'a> Region<'a>
             }
         }
 
-        if neighbors[0].is_some()
-        && neighbors[1].is_some()
-        && neighbors[2].is_some()
-        && neighbors[3].is_some()
-        && neighbors[4].is_some()
-        && neighbors[5].is_some()
-        {
-            println!("all neighbors @ {}", center.0.pos());
-        }
-        
         Self
         {
             center: center.1,
