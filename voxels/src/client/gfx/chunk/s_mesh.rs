@@ -40,8 +40,11 @@ impl System for SChunkMesh
             let gfx = r_gfx.as_ref().unwrap();
             let gfx_chunk = r_gfx_chunk.as_mut().unwrap();
 
+            println!("begin...");
             for (ent, (chunk, blocks)) in q_chunk.iter_entities(world)
             {
+                println!("querying");
+
                 // neighbors
                 let region = Region::new((&chunk, &blocks), world);
 
@@ -87,10 +90,13 @@ impl System for SChunkMesh
                     }
                 }
 
+                // done meshing, remove tag
+                cmd.remove_tag::<TUpdated>(ent);
+
                 // no empty meshes(this crashes anyways)
                 if vertices.is_empty()
                 {
-                    return;
+                    continue;
                 }
 
                 // position uniform
@@ -107,9 +113,6 @@ impl System for SChunkMesh
                 gfx_chunk.4.insert(chunk.pos(), mesh);
 
                 println!("remeshed chunk!");
-
-                // done meshing, remove tag
-                cmd.remove_tag::<TUpdated>(ent);
             }
         })
     }

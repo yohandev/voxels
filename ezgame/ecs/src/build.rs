@@ -61,7 +61,8 @@ impl Builder
         }
 
         // finalize schedule
-        s.build()
+        s.flush()
+         .build()
     }
 }
 
