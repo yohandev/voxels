@@ -2,7 +2,8 @@ use ezgame::time::evt;
 use ezgame::ecs::*;
 
 use super::{ CChunk, CBlockBuffer, TUngenerated, TUpdated };
-use crate::common::{ Block, CHUNK_SIZE };
+use crate::common::block::Block;
+use crate::common::CHUNK_SIZE;
 
 /// system that generates chunks'
 /// terrain

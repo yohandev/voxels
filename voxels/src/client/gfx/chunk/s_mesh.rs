@@ -5,7 +5,8 @@ use ezmath::*;
 
 use crate::client::gfx::{ SRender, RGraphicsChunk, ChunkVertex, ChunkPosition, ChunkMesh };
 use crate::common::chunk::{ CChunk, CBlockBuffer, TUpdated };
-use crate::common::{ CHUNK_SIZE, Direction, Block };
+use crate::common::{ CHUNK_SIZE, Direction };
+use crate::common::block::Block;
 
 /// system that remeshes chunks
 pub struct SChunkMesh;

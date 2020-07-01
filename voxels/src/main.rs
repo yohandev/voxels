@@ -30,6 +30,7 @@ impl Game for TestGame
                 .height(600)
                 .title("voxels")
         );
+        app.resources().insert(common::block::RBlockData::load(""));
         
         // insert standard camera into world
         let camera_components = 
