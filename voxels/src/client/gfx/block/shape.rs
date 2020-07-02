@@ -16,6 +16,6 @@ impl BlockData
     pub fn culled(t_data: &Self, n_data: &Self, t_var: u16, n_var: u16, face: BlockFace)
     {
         // prelimenary checks
-        if t_data.ty() == BlockType::Cube
+        //if t_data.ty() == BlockType::Cube
     }
 }

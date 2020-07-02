@@ -1,9 +1,9 @@
-mod compressed;
-mod shape;
-mod data;
+mod palette;
+mod block;
 mod face;
 
-pub use compressed::*;
-pub use shape::*;
-pub use data::*;
+pub use palette::*;
+pub use block::*;
 pub use face::*;
+
+pub mod shapes;
