@@ -15,11 +15,7 @@ impl CChunk
     /// snap to the 32x32x32 chunk grid.
     pub fn new(mut pos: int3) -> Self
     {
-        use crate::common::CHUNK_SIZE;
-
-        pos.x -= pos.x.rem_euclid(CHUNK_SIZE as i32);
-        pos.y -= pos.y.rem_euclid(CHUNK_SIZE as i32);
-        pos.z -= pos.z.rem_euclid(CHUNK_SIZE as i32);
+        super::ChunkPos::adjust(&mut pos);
 
         Self { pos }
     }
