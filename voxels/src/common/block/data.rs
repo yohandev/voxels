@@ -17,7 +17,7 @@ pub struct BlockData
     col: float4,
 
     /// block's shape
-    shape: BlockShape,
+    ty: BlockType,
 }
 
 /// block data resource. stores all types
@@ -57,8 +57,8 @@ impl RBlockData
     }
 
     /// get the shape of a block
-    pub fn shape(&self, b: Block) -> BlockShape
+    pub fn ty(&self, b: Block) -> BlockType
     {
-        self.blocks[b.id() as usize].shape
+        self.blocks[b.id() as usize].ty
     }
 }
