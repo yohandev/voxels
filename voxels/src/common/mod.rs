@@ -11,6 +11,7 @@ pub mod debug;
 pub type Bundle =
 (
     transform::SLocalToWorld,
+    chunk::SChunkLoad,
     chunk::SChunkGen,
     debug::SDebugFps,
 );

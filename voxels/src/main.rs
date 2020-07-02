@@ -54,31 +54,6 @@ impl Game for TestGame
             .registry()
             .insert(camera_components.0, camera_components.1);
 
-        // insert chunks into world
-        let chunk_components =
-        {
-            use crate::common::chunk::*;
-
-            const SIZE: i32 = crate::common::CHUNK_SIZE as i32;
-
-            let cmp: Vec<(CChunk, CBlockBuffer)> = (0..5)
-                .flat_map(|x| (0..5).map(move |z| (x, z)))
-                .flat_map(|(x, z)| (-2..2).map(move |y| (x, y, z)))
-                .map
-                (
-                    |(x, y, z)|
-                    (
-                        CChunk::new(ezmath::int3::new(x * SIZE, y * SIZE, z * SIZE)),
-                        CBlockBuffer::new(),
-                    )
-                )
-                .collect();
-            cmp
-        };
-        app
-            .registry()
-            .insert((crate::common::chunk::TUngenerated,), chunk_components);
-
         Self
     }
 }
