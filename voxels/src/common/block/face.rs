@@ -68,3 +68,44 @@ impl BlockFace
         }
     }
 }
+
+impl From<usize> for BlockFace
+{
+    fn from(num: usize) -> Self
+    {
+        match num
+        {
+            0 => Self::North,
+            1 => Self::South,
+            2 => Self::West,
+            3 => Self::East,
+            4 => Self::Down,
+            5 => Self::Up,
+            _ => panic!("direction cannot be inferred from {}!", num)
+        }
+    }
+}
+
+impl From<u8> for BlockFace
+{
+    fn from(num: u8) -> Self
+    {
+        Self::from(num as usize)
+    }
+}
+
+impl From<u16> for BlockFace
+{
+    fn from(num: u16) -> Self
+    {
+        Self::from(num as usize)
+    }
+}
+
+impl From<u32> for BlockFace
+{
+    fn from(num: u32) -> Self
+    {
+        Self::from(num as usize)
+    }
+}
