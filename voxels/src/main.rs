@@ -42,7 +42,7 @@ impl Game for TestGame
                     CCamera::new(45f32.to_radians(), 0.01, 1000.0, 1.0, 1.0),
                     CLocalToWorld::default(),
 
-                    CTranslation(ezmath::float3::new(0.0, 0.0, 10.0)),
+                    CTranslation(ezmath::float3::new(48.0, 12.0, 48.0)),
                     CRotation::default()
                 )]
             )
