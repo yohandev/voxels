@@ -5,8 +5,8 @@ use ezmath::*;
 
 use crate::client::gfx::{ SRender, RGraphicsChunk, ChunkVertex, ChunkPosition, ChunkMesh };
 use crate::common::chunk::{ CChunk, CBlockBuffer, TUpdated };
-use crate::common::{ CHUNK_SIZE, Direction };
-use crate::common::block::Block;
+use crate::common::block::{ Block, BlockFace };
+use crate::common::CHUNK_SIZE;
 
 /// system that remeshes chunks
 pub struct SChunkMesh;
@@ -69,7 +69,7 @@ impl System for SChunkMesh
                             // check block in every direction
                             for d in 0..6usize
                             {
-                                let dir: int3 = Direction::from(d).into();
+                                let dir: int3 = BlockFace::from(d).normal();
 
                                 let dx = dir.x;
                                 let dy = dir.y;
@@ -136,7 +136,7 @@ impl<'a> Region<'a>
             // iter directions
             for i in 0..6usize
             {
-                let mut dir: int3 = Direction::from(i).into();
+                let mut dir: int3 = BlockFace::from(i).normal();
 
                 dir *= CHUNK_SIZE as i32;
 
@@ -208,12 +208,12 @@ fn gen_face(verts: &mut Vec<ChunkVertex>, ind: &mut Vec<u32>, dir: usize, pos: i
 
     const TRI: [[usize; 4]; 6] =
     [
-        [ 0, 1, 2, 3 ],
-        [ 5, 0, 3, 6 ],
         [ 4, 5, 6, 7 ],
+        [ 0, 1, 2, 3 ],
         [ 1, 4, 7, 2 ],
-        [ 5, 4, 1, 0 ],
+        [ 5, 0, 3, 6 ],
         [ 3, 2, 7, 6 ],
+        [ 5, 4, 1, 0 ],
     ];
 
     const IND: [u32; 6] =

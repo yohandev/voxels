@@ -1,8 +1,6 @@
 mod consts;
-mod dir;
 
 pub use consts::*;
-pub use dir::*;
 
 pub mod transform;
 pub mod chunk;
