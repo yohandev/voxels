@@ -1,6 +1,3 @@
-//mod components;
-//mod resources;
-//mod systems;
 mod common;
 mod client;
 
