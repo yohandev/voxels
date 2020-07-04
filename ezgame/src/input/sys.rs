@@ -54,7 +54,11 @@ impl System for SInput
 
                 // reset mouse scroll
                 r_input.scroll[0] = 0.0;
-                r_input.scroll[0] = 0.0;
+                r_input.scroll[1] = 0.0;
+
+                // reset mouse delta
+                r_input.delta[0] = 0.0;
+                r_input.delta[1] = 0.0;
             }
             if let winit::event::Event::WindowEvent { event, ..} = &**r_winit
             {
@@ -95,6 +99,9 @@ impl System for SInput
                     }
                     winit::event::WindowEvent::CursorMoved { position, .. } =>
                     {
+                        r_input.delta[0] = position.x - r_input.cursor[0];
+                        r_input.delta[1] = position.y - r_input.cursor[1];
+
                         r_input.cursor[0] = position.x;
                         r_input.cursor[1] = position.y;
                     }

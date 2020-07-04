@@ -9,6 +9,7 @@ pub struct RInput
 {
     pub(super) cursor: [f64; 2],        // actual position
     pub(super) scroll: [f32; 2],        // delta
+    pub(super) delta: [f64; 2],         // delta cursor
 
     pub(super) keys: [InputState; 255], // up, down, pressed, and released data
     pub(super) btns: [InputState; 255], // same as keys, but for mouse buttons
@@ -41,6 +42,7 @@ impl RInput
         {
             cursor: [0.0; 2],
             scroll: [0.0; 2],
+            delta: [0.0; 2],
 
             keys: [InputState::Up; 255],
             btns: [InputState::Up; 255],
@@ -131,6 +133,26 @@ impl RInput
     pub fn cursor_y(&self) -> f64
     {
         self.cursor[1]
+    }
+
+    /// delta mouse position, in window pixel coordinates
+    pub fn delta(&self) -> &[f64; 2]
+    {
+        &self.delta
+    }
+
+    /// x dimension of the delta mouse, in window pixel
+    /// coordinates
+    pub fn dx(&self) -> f64
+    {
+        self.delta[0]
+    }
+
+    /// y dimension of the delta mouse, in window pixel
+    /// coordinates
+    pub fn dy(&self) -> f64
+    {
+        self.delta[1]
     }
 
     /// delta scroll during this frame. if you need the total scroll
