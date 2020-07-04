@@ -93,7 +93,7 @@ impl Block
     {
         // retrieve shapes
         let self_shape = pal.get(self.id() as usize).shape;
-        let other_shape = pal.get(self.id() as usize).shape;
+        let other_shape = pal.get(other.id() as usize).shape;
 
         use BlockShapes::*;
 

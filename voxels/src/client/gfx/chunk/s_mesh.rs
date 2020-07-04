@@ -171,30 +171,14 @@ impl<'a> Region<'a>
             if let Some(neighbor) = &self.neighbors[face as usize]
             {
                 // do test
-                if neighbor[(rx, ry, rz)].is_air()
-                {
-                    false
-                }
-                else
-                {
-                    true
-                }
-                //block.cull(neighbor[(rx, ry, rz)], face, self.pal)
+                block.cull(neighbor[(rx, ry, rz)], face, self.pal)
             }
             else { false }
         }
         else
         {
             // do test
-            if self.center[n_pos].is_air()
-            {
-                false
-            }
-            else
-            {
-                true
-            }
-            //block.cull(self.center[pos], face, self.pal)
+            block.cull(self.center[n_pos], face, self.pal)
         }
     }
 }
