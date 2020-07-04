@@ -9,17 +9,17 @@ use ezmath::*;
 pub enum BlockFace
 {
     /// -z
-    North,
+    North   = 0,
     /// +z
-    South,
+    South   = 1,
     /// -x
-    West,
+    West    = 2,
     /// +x
-    East,
+    East    = 3,
     /// -y
-    Down,
+    Down    = 4,
     /// +y
-    Up,
+    Up      = 5,
 }
 
 impl BlockFace

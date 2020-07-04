@@ -35,7 +35,27 @@ impl RBlockPalette
     /// their config is located
     pub fn load(_: &str) -> Self
     {
-        Self { blocks: Default::default() }
+        Self
+        {
+            // temporary hard-coded blocks
+            blocks: vec!
+            [
+                BlockData
+                {
+                    name: "Air".into(),
+                    id: "air".into(),
+                    col: float4::one(),
+                    shape: BlockShapes::None
+                },
+                BlockData
+                {
+                    name: "Grass".into(),
+                    id: "grass".into(),
+                    col: float4::new(0.0, 1.0, 0.0, 1.0),
+                    shape: BlockShapes::Cube
+                }
+            ]
+        }
     }
 
     /// get block data for a given block ID

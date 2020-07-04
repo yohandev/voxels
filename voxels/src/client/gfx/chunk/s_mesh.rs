@@ -4,8 +4,8 @@ use ezgame::time;
 use ezmath::*;
 
 use crate::client::gfx::{ SRender, RGraphicsChunk, ChunkVertex, ChunkPosition, ChunkMesh };
-use crate::common::chunk::{ CChunk, CBlockBuffer, TUpdated };
-use crate::common::block::{ Block, BlockFace };
+use crate::common::chunk::{ CChunk, CBlockBuffer, TUpdated, RChunkCache };
+use crate::common::block::{ Block, BlockFace, RBlockPalette };
 use crate::common::CHUNK_SIZE;
 
 /// system that remeshes chunks
@@ -23,16 +23,15 @@ impl System for SChunkMesh
         // begin...
         sys("chunk_mesh_system")
         // components...
-        .with_query
-        (
-            <(Read<CChunk>, Read<CBlockBuffer>)>::query().filter(tag::<TUpdated>())
-        )
+        .with_query(<Read<CChunk>>::query().filter(tag::<TUpdated>()))
         .read_component::<CBlockBuffer>()
         // resources...
+        .read_resource::<RChunkCache>()
+        .read_resource::<RBlockPalette>()
         .read_resource::<RGraphics>()
         .write_resource::<RGraphicsChunk>()
         // system...
-        .build(|cmd, world, (r_gfx, r_gfx_chunk), q_chunk|
+        .build(|cmd, world, (r_cache, r_pal, r_gfx, r_gfx_chunk), q_chunk|
         {
             if r_gfx.is_none() || r_gfx_chunk.is_none()
             {
@@ -41,10 +40,10 @@ impl System for SChunkMesh
             let gfx = r_gfx.as_ref().unwrap();
             let gfx_chunk = r_gfx_chunk.as_mut().unwrap();
 
-            for (ent, (chunk, blocks)) in q_chunk.iter_entities(world)
+            for (ent, chunk) in q_chunk.iter_entities(world)
             {
                 // neighbors
-                let region = Region::new((&chunk, &blocks), world);
+                let region = Region::new(chunk.pos(), world, r_cache, r_pal);
 
                 // geometry buffer
                 let mut vertices = Vec::<ChunkVertex>::new();
@@ -57,8 +56,11 @@ impl System for SChunkMesh
                     {
                         for z in 0..CHUNK_SIZE as i32
                         {
+                            // target position
+                            let pos = int3::new(x, y, z);
+
                             // target block
-                            let block = blocks[(x, y, z)];
+                            let block = region.center[pos];
 
                             // ignore air
                             if block.is_air()
@@ -69,19 +71,11 @@ impl System for SChunkMesh
                             // check block in every direction
                             for d in 0..6usize
                             {
-                                let dir: int3 = BlockFace::from(d).normal();
-
-                                let dx = dir.x;
-                                let dy = dir.y;
-                                let dz = dir.z;
-
-                                let neighbor = region.get(x + dx, y + dy, z + dz, d);
-
                                 // only generate face is neighbor face isn't
                                 // full opaque
-                                if neighbor.is_none() || neighbor.unwrap().is_air()
+                                if !region.culled(pos, block, BlockFace::from(d))
                                 {
-                                    gen_face(&mut vertices, &mut indices, d, int3::new(x, y, z));
+                                    gen_face(&mut vertices, &mut indices, d, pos);
                                 }
                             }
                         }
@@ -119,65 +113,88 @@ impl System for SChunkMesh
 /// represents a chunk and its cached neighbors
 struct Region<'a>
 {
-    center: &'a CBlockBuffer,
-    neighbors: [Option<CmpRef<'a, CBlockBuffer>>; 6]
+    center: CmpRef<'a, CBlockBuffer>,
+    neighbors: [Option<CmpRef<'a, CBlockBuffer>>; 6],
+
+    pal: &'a RBlockPalette
 }
 
 impl<'a> Region<'a>
 {
-    fn new(center: (&'a CChunk, &'a CBlockBuffer), world: &'a SubRegistry) -> Self
+    fn new(center: int3, world: &'a SubRegistry, cache: &'a RChunkCache, pal: &'a RBlockPalette) -> Self
     {
         // neighbors
         let mut neighbors = [None, None, None, None, None, None];
-
-        // iter chunks
-        for (ent, chunk) in <Read<CChunk>>::query().iter_entities(world)
+        for i in 0..6usize
         {
-            // iter directions
-            for i in 0..6usize
+            let dir = BlockFace::from(i).normal() * CHUNK_SIZE as i32;
+
+            if let Some(ent) = cache.at(center + dir)
             {
-                let mut dir: int3 = BlockFace::from(i).normal();
-
-                dir *= CHUNK_SIZE as i32;
-
-                if chunk.pos() == center.0.pos() + dir
-                {
-                    neighbors[i] = world.get_component::<CBlockBuffer>(ent);
-                }
+                neighbors[i] = world.get_component::<CBlockBuffer>(*ent);
             }
         }
 
+        // center
+        let center = world
+            .get_component::<CBlockBuffer>(*cache.at(center).unwrap())
+            .unwrap();
+
         Self
         {
-            center: center.1,
+            center,
             neighbors,
+            pal
         }
     }
 
     /// get a block in this region given the relative
     /// coordinates. returns None is the block isn't
     /// loaded.
-    fn get(&self, x: i32, y: i32, z: i32, d: usize) -> Option<Block>
+    fn culled(&self, pos: int3, block: Block, face: BlockFace) -> bool
     {
         const SIZE: i32 = CHUNK_SIZE as i32;
 
-        if x < 0 || x >= SIZE
-        || y < 0 || y >= SIZE
-        || z < 0 || z >= SIZE
-        {
-            let rx = x.rem_euclid(SIZE);
-            let ry = y.rem_euclid(SIZE);
-            let rz = z.rem_euclid(SIZE);
+        // neighbor block pos global
+        let n_pos = pos + face.normal();
 
-            if let Some(neighbor) = &self.neighbors[d]
+        if n_pos.x == -1 || n_pos.x == SIZE
+        || n_pos.y == -1 || n_pos.y == SIZE
+        || n_pos.z == -1 || n_pos.z == SIZE
+        {
+            // neighbor block ros relative
+            let rx = n_pos.x.rem_euclid(SIZE);
+            let ry = n_pos.y.rem_euclid(SIZE);
+            let rz = n_pos.z.rem_euclid(SIZE);
+
+            // neighbor chunk
+            if let Some(neighbor) = &self.neighbors[face as usize]
             {
-                Some(neighbor[(rx, ry, rz)])
+                // do test
+                if neighbor[(rx, ry, rz)].is_air()
+                {
+                    false
+                }
+                else
+                {
+                    true
+                }
+                //block.cull(neighbor[(rx, ry, rz)], face, self.pal)
             }
-            else { None }
+            else { false }
         }
         else
         {
-            Some(self.center[(x, y, z)])
+            // do test
+            if self.center[n_pos].is_air()
+            {
+                false
+            }
+            else
+            {
+                true
+            }
+            //block.cull(self.center[pos], face, self.pal)
         }
     }
 }
