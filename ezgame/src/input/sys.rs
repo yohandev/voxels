@@ -131,7 +131,7 @@ impl System for SInput
                         {
                             winit::event::ElementState::Pressed =>
                             {
-                                r_input.keys[code] = if r_input.keys[code] == InputState::Up
+                                r_input.btns[code] = if r_input.btns[code] == InputState::Up
                                 {
                                     InputState::Pressed
                                 }
@@ -142,7 +142,7 @@ impl System for SInput
                             }
                             winit::event::ElementState::Released =>
                             {
-                                r_input.keys[code] = if r_input.keys[code] == InputState::Down
+                                r_input.btns[code] = if r_input.btns[code] == InputState::Down
                                 {
                                     InputState::Released
                                 }

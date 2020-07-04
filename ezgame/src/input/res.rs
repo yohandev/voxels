@@ -175,6 +175,18 @@ impl RInput
         self.scroll[1]
     }
 
+    /// simulates an axis given two keys, returning 0 if both
+    /// or neither are pressed.
+    pub fn axis(&self, neg: KeyCode, pos: KeyCode) -> f32
+    {
+        let mut val = 0.0;
+
+        if self.key_down(neg) { val -= 1.0; }
+        if self.key_down(pos) { val += 1.0; }
+
+        val
+    }
+
     /// get the state of the key for this frame. it's preferred
     /// to use Input::key_up(), Input::key_down(), etc.
     pub fn key_state(&self, code: KeyCode) -> InputState

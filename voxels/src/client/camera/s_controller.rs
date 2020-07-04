@@ -1,6 +1,7 @@
 use ezgame::input::*;
 use ezgame::time::*;
 use ezgame::ecs::*;
+use ezmath::*;
 
 use crate::common::transform::*;
 use crate::client::camera::*;
@@ -20,7 +21,7 @@ impl System for SFpsController
         // components...
         .with_query
         (
-            <(Write<CTranslation>, Write<CRotation>)>::query()
+            <(Write<CTranslation>, Write<CRotation>, Read<CLocalToWorld>)>::query()
                 .filter(tag::<TMainCamera>())
         )
         // resources...
@@ -29,13 +30,32 @@ impl System for SFpsController
         // system...
         .build(|_, world, (r_in, r_time), q_trans|
         {
-            for (mut pos, _) in q_trans.iter_mut(world)
+            for (mut c_pos, mut c_rot, c_ltw) in q_trans.iter_mut(world)
             {
-                let s = r_time.dt() * 3.5;
+                // speed
+                let s = r_time.dt() * 4.0;
 
-                if r_in.key_down(KeyCode::K)     { pos.0.z += s; } else if r_in.key_down(KeyCode::I) { pos.0.z -= s; }
-                if r_in.key_down(KeyCode::L)     { pos.0.x += s; } else if r_in.key_down(KeyCode::J) { pos.0.x -= s; }
-                if r_in.key_down(KeyCode::Space) { pos.0.y += s; } else if r_in.key_down(KeyCode::M) { pos.0.y -= s; }
+                // look around
+                if r_in.button_down(MouseButton::Left)
+                {
+                    c_rot.0.x -= r_in.dy() as f32 * 0.01;
+                    c_rot.0.y -= r_in.dx() as f32 * 0.01;
+                }
+
+                // horizontal, vertical, up axes
+                let mut x = r_in.axis(KeyCode::I, KeyCode::K) * c_ltw.right();
+                let mut z = r_in.axis(KeyCode::J, KeyCode::L) * c_ltw.forward();
+                let y = r_in.axis(KeyCode::M, KeyCode::Space) * float3::y() * s;
+
+                x.y = 0.0; z.y = 0.0;
+
+                let xmag = x.magnitude();
+                let zmag = z.magnitude();
+                if xmag > 0.0 { x = (x / xmag) * s; }
+                if zmag > 0.0 { z = (z / zmag) * s; }
+
+                // move
+                c_pos.0 += (x + y + z) * if r_in.key_down(KeyCode::N) { 3.5 } else { 1.0 };
             }
         })
     }
