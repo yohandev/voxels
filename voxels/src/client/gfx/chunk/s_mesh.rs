@@ -5,7 +5,7 @@ use ezmath::*;
 
 use crate::client::gfx::{ SRender, RGraphicsChunk, ChunkVertex, ChunkPosition, ChunkMesh };
 use crate::common::chunk::{ CChunk, CBlockBuffer, TUpdated, RChunkCache };
-use crate::common::block::{ Block, BlockFace, RBlockPalette };
+use crate::common::block::{ PackedBlock, BlockFace, RBlockPalette };
 use crate::common::CHUNK_SIZE;
 
 /// system that remeshes chunks
@@ -151,7 +151,7 @@ impl<'a> Region<'a>
     /// get a block in this region given the relative
     /// coordinates. returns None is the block isn't
     /// loaded.
-    fn culled(&self, pos: int3, block: Block, face: BlockFace) -> bool
+    fn culled(&self, pos: int3, block: PackedBlock, face: BlockFace) -> bool
     {
         const SIZE: i32 = CHUNK_SIZE as i32;
 

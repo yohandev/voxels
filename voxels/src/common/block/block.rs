@@ -15,7 +15,7 @@ use super::*;
 /// to be inlined on the block heap. Block B's pointers are 2^15, meaning chunks shouldn't exceed
 /// 32x32x32 in the case that *all* blocks are model B
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
-pub struct Block
+pub struct PackedBlock
 {
     data: u16   // packed model(1 bit) + ID(11 bits) + variant(4 bits)
 }
@@ -24,9 +24,9 @@ pub struct Block
 ///     - data: all that needs to be known about the block is in the struct(grass, stairs, wheat, etc.)
 ///     - addr: the data in the struct points to larger block data stored in the chunk(chests, signs, etc.)
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum BlockFormat { Data, Addr }
+pub enum PackedBlockFormat { Data, Addr }
 
-impl Block
+impl PackedBlock
 {
     pub const SIZE:usize = std::mem::size_of::<Self>();
 
@@ -36,16 +36,16 @@ impl Block
     }
 
     /// get how this block is represented in memory
-    pub fn format(self) -> BlockFormat
+    pub fn format(self) -> PackedBlockFormat
     {
         match self.data >> 15
         {
-            1 => BlockFormat::Addr,
-            _ => BlockFormat::Data
+            1 => PackedBlockFormat::Addr,
+            _ => PackedBlockFormat::Data
         }
     }
 
-    /// (unsafe) get this block's ID(0-4095) directly.
+    /// (unsafe) get this block's ID(0..2048) directly.
     ///
     /// data is innacurate if self.format() != BlockFormat::Data
     /// outright panics in debug mode
@@ -54,7 +54,7 @@ impl Block
         (self.data & 0b0111_1111_1111_0000) >> 4
     }
 
-    /// (unsafe) get this block's variant(0-7) directly.
+    /// (unsafe) get this block's variant(0..16) directly.
     ///
     /// data is innacurate if self.format() != BlockFormat::Data
     /// outright panics in debug mode
@@ -89,7 +89,7 @@ impl Block
 
     /// should this block's face be culled by the other block?
     /// assumes `other` block touches `self` block on `face`
-    pub fn cull(self, other: Block, face: BlockFace, pal: &RBlockPalette) -> bool
+    pub fn cull(self, other: PackedBlock, face: BlockFace, pal: &RBlockPalette) -> bool
     {
         // retrieve shapes
         let self_shape = pal.get(self.id() as usize).shape;

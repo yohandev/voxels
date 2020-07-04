@@ -1,7 +1,7 @@
 use ezmath::*;
 
 use crate::common::{ CHUNK_SIZE, CHUNK_LAYER, CHUNK_VOLUME };
-use crate::common::block::Block;
+use crate::common::block::PackedBlock;
 
 /// component that stores a buffer of blocks,
 /// typically associated with a CChunk component.
@@ -9,7 +9,7 @@ use crate::common::block::Block;
 pub struct CBlockBuffer
 {
     /// raw blocks storage
-    blocks: Box<[Block; CHUNK_VOLUME]>,
+    blocks: Box<[PackedBlock; CHUNK_VOLUME]>,
 }
 
 impl CBlockBuffer
@@ -19,7 +19,7 @@ impl CBlockBuffer
     {
         Self
         {
-            blocks: Box::new([Block::default(); CHUNK_VOLUME])
+            blocks: Box::new([PackedBlock::default(); CHUNK_VOLUME])
         }
     }
 }
@@ -30,7 +30,7 @@ macro_rules! impl_index
     {
         impl std::ops::Index<$index_ty> for CBlockBuffer
         {
-            type Output = Block;
+            type Output = PackedBlock;
 
             /// get a block within this chunk, given a relative position
             fn index(&self, index: $index_ty) -> &Self::Output
