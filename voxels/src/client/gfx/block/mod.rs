@@ -116,7 +116,7 @@ fn gen_face(block: &Block, mesh: &mut ChunkMeshBuilder, face: BlockFace)
         let y = POS[*i][1] + pos.y as u32;
         let z = POS[*i][2] + pos.z as u32;
 
-        let tex = block.color().xy() * 128.0 * (pos.y as f32 / 32.0);
+        let tex = block.color().xy() * 128.0 * (0.5 + (pos.y as f32 / 64.0));
         let pos = uint3::new(x, y, z);
         let tex = uint2::new(tex.x as u32, tex.y as u32);
 

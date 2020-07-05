@@ -32,8 +32,6 @@ impl System for SChunkGen
             const SEA_LEVEL: f64 = 10.0;
             /// up and down delta from sea level at which terrain is generated
             const TERRAIN_DELTA: f64 = 5.0;
-            /// threshold between generation of dirt and grass
-            const GRASS_LEVEL: i32 = 12;
 
             use noise::*;
 
@@ -61,7 +59,7 @@ impl System for SChunkGen
                         {   
                             blocks.set_packed((rx, ry, rz),
                             {
-                                if h > GRASS_LEVEL
+                                if ry == rh - 1
                                 {
                                     PackedBlock::new(0b0000_0000_0001_0000)
                                 }
