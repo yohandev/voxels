@@ -1,7 +1,7 @@
 use ezmath::*;
 
+use crate::common::block::{ PackedBlock, UnpackedBlock, RBlockPalette };
 use crate::common::{ CHUNK_SIZE, CHUNK_LAYER, CHUNK_VOLUME };
-use crate::common::block::PackedBlock;
 
 /// component that stores a buffer of blocks,
 /// typically associated with a CChunk component.
@@ -10,6 +10,24 @@ pub struct CBlockBuffer
 {
     /// raw blocks storage
     blocks: Box<[PackedBlock; CHUNK_VOLUME]>,
+}
+
+/// trait that provides overridable methods for
+/// indexing the CBlockBuffer component
+pub trait BlockBufferIndex<T>
+{
+    /// get a packed block given a relative position,
+    /// for low-level operations
+    fn get_packed(&self, pos: T) -> PackedBlock;
+
+    /// get an unpacked block given a relative position
+    fn get<'a>(&'a self, pos: T, pal: &'a RBlockPalette) -> UnpackedBlock;
+
+    /// set a packed given a relative position, giving
+    /// direct access to the low-level chunk storage.
+    /// this should only be used if you know what you're
+    /// doing
+    fn set_packed(&mut self, pos: T, val: PackedBlock);
 }
 
 impl CBlockBuffer
@@ -28,33 +46,39 @@ macro_rules! impl_index
 {
     ($index_ty:ty, $x: tt, $y: tt, $z: tt) =>
     {
-        impl std::ops::Index<$index_ty> for CBlockBuffer
+        impl BlockBufferIndex<$index_ty> for CBlockBuffer
         {
-            type Output = PackedBlock;
-
-            /// get a block within this chunk, given a relative position
-            fn index(&self, index: $index_ty) -> &Self::Output
+            fn get_packed(&self, pos: $index_ty) -> PackedBlock
             {
-                &self.blocks
+                self.blocks
                 [
-                    (index.$x as usize              ) +
-                    (index.$y as usize * CHUNK_SIZE ) +
-                    (index.$z as usize * CHUNK_LAYER)
+                    (pos.$x as usize              ) +
+                    (pos.$y as usize * CHUNK_SIZE ) +
+                    (pos.$z as usize * CHUNK_LAYER)
                 ]
             }
-        }
 
-        impl std::ops::IndexMut<$index_ty> for CBlockBuffer
-        {
-            /// get a block within this chunk, given a relative position
-            fn index_mut(&mut self, index: $index_ty) -> &mut Self::Output
+            fn get<'a>(&'a self, pos: $index_ty, pal: &'a RBlockPalette) -> UnpackedBlock
             {
-                &mut self.blocks
+                UnpackedBlock::new
+                (
+                    // packed
+                    self.get_packed(pos),
+                    // local pos
+                    int3::new(pos.$x as i32, pos.$y as i32, pos.$z as i32),
+                    // palette
+                    pal
+                )
+            }
+
+            fn set_packed(&mut self, pos: $index_ty, val: PackedBlock)
+            {
+                self.blocks
                 [
-                    (index.$x as usize              ) +
-                    (index.$y as usize * CHUNK_SIZE ) +
-                    (index.$z as usize * CHUNK_LAYER)
-                ]
+                    (pos.$x as usize              ) +
+                    (pos.$y as usize * CHUNK_SIZE ) +
+                    (pos.$z as usize * CHUNK_LAYER)
+                ] = val;
             }
         }
     };

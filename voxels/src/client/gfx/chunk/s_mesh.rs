@@ -3,9 +3,9 @@ use ezgame::gfx::*;
 use ezgame::time;
 use ezmath::*;
 
+use crate::common::chunk::{ CChunk, CBlockBuffer, BlockBufferIndex, TUpdated, RChunkCache };
 use crate::client::gfx::{ SRender, RGraphicsChunk, ChunkVertex, ChunkPosition, ChunkMesh };
-use crate::common::chunk::{ CChunk, CBlockBuffer, TUpdated, RChunkCache };
-use crate::common::block::{ PackedBlock, BlockFace, RBlockPalette };
+use crate::common::block::{ Block, BlockFace, shapes::BlockShapes, RBlockPalette };
 use crate::common::CHUNK_SIZE;
 
 /// system that remeshes chunks
@@ -60,10 +60,10 @@ impl System for SChunkMesh
                             let pos = int3::new(x, y, z);
 
                             // target block
-                            let block = region.center[pos];
+                            let block = region.center.get(pos, region.pal);
 
                             // ignore air
-                            if block.is_air()
+                            if block.shape() == BlockShapes::None
                             {
                                 continue;
                             }
@@ -73,7 +73,7 @@ impl System for SChunkMesh
                             {
                                 // only generate face is neighbor face isn't
                                 // full opaque
-                                if !region.culled(pos, block, BlockFace::from(d))
+                                if !region.culled(&block, BlockFace::from(d))
                                 {
                                     gen_face(&mut vertices, &mut indices, d, pos);
                                 }
@@ -149,14 +149,13 @@ impl<'a> Region<'a>
     }
 
     /// get a block in this region given the relative
-    /// coordinates. returns None is the block isn't
-    /// loaded.
-    fn culled(&self, pos: int3, block: PackedBlock, face: BlockFace) -> bool
+    /// coordinates.
+    fn culled(&self, block: &Block, face: BlockFace) -> bool
     {
         const SIZE: i32 = CHUNK_SIZE as i32;
 
         // neighbor block pos global
-        let n_pos = pos + face.normal();
+        let n_pos = block.r_pos() + face.normal();
 
         if n_pos.x == -1 || n_pos.x == SIZE
         || n_pos.y == -1 || n_pos.y == SIZE
@@ -171,14 +170,14 @@ impl<'a> Region<'a>
             if let Some(neighbor) = &self.neighbors[face as usize]
             {
                 // do test
-                block.cull(neighbor[(rx, ry, rz)], face, self.pal)
+                block.cull(&neighbor.get((rx, ry, rz), self.pal), face)
             }
             else { false }
         }
         else
         {
             // do test
-            block.cull(self.center[n_pos], face, self.pal)
+            block.cull(&self.center.get(n_pos, self.pal), face)
         }
     }
 }

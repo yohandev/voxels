@@ -1,8 +1,3 @@
-#![allow(dead_code)]
-
-use super::shapes::*;
-use super::*;
-
 /// Represents a block, comprised(internally) of a single 2-byte integer.
 /// | 1 bit | block format, data(A) or addr(B)
 ///     - A: in place block data
@@ -61,87 +56,5 @@ impl PackedBlock
     pub fn variant(self) -> u16
     {
         self.data & 0b0000_0000_0000_1111
-    }
-
-    /// is this block air?
-    pub fn is_air(self) -> bool
-    {
-        self.data == 0
-    }
-
-    /// get the display name of this block
-    pub fn display<'a>(self, pal: &'a RBlockPalette) -> &'a str
-    {
-        pal.get(self.id() as usize).name.as_str()
-    }
-
-    /// get the string representation of this block's ID
-    pub fn name<'a>(self, pal: &'a RBlockPalette) -> &'a str
-    {
-        pal.get(self.id() as usize).id.as_str()
-    }
-
-    /// get the fallback colour of this block
-    pub fn colour(self, pal: &RBlockPalette) -> ezmath::float4
-    {
-        pal.get(self.id() as usize).col
-    }
-
-    /// should this block's face be culled by the other block?
-    /// assumes `other` block touches `self` block on `face`
-    pub fn cull(self, other: PackedBlock, face: BlockFace, pal: &RBlockPalette) -> bool
-    {
-        // retrieve shapes
-        let self_shape = pal.get(self.id() as usize).shape;
-        let other_shape = pal.get(other.id() as usize).shape;
-
-        use BlockShapes::*;
-
-        match self_shape
-        {
-            None => true,
-            Cube => match other_shape
-            {
-                None => false,                              // never cull
-                Cube => true,                               // always cull
-                Half => match other.variant().into()        // cull if fully covered
-                {
-                    HalfBlockVariants::North => match face  // opposing face = touching
-                    {
-                        BlockFace::South => true,
-                        _ => false,
-                    },
-                    HalfBlockVariants::South => match face  // opposing face = touching
-                    {
-                        BlockFace::North => true,
-                        _ => false,
-                    },
-                    HalfBlockVariants::West => match face   // opposing face = touching
-                    {
-                        BlockFace::East => true,
-                        _ => false,
-                    },
-                    HalfBlockVariants::East => match face   // opposing face = touching
-                    {
-                        BlockFace::West => true,
-                        _ => false,
-                    },
-                    HalfBlockVariants::Down => match face   // opposing face = touching
-                    {
-                        BlockFace::Up => true,
-                        _ => false,
-                    },
-                    HalfBlockVariants::Up => match face     // opposing face = touching
-                    {
-                        BlockFace::Down => true,
-                        _ => false,
-                    },
-                    HalfBlockVariants::NorthSouth => true,  // same as full blocks
-                    HalfBlockVariants::WestEast => true,    // same as full blocks
-                    HalfBlockVariants::DownUp => true,      // same as full blocks
-                }
-            },
-            Half => todo!()
-        }
     }
 }

@@ -1,7 +1,7 @@
 use ezgame::time::evt;
 use ezgame::ecs::*;
 
-use super::{ CChunk, CBlockBuffer, TUngenerated, TUpdated };
+use super::{ CChunk, CBlockBuffer, BlockBufferIndex, TUngenerated, TUpdated };
 use crate::common::block::PackedBlock;
 use crate::common::CHUNK_SIZE;
 
@@ -57,7 +57,7 @@ impl System for SChunkGen
                         // fill all 0..32 or none 0..-n blocks
                         for ry in 0..rh.min(CHUNK_SIZE as i32)
                         {
-                            blocks[(rx, ry, rz)] = PackedBlock::new(0b0000_0000_0001_0000);
+                            blocks.set_packed((rx, ry, rz),PackedBlock::new(0b0000_0000_0001_0000));
                         }
                     }
                 }

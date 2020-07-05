@@ -25,9 +25,9 @@ pub enum HalfBlockVariants
     DownUp = 8,
 }
 
-impl From<u16> for HalfBlockVariants
+impl From<usize> for HalfBlockVariants
 {
-    fn from(num: u16) -> Self
+    fn from(num: usize) -> Self
     {
         match num
         {

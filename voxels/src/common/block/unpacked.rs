@@ -1,7 +1,5 @@
 use ezmath::*;
 
-use crate::common::chunk::ChunkPos;
-use crate::common::CHUNK_SIZE;
 use crate::common::block::*;
 
 /// alias for unpacked block, which is relevant for
@@ -79,33 +77,11 @@ impl<'a> UnpackedBlock<'a>
         self.pal.get(self.id()).col
     }
 
-    /// get the world position of this block
-    pub fn pos(&self) -> int3
-    {
-        self.pos
-    }
-
     /// get the relative(to chunk) position of this
     /// block
     pub fn r_pos(&self) -> int3
     {
-        const SIZE: i32 = CHUNK_SIZE as i32;
-
-        let rx = self.pos.x.rem_euclid(SIZE);
-        let ry = self.pos.y.rem_euclid(SIZE);
-        let rz = self.pos.z.rem_euclid(SIZE);
-
-        int3::new(rx, ry, rz)
-    }
-
-    /// get the chunk position(min corner position)
-    /// that this block is in
-    pub fn c_pos(&self) -> int3
-    {
-        let mut pos = self.pos;
-
-        ChunkPos::adjust(&mut pos);
-        pos
+        self.pos
     }
 
     /// get this block's shape(for rendering and collision)
