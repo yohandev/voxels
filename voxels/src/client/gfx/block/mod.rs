@@ -1,3 +1,6 @@
+use ezmath::*;
+
+use crate::client::gfx::{ ChunkMeshBuilder, ChunkVertex };
 use crate::common::block::*;
 
 impl<'a> UnpackedBlock<'a>
@@ -55,5 +58,68 @@ impl<'a> UnpackedBlock<'a>
             },
             Half => todo!()
         }
+    }
+
+    /// meshes a given face of this block
+    pub fn mesh(&self, mesh: &mut ChunkMeshBuilder, face: BlockFace)
+    {
+        match self.shape()
+        {
+            shapes::BlockShapes::None => {}                 // strictly no mesh
+            shapes::BlockShapes::Cube =>                    // simple cube faces
+            {
+                gen_face(mesh, face, self.r_pos())
+            }
+            shapes::BlockShapes::Half =>                    // todo
+            {
+                todo!()
+            }
+        }
+    }
+}
+
+/// creates a square face of a mesh using the chunk vertex
+fn gen_face(mesh: &mut ChunkMeshBuilder, face: BlockFace, pos: int3)
+{
+    const POS: [[u32; 3]; 8] = 
+    [
+        [ 1 , 1 , 1 ],
+        [ 0 , 1 , 1 ],
+        [ 0 , 0 , 1 ],
+        [ 1 , 0 , 1 ],
+        [ 0 , 1 , 0 ],
+        [ 1 , 1 , 0 ],
+        [ 1 , 0 , 0 ],
+        [ 0 , 0 , 0 ],
+    ];
+
+    const TRI: [[usize; 4]; 6] =
+    [
+        [ 4, 5, 6, 7 ],
+        [ 0, 1, 2, 3 ],
+        [ 1, 4, 7, 2 ],
+        [ 5, 0, 3, 6 ],
+        [ 3, 2, 7, 6 ],
+        [ 5, 4, 1, 0 ],
+    ];
+
+    const IND: [u32; 6] =
+    [
+        0, 1, 2, 0, 2, 3
+    ];
+
+    for i in &TRI[face as usize]    // vertices
+    {
+        let x = POS[*i][0] + pos.x as u32;
+        let y = POS[*i][1] + pos.y as u32;
+        let z = POS[*i][2] + pos.z as u32;
+
+        mesh.vert.push(ChunkVertex::new(&uint3::new(x, y, z), &uint2::new(pos.x as u32, pos.z as u32)));
+    }
+
+    let j = mesh.vert.len() as u32;
+    for i in &IND                   // indices
+    {
+        mesh.ind.push(*i + j);
     }
 }

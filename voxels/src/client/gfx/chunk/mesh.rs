@@ -13,3 +13,11 @@ pub struct ChunkMesh
 pub type ChunkGeometry = Geometry<ChunkVertex, u32>;
 /// position bind group of a chunk
 pub type ChunkPosBind = BindGroup<(Uniform<ChunkPosition>,)>;
+
+#[derive(Debug, Default)]
+/// temporary structure to generate chunk geometry
+pub struct ChunkMeshBuilder
+{
+    pub vert: Vec<ChunkVertex>,
+    pub ind: Vec<u32>
+}

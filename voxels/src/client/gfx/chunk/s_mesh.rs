@@ -4,7 +4,7 @@ use ezgame::time;
 use ezmath::*;
 
 use crate::common::chunk::{ CChunk, CBlockBuffer, BlockBufferIndex, TUpdated, RChunkCache };
-use crate::client::gfx::{ SRender, RGraphicsChunk, ChunkVertex, ChunkPosition, ChunkMesh };
+use crate::client::gfx::{ SRender, RGraphicsChunk, ChunkMeshBuilder, ChunkPosition, ChunkMesh };
 use crate::common::block::{ Block, BlockFace, shapes::BlockShapes, RBlockPalette };
 use crate::common::CHUNK_SIZE;
 
@@ -46,8 +46,7 @@ impl System for SChunkMesh
                 let region = Region::new(chunk.pos(), world, r_cache, r_pal);
 
                 // geometry buffer
-                let mut vertices = Vec::<ChunkVertex>::new();
-                let mut indices  = Vec::<u32>::new();
+                let mut mesh = ChunkMeshBuilder::default();
 
                 // go through every block
                 for x in 0..CHUNK_SIZE as i32
@@ -71,11 +70,13 @@ impl System for SChunkMesh
                             // check block in every direction
                             for d in 0..6usize
                             {
+                                let face = BlockFace::from(d);
+
                                 // only generate face is neighbor face isn't
                                 // full opaque
-                                if !region.culled(&block, BlockFace::from(d))
+                                if !region.culled(&block, face)
                                 {
-                                    gen_face(&mut vertices, &mut indices, d, pos);
+                                    block.mesh(&mut mesh, face);
                                 }
                             }
                         }
@@ -86,7 +87,7 @@ impl System for SChunkMesh
                 cmd.remove_tag::<TUpdated>(ent);
 
                 // no empty meshes(this crashes anyways)
-                if vertices.is_empty()
+                if mesh.vert.is_empty()
                 {
                     continue;
                 }
@@ -97,7 +98,7 @@ impl System for SChunkMesh
                 //create mesh
                 let mesh = ChunkMesh
                 {
-                    geo: gfx.geometry(&vertices[..], &indices[..]),
+                    geo: gfx.geometry(&mesh.vert[..], &mesh.ind[..]),
                     pos: gfx.clone_bind_group(&gfx_chunk.2, (pos,))
                 };
 
@@ -179,61 +180,5 @@ impl<'a> Region<'a>
             // do test
             block.cull(&self.center.get(n_pos, self.pal), face)
         }
-    }
-}
-
-fn gen_face(verts: &mut Vec<ChunkVertex>, ind: &mut Vec<u32>, dir: usize, pos: int3)
-{
-    const POS: [[u32; 3]; 8] = 
-    [
-        [ 1 , 1 , 1 ],
-        [ 0 , 1 , 1 ],
-        [ 0 , 0 , 1 ],
-        [ 1 , 0 , 1 ],
-        [ 0 , 1 , 0 ],
-        [ 1 , 1 , 0 ],
-        [ 1 , 0 , 0 ],
-        [ 0 , 0 , 0 ],
-    ];
-
-    // const NOR: [[f32; 3]; 6] =
-    // [
-    //     [ 0.0, 0.0, 1.0 ],
-    //     [ 1.0, 0.0, 0.0 ],
-    //     [ 0.0, 0.0, -1. ],
-    //     [ -1., 0.0, 0.0 ],
-    //     [ 0.0, 1.0, 0.0 ],
-    //     [ 0.0, -1., 0.0 ],
-    // ];
-
-    const TRI: [[usize; 4]; 6] =
-    [
-        [ 4, 5, 6, 7 ],
-        [ 0, 1, 2, 3 ],
-        [ 1, 4, 7, 2 ],
-        [ 5, 0, 3, 6 ],
-        [ 3, 2, 7, 6 ],
-        [ 5, 4, 1, 0 ],
-    ];
-
-    const IND: [u32; 6] =
-    [
-        0, 1, 2, 0, 2, 3
-    ];
-
-    for i in &TRI[dir]            // vertices
-    {
-        let x = POS[*i][0] + pos.x as u32;
-        let y = POS[*i][1] + pos.y as u32;
-        let z = POS[*i][2] + pos.z as u32;
-
-        verts.push(ChunkVertex::new(&uint3::new(x, y, z), &uint2::new(pos.x as u32, pos.z as u32)));
-        //buf.nor.push(Normal(NOR[ n]));
-    }
-
-    let j = verts.len() as u32;
-    for i in &IND               // indices
-    {
-        ind.push(*i + j);
     }
 }
