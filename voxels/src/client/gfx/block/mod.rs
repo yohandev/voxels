@@ -68,7 +68,7 @@ impl<'a> UnpackedBlock<'a>
             shapes::BlockShapes::None => {}                 // strictly no mesh
             shapes::BlockShapes::Cube =>                    // simple cube faces
             {
-                gen_face(mesh, face, self.r_pos())
+                gen_face(self, mesh, face)
             }
             shapes::BlockShapes::Half =>                    // todo
             {
@@ -79,7 +79,7 @@ impl<'a> UnpackedBlock<'a>
 }
 
 /// creates a square face of a mesh using the chunk vertex
-fn gen_face(mesh: &mut ChunkMeshBuilder, face: BlockFace, pos: int3)
+fn gen_face(block: &Block, mesh: &mut ChunkMeshBuilder, face: BlockFace)
 {
     const POS: [[u32; 3]; 8] = 
     [
@@ -108,13 +108,19 @@ fn gen_face(mesh: &mut ChunkMeshBuilder, face: BlockFace, pos: int3)
         0, 1, 2, 0, 2, 3
     ];
 
+    let pos = block.r_pos();
+
     for i in &TRI[face as usize]    // vertices
     {
         let x = POS[*i][0] + pos.x as u32;
         let y = POS[*i][1] + pos.y as u32;
         let z = POS[*i][2] + pos.z as u32;
 
-        mesh.vert.push(ChunkVertex::new(&uint3::new(x, y, z), &uint2::new(pos.x as u32, pos.z as u32)));
+        let tex = block.color().xy() * 128.0 * (pos.y as f32 / 32.0);
+        let pos = uint3::new(x, y, z);
+        let tex = uint2::new(tex.x as u32, tex.y as u32);
+
+        mesh.vert.push(ChunkVertex::new(&pos, &tex));
     }
 
     let j = mesh.vert.len() as u32;
