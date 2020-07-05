@@ -53,6 +53,13 @@ impl RBlockPalette
                     id: "grass".into(),
                     col: float4::new(0.0, 1.0, 0.0, 1.0),
                     shape: BlockShapes::Cube
+                },
+                BlockData
+                {
+                    name: "Dirt".into(),
+                    id: "dirt".into(),
+                    col: float4::new(0.167, 0.133, 0.0, 1.0),
+                    shape: BlockShapes::Cube
                 }
             ]
         }
