@@ -16,31 +16,32 @@ impl System<PollEvent> for STime
 
     fn run(app: &mut crate::Application)
     {
-        let r_poll = app
-            .res()
-            .get::<crate::RWinitPoll>()
-            .unwrap()
-            .to_owned();
-        
-        if let winit::event::Event::NewEvents(_) = &r_poll
+        let (r_poll, mut r_time) = <(Read<crate::RWinitPoll>, Write<RTime>)>::fetch_mut(app.res_mut());
+        // let r_poll = app
+        //     .res()
+        //     .get::<crate::RWinitPoll>()
+        //     .unwrap()
+        //     .to_owned();
+
+        if let winit::event::Event::NewEvents(_) = &*r_poll
         {
             let now = Instant::now();
 
-            let mut r_time = app
-                .resources()
-                .get_mut_or_insert_with(|| RTime::new())
-                .unwrap();
+            // let mut r_time = app
+            //     .resources()
+            //     .get_mut_or_insert_with(|| RTime::new())
+            //     .unwrap();
 
             r_time.delta = now.duration_since(r_time.frame);
             r_time.frame = now;
         }
-        if let winit::event::Event::MainEventsCleared = &r_poll
+        if let winit::event::Event::MainEventsCleared = &*r_poll
         {
-            app.invoke(evt::UpdateEvent);
+            app.invoke::<evt::UpdateEvent>();
         }
-        if let winit::event::Event::RedrawRequested(_) = &r_poll
+        if let winit::event::Event::RedrawRequested(_) = &*r_poll
         {
-            app.invoke(evt::RenderEvent);
+            app.invoke::<evt::RenderEvent>();
         }
     }
 }

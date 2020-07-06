@@ -8,7 +8,7 @@ pub struct PollEvent(pub winit::event::Event<'static, ()>);
 /// event invoked by the application right after the Game::begin()
 /// call. It's only run once and can be used to initialize an ECS
 /// scene or resources outside the game module.
-pub const START: &str = "ezgame_start";
+pub struct StartEvent;
 
 /// event received by subscribed user systems, and finally the
 /// application. as the name implies, this event quits

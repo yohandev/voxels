@@ -2,7 +2,7 @@
 /// has been succesfully initialized. This
 /// is useful for window-dependent systems,
 /// such as the ezgfx SRendererInit.
-pub const CREATED: &str = "ezgame_window_created";
+pub struct CreatedEvent;
 
 /// event invoked when any window is resized.
 pub struct ResizedEvent;

@@ -32,7 +32,7 @@ impl Application
         //app.prepare();
 
         // start event
-        app.invoke(evt::START);
+        app.invoke::<evt::StartEvent>();
 
         // run game
         winit::event_loop::EventLoop::new().run
@@ -48,12 +48,15 @@ impl Application
                 // push current event into loop
                 if let Some(static_event) = event.to_static()
                 {
+                    // insert resource
+                    app.res_mut().insert(static_event);
+
                     // invoke systems for new event
-                    app.invoke(evt::PollEvent(static_event));
+                    app.invoke::<evt::PollEvent>();
                 }
 
                 // process events
-                //app.systems.process(&mut app.active, &mut app.resources);
+                app.systems.process(&mut app);
             }
         );
     }
@@ -118,7 +121,7 @@ impl Application
     }
 
     /// shortcut for `app.resources.get<REvents>.push`
-    pub fn invoke<T>(&self, evt: T)
+    pub fn invoke<T>(&self)
     {
         todo!();
         // self

@@ -39,15 +39,15 @@ impl System<PollEvent> for SWindow
                 {
                     winit::event::WindowEvent::Resized(_) =>
                     {
-                        app.invoke(evt::ResizedEvent);
+                        app.invoke::<evt::ResizedEvent>();
                     }
                     winit::event::WindowEvent::CloseRequested =>
                     {
-                        app.invoke(QuitEvent);
+                        app.invoke::<QuitEvent>();
                     }
                     winit::event::WindowEvent::ScaleFactorChanged {..} =>
                     {
-                        app.invoke(evt::ResizedEvent);
+                        app.invoke::<evt::ResizedEvent>();
                     },
                     _ => {}
                 }

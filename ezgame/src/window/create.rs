@@ -24,6 +24,6 @@ pub(crate) fn create_window(app: &mut Application, target: &EventLoopWindowTarge
 
         // if program hasn't panicked by then,
         // invoke event
-        app.invoke(super::evt::CREATED);
+        app.invoke::<super::evt::CreatedEvent>();
     }
 }
