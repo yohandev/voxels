@@ -90,6 +90,11 @@ impl Game for TestGame
             .title("my window")
             .clear(0.1, 0.2, 0.3, 1.0)
             .build();
+        
+        app.states().insert::<PauseState>();
+        app.states().insert::<GameplayState>();
+
+        app.states().switch::<GameplayState>(); // inserts if not inserted
     }
 }
 ```
