@@ -14,9 +14,15 @@ impl System<PollEvent> for STime
 {
     const ORDER: isize = 9999;
 
-    fn run(&mut self, app: &mut crate::Application, evt: &PollEvent)
+    fn run(app: &mut crate::Application)
     {
-        if let winit::event::Event::NewEvents(_) = &evt.0
+        let r_poll = app
+            .res()
+            .get::<crate::RWinitPoll>()
+            .unwrap()
+            .to_owned();
+        
+        if let winit::event::Event::NewEvents(_) = &r_poll
         {
             let now = Instant::now();
 
@@ -28,17 +34,11 @@ impl System<PollEvent> for STime
             r_time.delta = now.duration_since(r_time.frame);
             r_time.frame = now;
         }
-        if let winit::event::Event::MainEventsCleared = &evt.0
+        if let winit::event::Event::MainEventsCleared = &r_poll
         {
-            let dt = app
-                .res()
-                .get::<RTime>()
-                .unwrap()
-                .dt();
-
-            app.invoke(evt::UpdateEvent { dt });
+            app.invoke(evt::UpdateEvent);
         }
-        if let winit::event::Event::RedrawRequested(_) = &evt.0
+        if let winit::event::Event::RedrawRequested(_) = &r_poll
         {
             app.invoke(evt::RenderEvent);
         }

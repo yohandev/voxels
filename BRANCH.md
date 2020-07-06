@@ -9,17 +9,13 @@ benchmark of average event processing:
 
 ## proposal
 ```rust
-#[derive(Default)]
-struct SPhysics
-{
-    added: bool
-}
+struct SPhysics;
 
 impl System<StartEvent> for SPhysics
 {
     const ORDER: isize = 0;
 
-    fn run(&mut self, app: &mut Application, evt: &StartEvent)
+    fn run(app: &mut Application)
     {
         app.resources().insert(RGravity { x: 0.0, y: -9.8, z: 0.0 });
     }

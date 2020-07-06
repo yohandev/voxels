@@ -10,7 +10,7 @@ impl System<PollEvent> for SWindow
 {
     const ORDER: isize = 9999;
 
-    fn run(&mut self, app: &mut crate::Application, evt: &PollEvent)
+    fn run(app: &mut crate::Application)
     {
         // ignore is no window is present
         if !app.res().contains::<RWindow>()
@@ -21,9 +21,13 @@ impl System<PollEvent> for SWindow
             .res()
             .get::<RWindow>()
             .unwrap();
+        let r_poll = app
+            .res()
+            .get::<crate::RWinitPoll>()
+            .unwrap();
 
         // process winit events
-        match &evt.0
+        match &*r_poll
         {
             winit::event::Event::WindowEvent { window_id, event } =>
             {
@@ -33,17 +37,17 @@ impl System<PollEvent> for SWindow
                 }
                 match event
                 {
-                    winit::event::WindowEvent::Resized(size) =>
+                    winit::event::WindowEvent::Resized(_) =>
                     {
-                        app.invoke(evt::ResizedEvent(size.width, size.height));
+                        app.invoke(evt::ResizedEvent);
                     }
                     winit::event::WindowEvent::CloseRequested =>
                     {
                         app.invoke(QuitEvent);
                     }
-                    winit::event::WindowEvent::ScaleFactorChanged {new_inner_size, ..} =>
+                    winit::event::WindowEvent::ScaleFactorChanged {..} =>
                     {
-                        app.invoke(evt::ResizedEvent(new_inner_size.width, new_inner_size.height));
+                        app.invoke(evt::ResizedEvent);
                     },
                     _ => {}
                 }

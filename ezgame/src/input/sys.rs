@@ -10,14 +10,21 @@ impl System<PollEvent> for SInput
 {
     const ORDER: isize = 9999;
 
-    fn run(&mut self, app: &mut crate::Application, evt: &PollEvent)
+    fn run(app: &mut crate::Application)
     {
+        let r_poll = app
+            .res()
+            .get::<crate::RWinitPoll>()
+            .unwrap()
+            .to_owned();
+            
+        // get input
         let mut r_input = app
             .resources()
             .get_mut_or_insert_with(|| RInput::new())
             .unwrap();
 
-        if let winit::event::Event::NewEvents(_) = &evt.0
+        if let winit::event::Event::NewEvents(_) = &r_poll
         {
             // reset keyboard keys
             for key in r_input.keys.iter_mut()
@@ -51,7 +58,7 @@ impl System<PollEvent> for SInput
             r_input.delta[0] = 0.0;
             r_input.delta[1] = 0.0;
         }
-        if let winit::event::Event::WindowEvent { event, ..} = &evt.0
+        if let winit::event::Event::WindowEvent { event, ..} = &r_poll
         {
             match event
             {

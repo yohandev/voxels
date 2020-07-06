@@ -1,7 +1,3 @@
-/// winit event resource, typically only
-/// used by the ezgame engine systems.
-pub type REvent = winit::event::Event<'static, ()>;
-
 /// Window resource, which is simply an alias
 /// for winit's window, but wrapped in an option
 /// in case the window doesn't exist.

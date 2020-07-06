@@ -11,6 +11,9 @@ pub struct Application
     active:     ecs::Registry,
 }
 
+/// winit resource taken directly from the event loop
+pub(crate) type RWinitPoll = winit::event::Event<'static, ()>;
+
 impl Application
 {
     /// create and run an application
