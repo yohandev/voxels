@@ -5,4 +5,4 @@
 pub const CREATED: &str = "ezgame_window_created";
 
 /// event invoked when any window is resized.
-pub const RESIZED: &str = "ezgame_window_resized";
+pub struct ResizedEvent(pub u32, pub u32);

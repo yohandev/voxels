@@ -26,7 +26,7 @@ impl Application
         app.build::<T>();
 
         // prepare systems
-        app.prepare();
+        //app.prepare();
 
         // start event
         app.invoke(evt::START);
@@ -45,21 +45,32 @@ impl Application
                 // push current event into loop
                 if let Some(static_event) = event.to_static()
                 {
-                    // insert latest event
-                    app.resources().insert(static_event);
-
                     // invoke systems for new event
-                    app.invoke(evt::POLL);
+                    app.invoke(evt::PollEvent(static_event));
                 }
 
                 // process events
-                app.systems.process(&mut app.active, &mut app.resources);
+                //app.systems.process(&mut app.active, &mut app.resources);
             }
         );
     }
 
     /// get the resources for this app.
+    /// this is the exact same as `Application::res_mut()`
+    /// but prettier
     pub fn resources(&mut self) -> &mut ecs::Resources
+    {
+        &mut self.resources
+    }
+
+    /// get the resources for this app(immutable)
+    pub fn res(&self) -> &ecs::Resources
+    {
+        &self.resources
+    }
+
+    /// get the resources for this app(mutable)
+    pub fn res_mut(&mut self) -> &mut ecs::Resources
     {
         &mut self.resources
     }
@@ -91,7 +102,7 @@ impl Application
 
         // insert engine resources
         resources.insert(factory);
-        resources.insert(ecs::REvents::default());
+        //resources.insert(ecs::REvents::default());
 
         // return
         Self { resources, systems, active }
@@ -103,19 +114,14 @@ impl Application
         T::build(self);
     }
 
-    /// prepare currently added systems
-    fn prepare(&mut self)
-    {
-        self.systems.build(&mut self.resources);
-    }
-
     /// shortcut for `app.resources.get<REvents>.push`
-    pub(crate) fn invoke(&mut self, e: ecs::Event)
+    pub fn invoke<T>(&self, evt: T)
     {
-        self
-            .resources()
-            .get::<ecs::REvents>()
-            .unwrap()
-            .push(e);
+        todo!();
+        // self
+        //     .resources()
+        //     .get::<ecs::REvents>()
+        //     .unwrap()
+        //     .push(e);
     }
 }

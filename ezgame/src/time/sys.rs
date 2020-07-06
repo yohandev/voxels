@@ -1,7 +1,8 @@
 use std::time::*;
 
 use crate::ecs::*;
-use crate::evt;
+use crate::evt::*;
+use super::*;
 
 /// system that manages time for your game,
 /// invoking the update and render events
@@ -9,42 +10,37 @@ use crate::evt;
 /// RTime resource.
 pub struct STime;
 
-impl System for STime
+impl System<PollEvent> for STime
 {
-    const EVENT: Event = evt::POLL;
-    const ORDER: Order = ord::HIGH;
+    const ORDER: isize = 9999;
 
-    fn prepare(r: &mut Resources)
+    fn run(&mut self, app: &mut crate::Application, evt: &PollEvent)
     {
-        r.insert(super::RTime::new());
-    }
-
-    fn exe() -> SysFn
-    {
-        // begin...
-        sys("ezgame_time_system")
-        // resources...
-        .read_resource::<crate::window::REvent>()
-        .write_resource::<super::RTime>()
-        .read_resource::<REvents>()
-        // system...
-        .build(|_, _, (r_winit, r_time, r_events), _|
+        if let winit::event::Event::NewEvents(_) = &evt.0
         {
-            if let winit::event::Event::NewEvents(_) = &**r_winit
-            {
-                let now = Instant::now();
+            let now = Instant::now();
 
-                r_time.delta = now.duration_since(r_time.frame);
-                r_time.frame = now;
-            }
-            if let winit::event::Event::MainEventsCleared = &**r_winit
-            {
-                r_events.push(super::evt::UPDATE);
-            }
-            if let winit::event::Event::RedrawRequested(_) = &**r_winit
-            {
-                r_events.push(super::evt::RENDER);
-            }
-        })
+            let mut r_time = app
+                .resources()
+                .get_mut_or_insert_with(|| RTime::new())
+                .unwrap();
+
+            r_time.delta = now.duration_since(r_time.frame);
+            r_time.frame = now;
+        }
+        if let winit::event::Event::MainEventsCleared = &evt.0
+        {
+            let dt = app
+                .res()
+                .get::<RTime>()
+                .unwrap()
+                .dt();
+
+            app.invoke(evt::UpdateEvent { dt });
+        }
+        if let winit::event::Event::RedrawRequested(_) = &evt.0
+        {
+            app.invoke(evt::RenderEvent);
+        }
     }
 }

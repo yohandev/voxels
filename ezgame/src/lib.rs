@@ -8,12 +8,12 @@ pub mod window;
 pub mod input;
 pub mod time;
 pub mod evt;
+pub mod ecs;
 
-pub use ::ezgame_ecs as ecs;
 pub use ::winit;
 
-#[cfg(feature="plugin-ezgfx")]
-pub mod gfx;
+//#[cfg(feature="plugin-ezgfx")]
+//pub mod gfx;
 
 /// system bundle consisting of game systems
 #[cfg(not(feature="plugin-ezgfx"))]
@@ -25,6 +25,6 @@ pub type GameBundle =
     window::SWindow,
     input::SInput,
     time::STime,
-    gfx::SGraphicsInit,
-    gfx::SGraphicsResize
+    //gfx::SGraphicsInit,
+    //gfx::SGraphicsResize
 );

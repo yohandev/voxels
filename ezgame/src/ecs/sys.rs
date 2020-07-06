@@ -10,11 +10,7 @@ pub trait System<T>: 'static
     /// should make `B::ORDER` equal to `A::ORDER + 1`.
     const ORDER: isize;
 
-    //fn run(&mut self, app: &mut Applica)
-}
-
-/// creates a new system builder
-pub fn sys(name: &'static str) -> SystemBuilder
-{
-    SystemBuilder::new(name)
+    /// execute the system, receiving the event as an
+    /// argument. 
+    fn run(&mut self, app: &mut Application, evt: &T);
 }

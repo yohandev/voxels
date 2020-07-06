@@ -1,70 +1,58 @@
 use crate::ecs::*;
-use crate::evt;
+use crate::evt::*;
+use super::*;
 
 /// system that processes raw winit events
 /// regarding windows, then invokes events.
 pub struct SWindow;
 
-impl System for SWindow
+impl System<PollEvent> for SWindow
 {
-    const EVENT: Event = evt::POLL;
-    const ORDER: Order = ord::HIGH;
+    const ORDER: isize = 9999;
 
-    fn prepare(r: &mut Resources)
+    fn run(&mut self, app: &mut crate::Application, evt: &PollEvent)
     {
-        r.insert(super::RWindow::None);
-    }
-
-    fn exe() -> SysFn
-    {
-        // begin...
-        sys("ezgame_window_system")
-        // resources...
-        .read_resource::<super::REvent>()
-        .read_resource::<super::RWindow>()
-        .read_resource::<REvents>()
-        // system...
-        .build(|_, _, (r_winit, r_window, r_events), _|
+        // ignore is no window is present
+        if !app.res().contains::<RWindow>()
         {
-            // ignore is no window is present
-            if r_window.is_none()
-            {
-                return;
-            }
-            let win = r_window.as_ref().unwrap();
+            return;
+        }
+        let r_win = app
+            .res()
+            .get::<RWindow>()
+            .unwrap();
 
-            // process winit events
-            match &**r_winit
+        // process winit events
+        match &evt.0
+        {
+            winit::event::Event::WindowEvent { window_id, event } =>
             {
-                winit::event::Event::WindowEvent { window_id, event } =>
+                if *window_id != r_win.id()
                 {
-                    if *window_id != win.id()
-                    {
-                        return;   
-                    }
-                    match event
-                    {
-                        winit::event::WindowEvent::Resized(_) =>
-                        {
-                            r_events.push(super::evt::RESIZED);
-                        }
-                        winit::event::WindowEvent::CloseRequested =>
-                        {
-                            r_events.push(evt::QUIT);
-                        }
-                        winit::event::WindowEvent::ScaleFactorChanged {..} =>
-                        {
-                            r_events.push(super::evt::RESIZED);
-                        },
-                        _ => {}
-                    }
+                    return;   
                 }
-                winit::event::Event::MainEventsCleared =>
+                match event
                 {
-                    win.request_redraw();
+                    winit::event::WindowEvent::Resized(size) =>
+                    {
+                        app.invoke(evt::ResizedEvent(size.width, size.height));
+                    }
+                    winit::event::WindowEvent::CloseRequested =>
+                    {
+                        app.invoke(QuitEvent);
+                    }
+                    winit::event::WindowEvent::ScaleFactorChanged {new_inner_size, ..} =>
+                    {
+                        app.invoke(evt::ResizedEvent(new_inner_size.width, new_inner_size.height));
+                    },
+                    _ => {}
                 }
-                _ => {}
-            };
-        })
+            }
+            winit::event::Event::MainEventsCleared =>
+            {
+                r_win.request_redraw();
+            }
+            _ => {}
+        };
     }
 }

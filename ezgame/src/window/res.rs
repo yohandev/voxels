@@ -5,7 +5,7 @@ pub type REvent = winit::event::Event<'static, ()>;
 /// Window resource, which is simply an alias
 /// for winit's window, but wrapped in an option
 /// in case the window doesn't exist.
-pub type RWindow = Option<winit::window::Window>;
+pub type RWindow = winit::window::Window;
 
 /// resource used to request a window. It will
 /// place an RWindow resource into the world,
