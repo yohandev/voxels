@@ -1,3 +1,4 @@
+use super::ecs::*;
 use super::*;
 
 /// The application is the core of the game. Most of its functions,
@@ -6,9 +7,8 @@ use super::*;
 /// everything explains itself after that.
 pub struct Application
 {
-    resources:  ecs::Resources,
-    systems:    ecs::Systems,
-    active:     ecs::Registry,
+    resources:  Resources,
+    active:     Registry,
 }
 
 /// winit resource taken directly from the event loop
@@ -23,16 +23,14 @@ impl Application
     pub fn run<T>() where T : Game + 'static
     {
         // create app
-        let mut app = Self::create();
+        let mut app = Application::create();
+        let mut sys = Systems::create();
 
         // build game
-        app.build::<T>();
-
-        // prepare systems
-        //app.prepare();
+        T::build(&mut app, &mut sys);
 
         // start event
-        app.invoke::<evt::StartEvent>();
+        app.events().push::<evt::Start>();
 
         // run game
         winit::event_loop::EventLoop::new().run
@@ -46,19 +44,17 @@ impl Application
                 //window::create_window(&mut app, window_target);
 
                 // push current event into loop
-                // app.time().process(&event);
-                // app.input().process(&event);
-                // app.window().process(&event);
+                if let Some(static_event) = event.to_static()
+                {
+                    // insert latest event
+                    app.resources().insert(static_event);
 
-                //#[cfg(feature="plugin-ezgfx")]
-                // app.graphics().process(&event);
+                    // invoke systems for new event
+                    app.events().push::<evt::Poll>();
+                }
 
                 // process events
-                //if app.time().step()
-                {
-                    app.systems().update(&mut app);
-                }
-                //app.systems.process(&mut app);
+                sys.process(&mut app);
             }
         );
     }
@@ -66,33 +62,54 @@ impl Application
     /// get the resources for this app.
     /// this is the exact same as `Application::res_mut()`
     /// but prettier
-    pub fn resources(&mut self) -> &mut ecs::Resources
+    pub fn resources(&mut self) -> &mut Resources
     {
         &mut self.resources
     }
 
     /// get the resources for this app(immutable)
-    pub fn res(&self) -> &ecs::Resources
+    pub fn res(&self) -> &Resources
     {
         &self.resources
     }
 
     /// get the resources for this app(mutable)
-    pub fn res_mut(&mut self) -> &mut ecs::Resources
+    pub fn res_mut(&mut self) -> &mut Resources
     {
         &mut self.resources
     }
 
-    /// get the systems manager for this app
-    pub fn systems(&mut self) -> &mut ecs::Systems
+    /// short-cut for:
+    /// ```rust
+    /// <(Read<RFoo>, Read<RBar>)>::fetch(app.res())
+    /// ```
+    /// used to fetch multiple resources at once without rust's
+    /// borrowing constraints
+    pub fn fetch<T: ResourceSet + legion::query::ReadOnly>(&self) -> T::PreparedResources
     {
-        &mut self.systems
+        T::fetch(self.res())
     }
 
-    /// get the active entity registry
-    pub fn registry(&mut self) -> &mut ecs::Registry
+    /// short-cut for:
+    /// ```rust
+    /// <(Read<RFoo>, Write<RBar>)>::fetch_mut(app.res_mut())
+    /// ```
+    /// used to fetch multiple resources at once without rust's
+    /// borrowing constraints
+    pub fn fetch_mut<T: ResourceSet>(&mut self) -> T::PreparedResources
     {
-        &mut self.active
+        T::fetch_mut(self.res_mut())
+    }
+
+    /// short-cut for
+    /// ```rust
+    /// app.res_mut().get::<REventQueue>().unwrap()
+    /// ```
+    /// get the app's event queue, which should normally
+    /// always be there and valid.
+    pub fn events(&mut self) -> &mut REventQueue
+    {
+        todo!()
     }
 
     /// create a new app
@@ -100,7 +117,6 @@ impl Application
     {
         // resources and systems
         let mut resources = ecs::Resources::default();
-        let systems = ecs::Systems::default();
         
         // universe
         let factory = ecs::RegistryFactory::new();
@@ -113,13 +129,7 @@ impl Application
         //resources.insert(ecs::REvents::default());
 
         // return
-        Self { resources, systems, active }
-    }
-
-    /// build the game on this app
-    fn build<T: Game>(&mut self)
-    {
-        T::build(self);
+        Self { resources, active }
     }
 
     /// shortcut for `app.resources.get<REvents>.push`

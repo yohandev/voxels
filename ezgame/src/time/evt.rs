@@ -4,9 +4,9 @@
 /// you can't rely on this event's timings, and it's important
 /// to use the ezgame::resources::Time resource to retreive
 /// the delta time, or get it directly from the event data
-pub struct UpdateEvent;
+pub struct Update;
 
 /// event invoked by ezgame's window system. it's called
 /// with the os' vsync rate, and is useful for rendering
 /// pre/post processing actions.
-pub struct RenderEvent;
+pub struct Render;

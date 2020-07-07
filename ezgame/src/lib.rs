@@ -6,7 +6,7 @@ pub use app::*;
 
 //pub mod window;
 //pub mod input;
-//pub mod time;
+pub mod time;
 pub mod evt;
 pub mod ecs;
 
