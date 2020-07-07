@@ -7,7 +7,7 @@ use super::*;
 pub struct Application
 {
     resources:  ecs::Resources,
-    systems:    ecs::EventSystems,
+    systems:    ecs::Systems,
     active:     ecs::Registry,
 }
 
@@ -43,20 +43,22 @@ impl Application
                 *flow = winit::event_loop::ControlFlow::Poll;
                 
                 // poll window requests
-                window::create_window(&mut app, window_target);
+                //window::create_window(&mut app, window_target);
 
                 // push current event into loop
-                if let Some(static_event) = event.to_static()
-                {
-                    // insert resource
-                    app.res_mut().insert(static_event);
+                // app.time().process(&event);
+                // app.input().process(&event);
+                // app.window().process(&event);
 
-                    // invoke systems for new event
-                    app.invoke::<evt::PollEvent>();
-                }
+                //#[cfg(feature="plugin-ezgfx")]
+                // app.graphics().process(&event);
 
                 // process events
-                app.systems.process(&mut app);
+                //if app.time().step()
+                {
+                    app.systems().update(&mut app);
+                }
+                //app.systems.process(&mut app);
             }
         );
     }
@@ -82,7 +84,7 @@ impl Application
     }
 
     /// get the systems manager for this app
-    pub fn systems(&mut self) -> &mut ecs::EventSystems
+    pub fn systems(&mut self) -> &mut ecs::Systems
     {
         &mut self.systems
     }
@@ -98,7 +100,7 @@ impl Application
     {
         // resources and systems
         let mut resources = ecs::Resources::default();
-        let systems = ecs::EventSystems::default();
+        let systems = ecs::Systems::default();
         
         // universe
         let factory = ecs::RegistryFactory::new();
