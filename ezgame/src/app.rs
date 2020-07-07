@@ -7,8 +7,8 @@ use super::*;
 /// everything explains itself after that.
 pub struct Application
 {
+    factory: RegistryFactory,
     resources:  Resources,
-    active:     Registry,
 }
 
 /// winit resource taken directly from the event loop
@@ -41,7 +41,7 @@ impl Application
                 *flow = winit::event_loop::ControlFlow::Poll;
                 
                 // poll window requests
-                //window::create_window(&mut app, window_target);
+                window::SWindow::create(&mut app, window_target);
 
                 // push current event into loop
                 if let Some(static_event) = event.to_static()
@@ -112,34 +112,25 @@ impl Application
         todo!()
     }
 
+    /// create a new registry for this app
+    pub fn create_registry(&mut self) -> Registry
+    {
+        self.factory.create_world()
+    }
+
     /// create a new app
     fn create() -> Self
     {
-        // resources and systems
-        let mut resources = ecs::Resources::default();
-        
         // universe
-        let factory = ecs::RegistryFactory::new();
+        let factory = RegistryFactory::new();
 
-        // create active registry
-        let active = factory.create_world();
+        // resources
+        let mut resources = Resources::default();
 
         // insert engine resources
-        resources.insert(factory);
-        //resources.insert(ecs::REvents::default());
+        resources.insert(REventQueue::new());
 
         // return
-        Self { resources, active }
-    }
-
-    /// shortcut for `app.resources.get<REvents>.push`
-    pub fn invoke<T>(&self)
-    {
-        todo!();
-        // self
-        //     .resources()
-        //     .get::<ecs::REvents>()
-        //     .unwrap()
-        //     .push(e);
+        Self { factory, resources }
     }
 }

@@ -47,15 +47,15 @@ impl SWindow
                 {
                     winit::event::WindowEvent::Resized(_) =>
                     {
-                        app.invoke::<super::evt::Resized>();
+                        app.events().push::<super::evt::Resized>();
                     }
                     winit::event::WindowEvent::CloseRequested =>
                     {
-                        app.invoke::<crate::evt::Quit>();
+                        app.events().push::<crate::evt::Quit>();
                     }
                     winit::event::WindowEvent::ScaleFactorChanged {..} =>
                     {
-                        app.invoke::<super::evt::Resized>();
+                        app.events().push::<super::evt::Resized>();
                     },
                     _ => {}
                 }
@@ -95,7 +95,7 @@ impl SWindow
 
             // if program hasn't panicked by then,
             // invoke event
-            app.invoke::<super::evt::Created>();
+            app.events().push::<super::evt::Created>();
         }
     }
 }

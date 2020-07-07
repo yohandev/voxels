@@ -13,6 +13,11 @@ pub struct REventQueue
 
 impl REventQueue
 {
+    pub(crate) fn new() -> Self
+    {
+        Self { queue: Default::default() }
+    }
+
     /// queue an event to be processed later
     pub fn push<T: 'static>(&self)
     {

@@ -42,12 +42,12 @@ impl STime
         // update loop
         if let winit::event::Event::MainEventsCleared = &*r_poll
         {
-            app.invoke::<super::evt::Update>();
+            app.events().push::<super::evt::Update>();
         }
         // render loop
         if let winit::event::Event::RedrawRequested(_) = &*r_poll
         {
-            app.invoke::<super::evt::Render>();
+            app.events().push::<super::evt::Render>();
         }
     }
 }
