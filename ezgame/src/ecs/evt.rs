@@ -1,3 +1,4 @@
+use crossbeam::queue::SegQueue;
 use std::any::TypeId;
 
 /// event queue resource, at the core of ezgame
@@ -7,7 +8,7 @@ use std::any::TypeId;
 /// be tempered with.
 pub struct REventQueue
 {
-    pub(super) queue: Vec<TypeId>
+    pub(super) queue: SegQueue<TypeId>
 }
 
 impl REventQueue
@@ -15,6 +16,6 @@ impl REventQueue
     /// queue an event to be processed later
     pub fn push<T: 'static>(&self)
     {
-        todo!()
+        self.queue.push(TypeId::of::<T>());
     }
 }

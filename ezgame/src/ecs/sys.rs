@@ -111,7 +111,7 @@ impl Systems
     {
         // retrieve and replace events
         let queue = &mut app.events().queue;
-        let mut events = std::mem::replace(queue, Default::default());
+        let events = std::mem::replace(queue, Default::default());
 
         // break recursion
         if events.is_empty()
@@ -120,7 +120,7 @@ impl Systems
         }
 
         // process all events
-        while let Some(evt_id) = events.pop()
+        while let Ok(evt_id) = events.pop()
         {
             // get handlers list
             if let Some(handlers) = self.map.get(&evt_id)

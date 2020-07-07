@@ -1,30 +1,32 @@
 use crate::ecs::*;
-use crate::evt::*;
+use crate::*;
 use super::*;
 
 /// system that processes and caches input
 /// events into the RInput resource.
 pub struct SInput;
 
-impl System<PollEvent> for SInput
+impl System for SInput
 {
-    const ORDER: isize = 9999;
-
-    fn run(app: &mut crate::Application)
+    fn register(handlers: &mut Systems)
     {
-        let r_poll = app
-            .res()
-            .get::<crate::RWinitPoll>()
-            .unwrap()
-            .to_owned();
-            
-        // get input
-        let mut r_input = app
-            .resources()
-            .get_mut_or_insert_with(|| RInput::new())
-            .unwrap();
+        handlers.insert::<crate::evt::Start>(-9999, Self::on_start);
+        handlers.insert::<crate::evt::Poll>(-9999, Self::on_poll);
+    }
+}
 
-        if let winit::event::Event::NewEvents(_) = &r_poll
+impl SInput
+{
+    fn on_start(app: &mut Application)
+    {
+        app.resources().insert(RInput::new());
+    }
+
+    fn on_poll(app: &mut Application)
+    {
+        let (r_poll, mut r_input) = app.fetch_mut::<(Read<RWinitPoll>, Write<RInput>)>();
+
+        if let winit::event::Event::NewEvents(_) = &*r_poll
         {
             // reset keyboard keys
             for key in r_input.keys.iter_mut()
@@ -58,7 +60,7 @@ impl System<PollEvent> for SInput
             r_input.delta[0] = 0.0;
             r_input.delta[1] = 0.0;
         }
-        if let winit::event::Event::WindowEvent { event, ..} = &r_poll
+        if let winit::event::Event::WindowEvent { event, ..} = &*r_poll
         {
             match event
             {

@@ -1,85 +1,66 @@
 use crate::window::*;
 use crate::ecs::*;
+use crate::*;
+use super::*;
 
 /// system that initializes the RGraphics
-/// resource whenever a window is created.
-pub struct SGraphicsInit;
+/// resource whenever a window is created
+/// and resizes the framebuffer when the
+/// window is resized
+pub struct SGraphics;
 
-/// system that resizes the framebuffer when
-/// the window is resized.
-pub struct SGraphicsResize;
-
-impl System for SGraphicsInit
+impl System for SGraphics
 {
-    const EVENT: Event = evt::CREATED;
-    const ORDER: Order = ord::HIGH * 2;
-    
-    fn prepare(r: &mut Resources)
+    fn register(handlers: &mut Systems)
     {
-        r.insert(super::RGraphics::None);
-    }
-    
-    fn exe() -> SysFn
-    {
-        // begin...
-        sys("ezgfx_init_system")
-        // resources
-        .read_resource::<RWindow>()
-        .write_resource::<super::RGraphics>()
-        .read_resource::<REvents>()
-        // system
-        .build(|_, _, (r_window, r_gfx, r_events), _|
-        {
-            // retrieve window
-            let window = r_window.as_ref().unwrap();
-            let size   = window.inner_size();
-
-            // create renderer
-            **r_gfx = Some(ezgfx::Renderer::from_window(window, size.width, size.height));
-            
-            // invoke event
-            r_events.push(super::evt::READY);
-        })
-    }
+        handlers.insert::<crate::evt::Start>(-8999, Self::on_start);
+        handlers.insert::<window::evt::Resized>(-9999, Self::on_window_resize);
+        handlers.insert::<window::evt::Created>(-9999, Self::on_window_created);
+    } 
 }
 
-impl System for SGraphicsResize
+impl SGraphics
 {
-    const EVENT: Event = evt::RESIZED;
-    const ORDER: Order = ord::HIGH * 2;
-
-    fn prepare(r: &mut Resources)
+    fn on_start(app: &mut Application)
     {
-        r.insert(super::RGraphics::None);
+        app.resources().insert(super::RGraphics::None);
     }
 
-    fn exe() -> SysFn
+    fn on_window_created(app: &mut Application)
     {
-        // begin...
-        sys("ezgfx_resize_system")
-        // resources...
-        .read_resource::<RWindow>()
-        .write_resource::<super::RGraphics>()
-        // system
-        .build(|_, _, (r_window, r_gfx), _|
-        {
-            // renderer not initialized
-            if r_gfx.is_none()
-            {
-                return;
-            }
+        // retrieve resources
+        let (r_win, mut r_gfx) = app.fetch_mut::<(Read<RWindow>, Write<RGraphics>)>();
 
+        // retrieve window
+        if let Some(win)  = &*r_win
+        {
+            // window size
+            let size = win.inner_size();
+
+            // create renderer
+            *r_gfx = Some(ezgfx::Renderer::from_window(win, size.width, size.height));
+            
+            // invoke event
+            app.events().push::<super::evt::Ready>();
+        }
+    }
+
+    fn on_window_resize(app: &mut Application)
+    {
+        // retrieve resources
+        let (r_win, mut r_gfx) = app.fetch_mut::<(Read<RWindow>, Write<RGraphics>)>();
+
+        // renderer is initialized
+        if let Some(gfx) = &mut *r_gfx
+        {
             // get window size
-            let size = r_window
+            let size = r_win
                 .as_ref()
                 .unwrap()
                 .inner_size();
 
             // update swapchain size
-            r_gfx
-                .as_mut()
-                .unwrap()
-                .resize(size.width, size.height);
-        })
+            gfx.resize(size.width, size.height);
+        }
     }
 }

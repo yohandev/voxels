@@ -3,4 +3,4 @@
 /// render pipelines, textures, and other assets. it's
 /// invoked as many times as there are ezgfx::*::Renderer
 /// components.
-pub const READY: &str = "ezgfx_ready";
+pub struct Ready;
