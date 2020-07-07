@@ -17,14 +17,14 @@ pub mod gfx;
 
 /// system bundle consisting of game systems
 #[cfg(not(feature="plugin-ezgfx"))]
-pub type GameBundle = (window::SWindow, input::SInput, time::STime);
+pub type GameBundle = ( window::SWindow, input::SInput, time::STime );
 
+/// system bundle consisting of game and rendering systems
 #[cfg(feature="plugin-ezgfx")]
 pub type GameBundle =
 (
-    //window::SWindow,
-    //input::SInput,
-    //time::STime,
-    //gfx::SGraphicsInit,
-    //gfx::SGraphicsResize
+    window::SWindow,
+    input::SInput,
+    time::STime,
+    gfx::SGraphics,
 );
