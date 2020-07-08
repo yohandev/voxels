@@ -107,6 +107,12 @@ impl Systems
         handlers.sort_unstable_by(|a, b| a.0.cmp(&b.0));
     }
 
+    /// insert a system bundle
+    pub fn bundle<T: SystemBundle>(&mut self)
+    {
+        T::insert(self);
+    }
+
     /// recursively process events
     pub(crate) fn process(&self, app: &mut Application)
     {

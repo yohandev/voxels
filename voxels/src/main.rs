@@ -1,6 +1,7 @@
 mod common;
 mod client;
 
+use ezgame::ecs::*;
 use ezgame::*;
 
 fn main()
@@ -12,12 +13,12 @@ struct TestGame;
 
 impl Game for TestGame
 {
-    fn build(app: &mut Application) -> Self
+    fn build(app: &mut Application, sys: &mut Systems) -> Self
     {
-        app.systems().bundle::<GameBundle>();
+        sys.bundle::<GameBundle>();
 
-        app.systems().bundle::<common::Bundle>();
-        app.systems().bundle::<client::Bundle>();
+        sys.bundle::<common::Bundle>();
+        sys.bundle::<client::Bundle>();
 
         // request window
         app.resources().insert

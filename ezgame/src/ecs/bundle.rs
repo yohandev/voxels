@@ -1,12 +1,19 @@
 use super::*;
 
+/// collection of systems that can be added
+/// all at once
+pub trait SystemBundle
+{
+    fn insert(sys: &mut Systems);
+}
+
 macro_rules! impl_bundle
 {
     ($($sys_id:ident),*) =>
     {
-        impl<$($sys_id: System),*> System for ($($sys_id),*,)
+        impl<$($sys_id: System),*> SystemBundle for ($($sys_id),*,)
         {
-            fn register(sys: &mut Systems)
+            fn insert(sys: &mut Systems)
             {
                 $(
                     $sys_id::register(sys);
