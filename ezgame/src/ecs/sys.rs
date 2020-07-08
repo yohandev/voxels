@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::any::TypeId;
 
 use crate::*;
+use super::*;
 
 /// an event-responding system, that operates on entities
 /// and their components. it's convention that systems
@@ -110,8 +111,12 @@ impl Systems
     pub(crate) fn process(&self, app: &mut Application)
     {
         // retrieve and replace events
-        let queue = &mut app.events().queue;
-        let events = std::mem::replace(queue, Default::default());
+        let events =
+        {
+            let old = &mut app.fetch_mut::<Write<REventQueue>>();
+
+            std::mem::replace(&mut old.queue, Default::default())
+        };
 
         // break recursion
         if events.is_empty()

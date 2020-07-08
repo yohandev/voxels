@@ -7,7 +7,8 @@ use super::*;
 /// everything explains itself after that.
 pub struct Application
 {
-    factory: RegistryFactory,
+    factory:    RegistryFactory,
+    states:     StateMachine,
     resources:  Resources,
 }
 
@@ -103,13 +104,19 @@ impl Application
 
     /// short-cut for
     /// ```rust
-    /// app.res_mut().get::<REventQueue>().unwrap()
+    /// app.res().get::<REventQueue>().unwrap()
     /// ```
     /// get the app's event queue, which should normally
     /// always be there and valid.
-    pub fn events(&mut self) -> &mut REventQueue
+    pub fn events(&self) -> ResFetch<'_, REventQueue>
     {
-        todo!()
+        self.res().get::<REventQueue>().unwrap()
+    }
+
+    /// get this app's state manager
+    pub fn states(&mut self) -> &mut StateMachine
+    {
+        &mut self.states
     }
 
     /// create a new registry for this app
@@ -124,6 +131,9 @@ impl Application
         // universe
         let factory = RegistryFactory::new();
 
+        // states
+        let states = StateMachine::new();
+
         // resources
         let mut resources = Resources::default();
 
@@ -131,6 +141,6 @@ impl Application
         resources.insert(REventQueue::new());
 
         // return
-        Self { factory, resources }
+        Self { factory, states, resources }
     }
 }

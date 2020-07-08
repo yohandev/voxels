@@ -47,3 +47,9 @@ pub use legion::borrow::
     Ref as CmpRef,
     RefMut as CmpRefMut,
 };
+
+pub use legion::systems::resource::
+{
+    Fetch as ResFetch,
+    FetchMut as ResFetchMut,
+};

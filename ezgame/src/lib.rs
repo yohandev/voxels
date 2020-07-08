@@ -1,6 +1,8 @@
+mod state;
 mod game;
 mod app;
 
+pub use state::*;
 pub use game::*;
 pub use app::*;
 
