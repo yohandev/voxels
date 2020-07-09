@@ -119,6 +119,18 @@ impl Application
         &mut self.states
     }
 
+    /// switch to a state, or register it using its default.
+    /// this will invoke the StateChange event if the state
+    /// actually changed
+    pub fn switch<T: State>(&mut self)
+    {
+        if !self.states().is::<T>()
+        {
+            self.events().push::<evt::StateChanged>();
+        }
+        self.states().switch::<T>()
+    }
+
     /// create a new registry for this app
     pub fn create_registry(&mut self) -> Registry
     {

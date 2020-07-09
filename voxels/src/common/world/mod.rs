@@ -1,17 +1,17 @@
-mod c_blockbuf;
-mod c_chunk;
+mod s_updated;
+mod chunk;
+mod world;
 mod t_chunk;
-mod r_cache;
 mod s_load;
 mod s_gen;
 mod pos;
 
 pub use self::
 {
-    c_blockbuf::*,
-    c_chunk::*,
+    chunk::*,
+    world::*,
     t_chunk::*,
-    r_cache::*,
+    s_updated::*,
     s_load::*,
     s_gen::*,
     pos::*,

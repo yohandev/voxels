@@ -3,7 +3,8 @@ mod consts;
 pub use consts::*;
 
 pub mod transform;
-pub mod chunk;
+pub mod states;
+pub mod world;
 pub mod block;
 pub mod debug;
 
@@ -11,7 +12,7 @@ pub mod debug;
 pub type Bundle =
 (
     transform::SLocalToWorld,
-    chunk::SChunkLoad,
-    chunk::SChunkGen,
+    world::SChunkLoad,
+    world::SChunkGen,
     debug::SDebugFps,
 );

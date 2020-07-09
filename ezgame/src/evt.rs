@@ -16,3 +16,15 @@ pub struct Start;
 /// application. as the name implies, this event quits
 /// the game and closes all windows, etc.
 pub struct Quit;
+
+/// event invoked when the game state has been changed. this could be
+/// called multiple times per state, if the following scenario occurs:
+/// - `app.switch::<A>()`
+///     - StateChanged invoked for A
+/// - `app.switch::<B>()`
+///     - StateChanged invoked for B
+/// - `app.switch::<B>()`
+///     - StateChanged **not** invoked
+/// - `app.switch::<A>()`
+///     - StateChanged invoked for A **again**
+pub struct StateChanged;

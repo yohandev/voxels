@@ -1,9 +1,11 @@
 use ezgame::time::evt;
 use ezgame::ecs::*;
+use ezgame::*;
 
-use super::{ CChunk, CBlockBuffer, BlockBufferIndex, TUngenerated, TUpdated };
 use crate::common::block::PackedBlock;
+use crate::common::states::GameState;
 use crate::common::CHUNK_SIZE;
+use super::ChunkIndex;
 
 /// system that generates chunks'
 /// terrain
@@ -11,33 +13,28 @@ pub struct SChunkGen;
 
 impl System for SChunkGen
 {
-    const EVENT: Event = evt::UPDATE;
-    const ORDER: Order = ord::LOW;
-
-    const FLUSH: bool = true;
-
-    fn exe() -> SysFn
+    fn register(handlers: &mut Systems)
     {
-        // begin...
-        sys("chunk_gen_system")
-        // components...
-        .with_query
-        (
-            <(Read<CChunk>, Write<CBlockBuffer>)>::query()
-                .filter(tag::<TUngenerated>())
-        )
-        .build(|cmd, world, _, q_chunks|
+        handlers.insert::<evt::Update>(-500, Self::on_update);
+    }
+}
+
+impl SChunkGen
+{
+    fn on_update(app: &mut Application)
+    {
+        /// sea level at which terrain is generated
+        const SEA_LEVEL: f64 = 10.0;
+        /// up and down delta from sea level at which terrain is generated
+        const TERRAIN_DELTA: f64 = 5.0;
+
+        use noise::*;
+
+        let perlin = Perlin::new().set_seed(12345);
+
+        if let Some(state) = app.states().get_mut::<GameState>()
         {
-            /// sea level at which terrain is generated
-            const SEA_LEVEL: f64 = 10.0;
-            /// up and down delta from sea level at which terrain is generated
-            const TERRAIN_DELTA: f64 = 5.0;
-
-            use noise::*;
-
-            let perlin = Perlin::new().set_seed(12345);
-
-            for (ent, (chunk, mut blocks)) in q_chunks.iter_entities_mut(world)
+            for chunk in state.world.chunks_mut().filter(|c| !c.generated())
             {
                 // go through horizontal plane
                 for rx in 0..CHUNK_SIZE as u32
@@ -57,7 +54,7 @@ impl System for SChunkGen
                         // fill all 0..32 or none 0..-n blocks
                         for ry in 0..rh.min(CHUNK_SIZE as i32)
                         {   
-                            blocks.set_packed((rx, ry, rz),
+                            chunk.set_packed((rx, ry, rz),
                             {
                                 if ry == rh - 1
                                 {
@@ -71,13 +68,8 @@ impl System for SChunkGen
                         }
                     }
                 }
-
-                println!("generated chunk!");
-
-                // remove and set tags
-                cmd.remove_tag::<TUngenerated>(ent);
-                cmd.add_tag(ent, TUpdated);
+                chunk.mark_generated();
             }
-        })
+        }
     }
 }
