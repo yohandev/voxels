@@ -2,12 +2,13 @@ use std::collections::HashMap;
 use std::any::*;
 
 use crate::ecs::*;
+use super::*;
 
 /// see `ezgame::StateMachine`
 pub trait State: Any
 {
     /// create a new state of Self type
-    fn create() -> Self where Self: Sized;
+    fn create(app: &mut Application) -> Self where Self: Sized;
 
     /// get an immutable list of this state's
     /// registries(if any). this is for systems
@@ -57,8 +58,8 @@ impl dyn State
 /// stages and storing entity registries(if any)
 pub struct StateMachine
 {
-    states: HashMap<TypeId, Box<dyn State>>,
-    active: Option<TypeId>
+    pub(super) states: HashMap<TypeId, Box<dyn State>>,
+    pub(super) active: Option<TypeId>
 }
 
 impl StateMachine
@@ -72,30 +73,15 @@ impl StateMachine
         }
     }
 
-    /// switch to a state, or register it using its default
-    pub(super) fn switch<T: State>(&mut self)
-    {
-        let id = TypeId::of::<T>();
-
-        // implicit register
-        if !self.states.contains_key(&id)
-        {
-            self.states.insert(id, Box::new(T::create()));
-        }
-
-        // switch
-        self.active = Some(id);
-    }
-
     /// register a state without switching to it.
     /// the old one will be silently overwritten
     /// if it existed
-    pub fn register<T: State>(&mut self)
+    pub fn register<T: State>(&mut self, app: &mut Application)
     {
         self.states.insert
         (
             TypeId::of::<T>(),
-            Box::new(T::create())
+            Box::new(T::create(app))
         );
     }
 

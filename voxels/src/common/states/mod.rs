@@ -1,5 +1,8 @@
 use std::rc::Rc;
 
+use ezgame::ecs::*;
+use ezgame::*;
+
 use crate::common::block::RBlockPalette;
 use crate::common::world::World;
 
@@ -8,15 +11,26 @@ use crate::common::world::World;
 pub struct GameState
 {
     pub world: World,
+    pub registry: Registry,
 }
 
-impl Default for GameState
+impl State for GameState
 {
-    fn default() -> Self
+    fn create() -> Self where Self: Sized
     {
         Self
         {
             world: World::new(Rc::new(RBlockPalette::load("")))
         }
+    }
+
+    fn registries(&self) -> &[&Registry]
+    {
+        todo!()
+    }
+
+    fn registries_mut(&self) -> &[&mut Registry]
+    {
+        todo!()
     }
 }

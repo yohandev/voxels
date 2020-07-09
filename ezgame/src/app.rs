@@ -124,11 +124,25 @@ impl Application
     /// actually changed
     pub fn switch<T: State>(&mut self)
     {
+        use std::any::*;
+
         if !self.states().is::<T>()
         {
             self.events().push::<evt::StateChanged>();
+
+            let id = TypeId::of::<T>();
+
+            // implicit register
+            if !self.states.states.contains_key(&id)
+            {
+                let new = { Box::new(T::create(self)) };
+                
+                self.states.states.insert(id, new);
+            }
+
+            // switch
+            self.states.active = Some(id);
         }
-        self.states().switch::<T>()
     }
 
     /// create a new registry for this app
