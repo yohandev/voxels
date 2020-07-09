@@ -3,9 +3,9 @@ use ezgame::gfx::*;
 use ezgame::time;
 use ezmath::*;
 
-use crate::common::chunk::{ CChunk, CBlockBuffer, BlockBufferIndex, TUpdated, RChunkCache };
 use crate::client::gfx::{ SRender, RGraphicsChunk, ChunkMeshBuilder, ChunkPosition, ChunkMesh };
 use crate::common::block::{ Block, BlockFace, shapes::BlockShapes, RBlockPalette };
+use crate::common::world::{ World, Chunk, ChunkIndex };
 use crate::common::CHUNK_SIZE;
 
 /// system that remeshes chunks

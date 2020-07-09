@@ -1,5 +1,6 @@
 use ezgame::ecs::*;
 use ezgame::gfx::*;
+use ezgame::*;
 
 use super::super::
 {
@@ -7,7 +8,6 @@ use super::super::
     ChunkVertex, 
     RGraphicsShared, 
     RGraphicsChunk,
-    SGraphicsShared,
 };
 
 /// system that initializes the RGraphicsChunk
@@ -16,38 +16,46 @@ pub struct SGraphicsChunk;
 
 impl System for SGraphicsChunk
 {
-    const EVENT: Event = evt::READY;
-    const ORDER: Order = SGraphicsShared::ORDER + 1;
-
-    fn prepare(r: &mut Resources)
+    fn register(handlers: &mut Systems)
     {
-        r.insert(RGraphicsChunk::None);
+        handlers.insert::<ezgame::evt::Start>(-999, Self::on_start);
+        handlers.insert::<gfx::evt::Ready>(-995, Self::on_ezgfx_ready);
+    }
+}
+
+impl SGraphicsChunk
+{
+    fn on_start(app: &mut Application)
+    {
+        app.resources().insert(RGraphicsChunk::None);
     }
 
-    fn exe() -> SysFn
+    fn on_ezgfx_ready(app: &mut Application)
     {
-        // begin...
-        sys("chunk_graphics_init_system")
-        // resources
-        .read_resource::<RGraphics>()
-        .read_resource::<RGraphicsShared>()
-        .write_resource::<RGraphicsChunk>()
-        // system
-        .build(move |_, _, (r_gfx, r_shared, r_chunk), _|
+        if let Some(ctx) = &*app.gfx()
         {
+            // shaders source
             const VS_SRC: &str = include_str!("../../../../assets/shaders/chunk.vert");
             const FS_SRC: &str = include_str!("../../../../assets/shaders/chunk.frag");
-
-            let ctx = r_gfx.as_ref().unwrap();
             
+            // compiled shaders
             let vs = ctx.shader(ShaderKind::Vertex, VS_SRC);
             let fs = ctx.shader(ShaderKind::Fragment, FS_SRC);
 
-            let vp = &r_shared.as_ref().unwrap().0;
+            // shared view-projection bind group
+            let vp = &app
+                .res()
+                .get::<RGraphicsShared>()
+                .unwrap()
+                .as_ref()
+                .unwrap().0;
 
+            // chunk position uniform
             let pos = ctx.uniform(ChunkPosition::default());
+            // chunk position bind group
             let pos = ctx.bind_group(ShaderKind::Vertex, (pos,));
 
+            // chunk pipeline
             let pipeline = ctx
                 .pipeline()
                     .bindings(&[vp, &pos])
@@ -58,7 +66,11 @@ impl System for SGraphicsChunk
                     .depth(true)
                 .build();
             
-            r_chunk.replace((vs, fs, pos, pipeline, Default::default()));
-        })
+            // explicit typing to make sure type matches
+            let res: RGraphicsChunk = Some((vs, fs, pos, pipeline, Default::default()));
+
+            // replace resource
+            app.resources().insert(res);
+        }
     }
 }
