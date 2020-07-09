@@ -1,34 +1,34 @@
+use ezgame::window::evt;
 use ezgame::ecs::*;
-use ezgame::window;
+use ezgame::*;
 
 /// updates the camera matrix on window resize
 pub struct SCameraResize;
 
 impl System for SCameraResize
 {
-    const EVENT: Event = window::evt::RESIZED;
-    const ORDER: Order = ord::MID;
-
-    fn exe() -> SysFn
+    fn register(handlers: &mut Systems) 
     {
-        // begin...
-        sys("camera_resize_system")
-        // components...
-        .with_query(<Write<super::CCamera>>::query())
-        // resources...
-        .read_resource::<window::RWindow>()
-        // system
-        .build(|_, world, window, query|
-        {
-            let size = window
-                .as_ref()
-                .unwrap()
-                .inner_size();
+        handlers.insert::<evt::Resized>(0, Self::on_window_resized)
+    }
+}
 
-            for mut cam in query.iter_mut(world)
+impl SCameraResize
+{
+    fn on_window_resized(app: &mut Application)
+    {
+        let size = app
+            .window()
+            .as_ref()
+            .unwrap()
+            .inner_size();
+
+        for registry in app.registries_mut()
+        {
+            for mut cam in <Write<super::CCamera>>::query().iter_mut(*registry)
             {
                 cam.resize(size.width as f32, size.height as f32);
             }
-        })
+        }
     }
 }

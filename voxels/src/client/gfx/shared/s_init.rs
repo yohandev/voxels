@@ -1,5 +1,6 @@
 use ezgame::ecs::*;
 use ezgame::gfx::*;
+use ezgame::*;
 
 use super::{ ViewProjUniform, RGraphicsShared };
 
@@ -9,30 +10,34 @@ pub struct SGraphicsShared;
 
 impl System for SGraphicsShared
 {
-    const EVENT: Event = evt::READY;
-    const ORDER: Order = ord::HIGH;
-
-    fn prepare(r: &mut Resources)
+    fn register(handlers: &mut Systems)
     {
-        r.insert(RGraphicsShared::None);
+        handlers.insert::<ezgame::evt::Start>(-999, Self::on_start);
+        handlers.insert::<gfx::evt::Ready>(-999, Self::on_ezgfx_ready);
+    }
+}
+
+impl SGraphicsShared
+{
+    fn on_start(app: &mut Application)
+    {
+        app.resources().insert(RGraphicsShared::None);
     }
 
-    fn exe() -> SysFn
+    fn on_ezgfx_ready(app: &mut Application)
     {
-        // begin...
-        sys("shared_graphics_init_system")
-        // resources
-        .read_resource::<RGraphics>()
-        .write_resource::<RGraphicsShared>()
-        // system
-        .build(move |_, _, (r_gfx, r_shared), _|
+        if let Some(ctx) = &*app.gfx()
         {
-            let ctx = r_gfx.as_ref().unwrap();
-            
+            // uniform buffer
             let vp = ctx.uniform(ViewProjUniform::default());
+            // bind group
             let vp = ctx.bind_group(ShaderKind::Vertex, (vp,));
 
-            r_shared.replace((vp,));
-        })
+            // explicit typing to make sure type matches
+            let res: RGraphicsShared = Some((vp,));
+
+            // replace resource
+            app.resources().insert(res);
+        }
     }
 }

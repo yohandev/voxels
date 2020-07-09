@@ -1,8 +1,10 @@
+use ezgame::time::evt;
 use ezgame::input::*;
-use ezgame::time::*;
 use ezgame::ecs::*;
+use ezgame::*;
 use ezmath::*;
 
+use crate::common::states::GameState;
 use crate::common::transform::*;
 use crate::client::camera::*;
 
@@ -11,29 +13,37 @@ pub struct SFpsController;
 
 impl System for SFpsController
 {
-    const EVENT: Event = evt::UPDATE;
-    const ORDER: Order = ord::MID;
-
-    fn exe() -> SysFn
+    fn register(handlers: &mut Systems)
     {
-        // begin...
-        sys("camera_fps_controller_system")
-        // components...
-        .with_query
-        (
-            <(Write<CTranslation>, Write<CRotation>, Read<CLocalToWorld>)>::query()
-                .filter(tag::<TMainCamera>())
-        )
-        // resources...
-        .read_resource::<RInput>()
-        .read_resource::<RTime>()
-        // system...
-        .build(|_, world, (r_in, r_time), q_trans|
+        handlers.insert::<evt::Update>(0, Self::on_update)
+    }
+}
+
+impl SFpsController
+{
+    fn on_update(app: &mut Application)
+    {
+        // camera transform query
+        let q_trans =
+        <(
+            Write<CTranslation>,
+            Write<CRotation>,
+            Read<CLocalToWorld>
+        )>
+        ::query().filter(tag::<TMainCamera>());
+
+        // delta time
+        let dt = app.time().dt();
+
+        // input
+        let r_in = app.input();
+
+        if let Some(state) = app.states().get_mut::<GameState>()
         {
-            for (mut c_pos, mut c_rot, c_ltw) in q_trans.iter_mut(world)
+            for (mut c_pos, mut c_rot, c_ltw) in q_trans.iter_mut(&mut state.registry)
             {
                 // speed
-                let s = r_time.dt() * 4.0;
+                let s = dt * 4.0;
 
                 // look around
                 if r_in.button_down(MouseButton::Left)
@@ -57,6 +67,6 @@ impl System for SFpsController
                 // move
                 c_pos.0 += (x + y + z) * if r_in.key_down(KeyCode::N) { 3.5 } else { 1.0 };
             }
-        })
+        }
     }
 }
