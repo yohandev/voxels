@@ -1,6 +1,7 @@
 use ezgame::ecs::*;
 use ezgame::gfx::*;
 use ezgame::time;
+use ezgame::*;
 use ezmath::*;
 
 use crate::common::transform::CLocalToWorld;
@@ -15,52 +16,46 @@ pub struct SCameraUniform;
 
 impl System for SCameraUniform
 {
-    const EVENT: Event = time::evt::RENDER;
-    const ORDER: Order = ord::HIGH;
-
-    const FLUSH: bool = true;
-
-    fn exe() -> SysFn
+    fn register(handlers: &mut Systems) 
     {
-        // begin...
-        sys("camera_update_uniform_system")
-        // components...
-        .with_query
-        (
-            <(
-                Read<super::CCamera>,
-                TryRead<CLocalToWorld>
-            )>::query()
+        handlers.insert::<time::evt::Render>(-499, Self::on_render);
+    }
+}
+
+impl SCameraUniform
+{
+    fn on_render(app: &mut Application)
+    {
+        // camera query
+        let q_cam = <(Read<super::CCamera>, TryRead<CLocalToWorld>)>::query()
             .filter
             (
                 tag::<super::TMainCamera>() &
                 (changed::<super::CCamera>() |
                 changed::<CLocalToWorld>())
-            )
-        )
-        // resources...
-        .read_resource::<RGraphicsShared>()
-        .write_resource::<RGraphics>()
-        // system...
-        .build(|_, world, (r_shared, r_gfx), q_cam|
+            );
+           
+        // fetch resources
+        let (mut r_gfx, r_shared) = app.fetch_mut::<(Write<RGraphics>, Read<RGraphicsShared>)>();
+
+        // do nothing is renderer or resources
+        // aren't initialized
+        if r_gfx.is_none()
         {
-            // do nothing is renderer or shared
-            // aren't initialized
-            if r_gfx.is_none()
-            {
-                return;
-            }
-            if r_shared.is_none()
-            {
-                return;
-            }
+            return;
+        }
+        if r_shared.is_none()
+        {
+            return;
+        }
+        let ctx = r_gfx.as_mut().unwrap();
+        let shared = r_shared.as_ref().unwrap();
 
-            // unwrap
-            let ctx = r_gfx.as_mut().unwrap();
-            let shared = r_shared.as_ref().unwrap();
-
+        // go through every registry
+        for registry in app.registries()
+        {
             // get first camera
-            for (cam, ltw) in q_cam.iter(world)
+            for (cam, ltw) in q_cam.iter(*registry)
             {
                 // (view) projection matrix
                 let vp = if let Some(ltw) = &ltw
@@ -76,8 +71,8 @@ impl System for SCameraUniform
                 ctx.update_uniform(&shared.0.bindings.0, ViewProjUniform::new(vp));
 
                 // break after first camera
-                break;
+                return;
             }
-        })
+        }
     }
 }
