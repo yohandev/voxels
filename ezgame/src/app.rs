@@ -145,6 +145,44 @@ impl Application
         }
     }
 
+    /// get an immutable list of the active
+    /// state's registries(if any). this is
+    /// for systems that operate on *all* states
+    /// but need access to entity registries
+    /// (which are stored in the state). if no
+    /// state is active, an empty array is
+    /// returned.
+    pub fn registries(&self) -> &[&Registry]
+    {
+        if let Some(state) = &self.states.active
+        {
+            self.states.states
+                .get(state)
+                .unwrap()
+                .registries()
+        }
+        else { &[] }
+    }
+
+    /// get a mutable list of the active
+    /// state's registries(if any). this is
+    /// for systems that operate on *all* states
+    /// but need access to entity registries
+    /// (which are stored in the state). if no
+    /// state is active, an empty array is
+    /// returned.
+    pub fn registries_mut(&mut self) -> &[&mut Registry]
+    {
+        if let Some(state) = &self.states.active
+        {
+            self.states.states
+                .get_mut(state)
+                .unwrap()
+                .registries_mut()
+        }
+        else { &[] }
+    }
+
     /// create a new registry for this app
     pub fn create_registry(&mut self) -> Registry
     {
