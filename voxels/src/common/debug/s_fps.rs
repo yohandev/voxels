@@ -1,24 +1,22 @@
-use ezgame::time::*;
+use ezgame::time::evt;
 use ezgame::ecs::*;
+use ezgame::*;
 
 /// system that prints the frames per second
 pub struct SDebugFps;
 
 impl System for SDebugFps
 {
-    const EVENT: Event = evt::UPDATE;
-    const ORDER: Order = ord::LOW;
-
-    fn exe() -> SysFn
+    fn register(handlers: &mut Systems)
     {
-        // begin...
-        sys("debug_fps_system")
-        // resources...
-        .read_resource::<RTime>()
-        // system...
-        .build(|_, _, r_time, _|
-        {
-            println!("{} FPS", (1.0 / r_time.dt()).round());
-        })
+        handlers.insert::<evt::Update>(0, Self::on_update);
+    }
+}
+
+impl SDebugFps
+{
+    fn on_update(app: &mut Application)
+    {
+        println!("{} FPS", (1.0 / app.time().dt()).round());
     }
 }
