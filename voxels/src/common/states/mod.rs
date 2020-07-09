@@ -10,27 +10,30 @@ use crate::common::world::World;
 /// happens
 pub struct GameState
 {
+    /// overworld dimension
     pub world: World,
+    /// living entity registry
     pub registry: Registry,
 }
 
 impl State for GameState
 {
-    fn create() -> Self where Self: Sized
+    fn create(app: &mut Application) -> Self where Self: Sized
     {
         Self
         {
-            world: World::new(Rc::new(RBlockPalette::load("")))
+            world: World::new(Rc::new(RBlockPalette::load(""))),
+            registry: app.create_registry()
         }
     }
 
     fn registries(&self) -> &[&Registry]
     {
-        todo!()
+        &[&self.registry]
     }
 
     fn registries_mut(&self) -> &[&mut Registry]
     {
-        todo!()
+        &[&mut self.registry]
     }
 }
