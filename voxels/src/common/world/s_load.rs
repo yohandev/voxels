@@ -22,7 +22,7 @@ impl SChunkLoad
     {
         const SIZE: i32 = CHUNK_SIZE as i32;
 
-        if let Some(state) = app.states().get_mut::<GameState>()
+        if let Some(state) = app.state().get_mut::<GameState>()
         {
             // temporary load on start
             (0..5)

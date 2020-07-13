@@ -7,9 +7,9 @@ use super::*;
 /// everything explains itself after that.
 pub struct Application
 {
-    factory:    RegistryFactory,
-    states:     StateMachine,
-    resources:  Resources,
+    pub(crate) factory:    RegistryFactory,
+    pub(crate) states:     StateMachine,
+    pub(crate) resources:  Resources,
 }
 
 /// winit resource taken directly from the event loop
@@ -114,73 +114,9 @@ impl Application
     }
 
     /// get this app's state manager
-    pub fn states(&mut self) -> &mut StateMachine
+    pub fn state(&mut self) -> &mut StateMachine
     {
         &mut self.states
-    }
-
-    /// switch to a state, or register it using its default.
-    /// this will invoke the StateChange event if the state
-    /// actually changed
-    pub fn switch<T: State>(&mut self)
-    {
-        use std::any::*;
-
-        if !self.states().is::<T>()
-        {
-            self.events().push::<evt::StateChanged>();
-
-            let id = TypeId::of::<T>();
-
-            // implicit register
-            if !self.states.states.contains_key(&id)
-            {
-                let new = { Box::new(T::create(self)) };
-                
-                self.states.states.insert(id, new);
-            }
-
-            // switch
-            self.states.active = Some(id);
-        }
-    }
-
-    /// get an immutable list of the active
-    /// state's registries(if any). this is
-    /// for systems that operate on *all* states
-    /// but need access to entity registries
-    /// (which are stored in the state). if no
-    /// state is active, an empty array is
-    /// returned.
-    pub fn registries(&self) -> &[&Registry]
-    {
-        if let Some(state) = &self.states.active
-        {
-            self.states.states
-                .get(state)
-                .unwrap()
-                .registries()
-        }
-        else { &[] }
-    }
-
-    /// get a mutable list of the active
-    /// state's registries(if any). this is
-    /// for systems that operate on *all* states
-    /// but need access to entity registries
-    /// (which are stored in the state). if no
-    /// state is active, an empty array is
-    /// returned.
-    pub fn registries_mut(&mut self) -> &[&mut Registry]
-    {
-        if let Some(state) = &self.states.active
-        {
-            self.states.states
-                .get_mut(state)
-                .unwrap()
-                .registries_mut()
-        }
-        else { &[] }
     }
 
     /// create a new registry for this app

@@ -38,7 +38,7 @@ impl SFpsController
         // input
         let r_in = app.input();
 
-        if let Some(state) = app.states().get_mut::<GameState>()
+        if let Some(state) = app.state().get_mut::<GameState>()
         {
             for (mut c_pos, mut c_rot, c_ltw) in q_trans.iter_mut(&mut state.registry)
             {

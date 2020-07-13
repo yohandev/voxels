@@ -32,7 +32,7 @@ impl SChunkGen
 
         let perlin = Perlin::new().set_seed(12345);
 
-        if let Some(state) = app.states().get_mut::<GameState>()
+        if let Some(state) = app.state().get_mut::<GameState>()
         {
             for chunk in state.world.chunks_mut().filter(|c| !c.generated())
             {

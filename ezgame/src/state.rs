@@ -9,20 +9,6 @@ pub trait State: Any
 {
     /// create a new state of Self type
     fn create(app: &mut Application) -> Self where Self: Sized;
-
-    /// get an immutable list of this state's
-    /// registries(if any). this is for systems
-    /// that operate on *all* states but need
-    /// access to entity registries(which are
-    /// stored in the state)
-    fn registries(&self) -> &[&Registry];
-
-    /// get a mutable list of this state's
-    /// registries(if any). this is for systems
-    /// that operate on *all* states but need
-    /// access to entity registries(which are
-    /// stored in the state)
-    fn registries_mut(&self) -> &[&mut Registry];
 }
 
 impl dyn State
@@ -58,8 +44,62 @@ impl dyn State
 /// stages and storing entity registries(if any)
 pub struct StateMachine
 {
-    pub(super) states: HashMap<TypeId, Box<dyn State>>,
+    pub(super) states: HashMap<TypeId, (Box<dyn State>, Registry)>,
     pub(super) active: Option<TypeId>
+}
+
+impl Application
+{
+    /// switch to a state, or register it using its default.
+    /// this will invoke the StateChange event if the state
+    /// actually changed
+    pub fn switch<T: State>(&mut self)
+    {
+        use std::any::*;
+
+        if !self.state().is::<T>()
+        {
+            self.events().push::<evt::StateChanged>();
+
+            let id = TypeId::of::<T>();
+
+            // implicit register
+            if !self.states.states.contains_key(&id)
+            {
+                let state = Box::new(T::create(self));
+                let registry = self.create_registry();
+
+                self.states.states.insert(id, (state, registry));
+            }
+
+            // switch
+            self.states.active = Some(id);
+        }
+    }
+
+    /// get the active state's registry. this is
+    /// for systems that operate on *all* states
+    /// but need access to entity registries
+    /// (which are stored in the state).
+    pub fn registry(&self) -> &Registry
+    {
+        &self.states.states
+            .get(&self.states.active.unwrap())
+            .unwrap()
+            .1
+    }
+
+    /// get the active state's registry. this is
+    /// for systems that operate on *all* states
+    /// but need access to entity registries
+    /// (which are stored in the state).
+    pub fn registry_mut(&mut self) -> &mut Registry
+    {
+        &mut self.states.states
+            .get_mut(&self.states.active.unwrap())
+            .unwrap()
+            .1
+    }
 }
 
 impl StateMachine
@@ -81,7 +121,7 @@ impl StateMachine
         self.states.insert
         (
             TypeId::of::<T>(),
-            Box::new(T::create(app))
+            (Box::new(T::create(app)), app.create_registry())
         );
     }
 
@@ -94,7 +134,7 @@ impl StateMachine
     {
         if let Some(id) = self.active
         {
-            Some(self.states.get_mut(&id).unwrap().downcast_mut())
+            Some(self.states.get_mut(&id).unwrap().0.downcast_mut())
         }
         else
         {
@@ -111,7 +151,7 @@ impl StateMachine
     {
         if let Some(id) = self.active
         {
-            Some(self.states.get(&id).unwrap().downcast_ref())
+            Some(self.states.get(&id).unwrap().0.downcast_ref())
         }
         else
         {
@@ -127,7 +167,7 @@ impl StateMachine
         {
             Some(id) => match self.states.get(&id)
             {
-                Some(state) => state.is::<T>(),
+                Some((state, _)) => state.is::<T>(),
                 None => false,
             },
             None => false,
