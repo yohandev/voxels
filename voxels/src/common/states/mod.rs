@@ -12,8 +12,6 @@ pub struct GameState
 {
     /// overworld dimension
     pub world: World,
-    /// living entity registry
-    pub registry: Registry,
 }
 
 impl State for GameState
@@ -23,17 +21,6 @@ impl State for GameState
         Self
         {
             world: World::new(Rc::new(RBlockPalette::load(""))),
-            registry: app.create_registry()
         }
-    }
-
-    fn registries(&self) -> &[&Registry]
-    {
-        &[&self.registry]
-    }
-
-    fn registries_mut(&self) -> &[&mut Registry]
-    {
-        &[&mut self.registry]
     }
 }

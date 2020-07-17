@@ -23,12 +23,9 @@ impl SCameraResize
             .unwrap()
             .inner_size();
 
-        for registry in app.registries_mut()
+        for mut cam in <Write<super::CCamera>>::query().iter_mut(app.registry_mut())
         {
-            for mut cam in <Write<super::CCamera>>::query().iter_mut(*registry)
-            {
-                cam.resize(size.width as f32, size.height as f32);
-            }
+            cam.resize(size.width as f32, size.height as f32);
         }
     }
 }

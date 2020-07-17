@@ -42,22 +42,19 @@ impl SLocalToWorld
                 changed::<CRotation>()
             );
 
-        for &mut registry in app.registries_mut()
+        for (mut ltw, t) in q_t.iter_mut(app.registry_mut())
         {
-            for (mut ltw, t) in q_t.iter_mut(&mut registry)
-            {
-                *ltw = CLocalToWorld(float4x4::translation(t.0));
-            }
+            *ltw = CLocalToWorld(float4x4::translation(t.0));
+        }
 
-            for (mut ltw, r) in q_r.iter_mut(&mut registry)
-            {
-                *ltw = CLocalToWorld(float4x4::rotation(r.0));
-            }
+        for (mut ltw, r) in q_r.iter_mut(app.registry_mut())
+        {
+            *ltw = CLocalToWorld(float4x4::rotation(r.0));
+        }
 
-            for (mut ltw, t, r) in q_tr.iter_mut(&mut registry)
-            {
-                *ltw = CLocalToWorld(float4x4::translation(t.0) * float4x4::rotation(r.0))
-            }
+        for (mut ltw, t, r) in q_tr.iter_mut(app.registry_mut())
+        {
+            *ltw = CLocalToWorld(float4x4::translation(t.0) * float4x4::rotation(r.0))
         }
     }
 }

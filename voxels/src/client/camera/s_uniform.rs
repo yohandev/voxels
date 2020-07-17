@@ -51,28 +51,24 @@ impl SCameraUniform
         let ctx = r_gfx.as_mut().unwrap();
         let shared = r_shared.as_ref().unwrap();
 
-        // go through every registry
-        for registry in app.registries()
+        // get first camera
+        for (cam, ltw) in q_cam.iter(app.registry())
         {
-            // get first camera
-            for (cam, ltw) in q_cam.iter(*registry)
+            // (view) projection matrix
+            let vp = if let Some(ltw) = &ltw
             {
-                // (view) projection matrix
-                let vp = if let Some(ltw) = &ltw
-                {
-                    cam.proj * ltw.0.inverse()
-                }
-                else
-                {
-                    cam.proj
-                };
-
-                // update uniforms
-                ctx.update_uniform(&shared.0.bindings.0, ViewProjUniform::new(vp));
-
-                // break after first camera
-                return;
+                cam.proj * ltw.0.inverse()
             }
+            else
+            {
+                cam.proj
+            };
+
+            // update uniforms
+            ctx.update_uniform(&shared.0.bindings.0, ViewProjUniform::new(vp));
+
+            // break after first camera
+            return;
         }
     }
 }
