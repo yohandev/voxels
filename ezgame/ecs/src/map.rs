@@ -4,7 +4,7 @@ use crate::*;
 
 /// maps events to systems schedules.
 #[derive(Default)]
-pub struct EventSystems
+pub struct Systems
 {
     map: HashMap<Event, SystemOven>,
 }
@@ -14,16 +14,16 @@ pub struct EventSystems
 /// or not.
 enum SystemOven
 {
-    Baked(Systems),
-    Baking(Option<Builder>),
+    Baked(Schedule),
+    Baking(Builder),
 }
 
-impl EventSystems
+impl Systems
 {
     /// recursively process all events inside
     /// the REvents resource. if some systems
     /// aren't built, they will be built dynamically.
-    pub fn process(&mut self, registry: &mut Registry, resources: &mut Resources)
+    pub(crate) fn process(&self, app: &mut Application)
     {
         // retrieve events
         let events = resources
@@ -70,9 +70,11 @@ impl EventSystems
         self.process(registry, resources);
     }
 
-    /// insert a system into this systems collection,
-    /// automatically figuring out ordering and events.
-    pub fn insert<T: System>(&mut self)
+    /// insert a system function into this systems collection.
+    /// the generic parameter is the event the fn is subscribed to
+    /// and the name parameter is for debug purposes. this returns
+    /// a system builder
+    pub fn insert<T: 'static>(&mut self, name: &str)
     {
         let e = T::EVENT;
 

@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 winit = "0.22.2"
-ezgame-ecs = { path = "./ecs" }
+legion = "0.2.4"
 
 ezgfx = { path = "../ezgfx", optional = true }
 

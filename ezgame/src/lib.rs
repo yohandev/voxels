@@ -8,8 +8,8 @@ pub mod window;
 pub mod input;
 pub mod time;
 pub mod evt;
+pub mod ecs;
 
-pub use ::ezgame_ecs as ecs;
 pub use ::winit;
 
 #[cfg(feature="plugin-ezgfx")]

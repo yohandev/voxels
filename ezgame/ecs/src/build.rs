@@ -1,5 +1,7 @@
 use std::collections::BinaryHeap;
 
+use super::*;
+
 /// `Systems` builder
 #[derive(Default)]
 pub struct Builder
@@ -18,9 +20,6 @@ struct Sys
 
     flush: bool,
 }
-
-/// closure version of System::prepare()
-type PrepFn = Box<dyn FnOnce(&mut crate::Resources)>;
 
 impl Builder
 {

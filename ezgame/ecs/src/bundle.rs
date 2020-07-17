@@ -2,7 +2,7 @@
 /// be added together
 pub trait SystemBundle
 {
-    fn insert(sys: &mut crate::EventSystems);
+    fn insert(sys: &mut crate::Systems);
 }
 
 macro_rules! impl_bundle
