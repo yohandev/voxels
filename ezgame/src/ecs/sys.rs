@@ -1,3 +1,9 @@
+use std::collections::HashMap;
+use std::any::TypeId;
+
+use crate::Application;
+use super::*;
+
 /// an event-responding system, that operates on entities
 /// and their components. it's convention that systems
 /// are prefixed with an `S`. all the implementation of
@@ -61,5 +67,12 @@
 /// ```
 pub trait System: 'static
 {
-    fn register(handlers: &mut Systems);
+    fn register(app: &mut Application);
+}
+
+/// maps events to a list of sorted handlers
+pub struct Systems
+{
+    /// < event id, sorted vec of (order, function) >
+    map: HashMap<TypeId, Vec<(isize, Schedule)>>,
 }
