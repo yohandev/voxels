@@ -18,7 +18,7 @@ impl System for SChunkMesh
 
     const FLUSH: bool = true;
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("chunk_mesh_system")

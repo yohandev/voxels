@@ -18,7 +18,7 @@ impl System for SChunkLoad
         res.insert(RChunkCache::new())
     }
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("chunk_loading_system")

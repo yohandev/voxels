@@ -24,7 +24,7 @@ impl System for SGraphicsChunk
         r.insert(RGraphicsChunk::None);
     }
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("chunk_graphics_init_system")

@@ -18,7 +18,7 @@ impl System for SRender
 
     const FLUSH: bool = true;
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("render_system")

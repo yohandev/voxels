@@ -19,7 +19,7 @@ impl System for STime
         r.insert(super::RTime::new());
     }
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("ezgame_time_system")

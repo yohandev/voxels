@@ -15,7 +15,7 @@ impl System for SWindow
         r.insert(super::RWindow::None);
     }
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("ezgame_window_system")

@@ -19,7 +19,7 @@ impl System for SGraphicsInit
         r.insert(super::RGraphics::None);
     }
     
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("ezgfx_init_system")
@@ -53,7 +53,7 @@ impl System for SGraphicsResize
         r.insert(super::RGraphics::None);
     }
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("ezgfx_resize_system")

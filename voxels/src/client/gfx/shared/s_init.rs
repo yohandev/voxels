@@ -17,7 +17,7 @@ impl System for SGraphicsShared
         r.insert(RGraphicsShared::None);
     }
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("shared_graphics_init_system")

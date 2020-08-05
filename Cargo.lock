@@ -390,17 +390,10 @@ dependencies = [
 name = "ezgame"
 version = "0.1.0"
 dependencies = [
- "ezgame-ecs",
- "ezgfx",
- "winit",
-]
-
-[[package]]
-name = "ezgame-ecs"
-version = "0.1.0"
-dependencies = [
  "crossbeam",
+ "ezgfx",
  "legion",
+ "winit",
 ]
 
 [[package]]

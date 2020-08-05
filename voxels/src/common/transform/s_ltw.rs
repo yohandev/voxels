@@ -12,7 +12,7 @@ impl System for SLocalToWorld
     const EVENT: Event = evt::UPDATE;
     const ORDER: Order = ord::HIGH * 2;
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("local_to_world_system")

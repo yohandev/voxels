@@ -9,7 +9,7 @@ impl System for SCameraResize
     const EVENT: Event = window::evt::RESIZED;
     const ORDER: Order = ord::MID;
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("camera_resize_system")

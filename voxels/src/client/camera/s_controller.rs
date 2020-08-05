@@ -14,7 +14,7 @@ impl System for SFpsController
     const EVENT: Event = evt::UPDATE;
     const ORDER: Order = ord::MID;
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("camera_fps_controller_system")

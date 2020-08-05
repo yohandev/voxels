@@ -9,7 +9,7 @@ impl System for SDebugFps
     const EVENT: Event = evt::UPDATE;
     const ORDER: Order = ord::LOW;
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("debug_fps_system")

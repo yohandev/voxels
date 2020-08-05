@@ -16,7 +16,7 @@ impl System for SChunkGen
 
     const FLUSH: bool = true;
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("chunk_gen_system")

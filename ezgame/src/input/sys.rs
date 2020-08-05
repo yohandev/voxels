@@ -16,7 +16,7 @@ impl System for SInput
         r.insert(RInput::new());
     }
 
-    fn exe() -> SysFn
+    fn exe() -> Job
     {
         // begin...
         sys("ezgame_input_system")
